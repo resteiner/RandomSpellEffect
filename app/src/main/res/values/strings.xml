@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">RandomSpellEffect</string>
+
+    <string name="loading">Loading</string>
+    <string name="generic_error_message">An error has occurred. Please try again.</string>
+    <string name="spell_info_dice_roll">%1$i!d%1$i!</string>
+</resources>

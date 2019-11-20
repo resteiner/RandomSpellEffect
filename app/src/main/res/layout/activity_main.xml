@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBlackInk"
+    tools:context=".views.activities.MainActivity">
+
+    <FrameLayout
+        android:id="@+id/mMainCardContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/mGenerateNewSpellEffectButton"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <FrameLayout
+                android:id="@+id/fCenter"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/card_image_blank_background"
+                app:layout_constraintBottom_toTopOf="@+id/fBorderBottom"
+                app:layout_constraintLeft_toRightOf="@id/fBorderLeft"
+                app:layout_constraintRight_toLeftOf="@+id/fBorderRight"
+                app:layout_constraintTop_toBottomOf="@+id/fBorderTop">
+
+                <View
+                    android:id="@+id/vColorLayer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorGreenEmerald" />
+
+                <View
+                    android:id="@+id/vPatternLayer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/pattern_tile_spectrum_swirl" />
+
+                <ImageView
+                    android:id="@+id/iCardCenterImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+
+                    android:src="@drawable/card_image_placeholder" />
+
+
+                <TextView
+                    android:id="@+id/mMainActivityText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginLeft="@dimen/primary_margin_horizontal"
+                    android:layout_marginTop="@dimen/primary_margin_vertical"
+                    android:layout_marginRight="@dimen/primary_margin_horizontal"
+                    android:layout_marginBottom="30dp"
+                    android:background="@color/colorWhiteSmoke"
+                    android:padding="@dimen/primary_margin_horizontal"
+                    android:text="@string/generic_error_message"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="18sp" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/fBorderTop"
+                android:layout_width="0dp"
+                android:layout_height="22dp"
+                android:background="@color/colorPrimary"
+                app:layout_constraintLeft_toRightOf="@+id/iCornerTopLeft"
+                app:layout_constraintRight_toLeftOf="@+id/iCornerTopRight"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/tBorderTop"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/border_tile_top_horizontal"
+                    android:text="" />
+            </FrameLayout>
+
+            <ImageView
+                android:id="@+id/iCornerTopRight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toRightOf="@id/fBorderTop"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/border_corner_top_right" />
+
+            <ImageView
+                android:id="@+id/iCornerTopLeft"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/fBorderTop"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/border_corner_top_left" />
+
+
+            <FrameLayout
+                android:id="@+id/fBorderLeft"
+                android:layout_width="22dp"
+                android:layout_height="0dp"
+                android:background="@color/colorPrimary"
+                app:layout_constraintBottom_toTopOf="@+id/iCornerBottomLeft"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/iCornerTopLeft"
+                app:layout_constraintRight_toLeftOf="@+id/fCenter">
+
+                <TextView
+                    android:id="@+id/tBorderLeft"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/border_tile_side_vertical"
+                    android:text="" />
+            </FrameLayout>
+
+
+            <FrameLayout
+                android:id="@+id/fBorderRight"
+                android:layout_width="22dp"
+                android:layout_height="0dp"
+                android:background="@color/colorPrimary"
+                app:layout_constraintBottom_toTopOf="@+id/iCornerBottomRight"
+                app:layout_constraintLeft_toRightOf="@id/fCenter"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iCornerTopLeft">
+
+                <TextView
+                    android:id="@+id/tBorderRight"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/border_tile_side_vertical"
+                    android:text="" />
+            </FrameLayout>
+
+
+            <FrameLayout
+                android:id="@+id/fBorderBottom"
+                android:layout_width="0dp"
+                android:layout_height="22dp"
+                android:background="@color/colorPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/iCornerBottomLeft"
+                app:layout_constraintRight_toLeftOf="@+id/iCornerBottomRight">
+
+                <TextView
+                    android:id="@+id/tBorderBottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/border_tile_top_horizontal"
+                    android:text="" />
+            </FrameLayout>
+
+            <ImageView
+                android:id="@+id/iCornerBottomRight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/fBorderBottom"
+                app:layout_constraintRight_toRightOf="parent"
+                app:srcCompat="@drawable/border_corner_bottom_right" />
+
+            <ImageView
+                android:id="@+id/iCornerBottomLeft"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/fBorderBottom"
+                app:srcCompat="@drawable/border_corner_bottom_left" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/mGenerateNewSpellEffectButton"
+        android:layout_width="@dimen/primary_button_width"
+        android:layout_height="@dimen/primary_button_height"
+        android:layout_marginLeft="@dimen/primary_margin_horizontal"
+        android:layout_marginRight="@dimen/primary_margin_horizontal"
+        android:layout_marginBottom="@dimen/primary_margin_vertical"
+        android:background="@drawable/button_background_rounded_corners"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@+id/mMainCardContainer"
+        app:layout_constraintRight_toRightOf="@+id/mMainCardContainer">
+
+        <TextView
+            android:id="@+id/tButtonText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="New Spell Effect"
+            android:textAlignment="center"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/mDebugInfoContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/primary_margin_vertical"
+        android:padding="@dimen/primary_margin_horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <TextView
+            android:id="@+id/tDebugSystemText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="System"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/mSpellInfoContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/primary_margin_horizontal"
+        android:layout_marginRight="@dimen/primary_margin_horizontal"
+        android:layout_marginBottom="@dimen/primary_margin_vertical"
+        android:background="@color/colorSpellInfoBG"
+        android:padding="@dimen/primary_margin_horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tSpellTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/primary_margin_vertical"
+                android:text="Spell Info"
+                android:textSize="@dimen/title_text_size"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tSpellDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/primary_margin_vertical"
+                android:text="Spell Description" />
+
+            <TextView
+                android:id="@+id/tSpellPage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/primary_margin_vertical"
+                android:text="Spell Page"
+                android:textStyle="italic" />
+
+            <TextView
+                android:id="@+id/tSpellDiceRoll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/primary_margin_vertical"
+                android:text="Dice Roll" />
+
+            <FrameLayout
+                android:id="@+id/mSpellInfoDiceRollsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage1"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage2"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage3"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage4"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage5"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage6"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage7"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage8"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage9"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage10"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage12"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage11"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage13"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage14"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage15"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage16"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage17"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage18"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage19"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage20"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tSpellInfoRollMultiplierX"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="x"
+                        android:textSize="36sp" />
+
+                    <TextView
+                        android:id="@+id/tSpellInfoRollMultiplierNumber"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="1/2"
+                        android:textSize="36sp" />
+
+                    <TextView
+                        android:id="@+id/tSpellInfoRollMultiplierEquals"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="="
+                        android:textSize="36sp" />
+
+                    <TextView
+                        android:id="@+id/tSpellInfoRollMultiplierResult"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="0"
+                        android:textSize="36sp" />
+
+                </LinearLayout>
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
