@@ -314,9 +314,10 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         if (workingString != null && workingString.contains("CREATURE")) {
 
             val db = mDatabase
-            val count = DatabaseUtils.queryNumEntries(db, DB_CREATURE_TABLE_NAME).toInt()
-            db?.close()
-            val random = (1..count).random()
+            val count = DatabaseUtils.queryNumEntries(db, DB_CREATURE_TABLE_NAME)
+            val safeCount = count.toInt()
+            //db?.close()
+            val random = (1..safeCount).random()
 
             val creature = getCreatureById(db, random)
             val creatureName = creature?.mName ?: ""
