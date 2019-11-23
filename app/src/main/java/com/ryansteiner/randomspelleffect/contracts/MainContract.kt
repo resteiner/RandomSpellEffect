@@ -24,6 +24,7 @@ interface MainContract {
         fun updatePatternLayer(patternId: Int?, visibility: Boolean)
         fun updateDiceRoll(selectedSpellDice: String?)
         fun updateSpellInfoContainer(visibility: Boolean, spellText: String?, selectedSpellDescriptionWithDamageLevel: String?, selectedSpellPageNumber: String?)
+        fun onClickSettings(showSettings: Boolean)
     }
 
     interface Presenter : BaseContract.Presenter {
@@ -34,5 +35,7 @@ interface MainContract {
         fun parseSpellStringForVariables(string: String?, system: Int): String?
         fun updateDamagePreferences(damagePrefs: List<Int>?)
         fun updateSpellList(spellsList: SpellsList)
+        fun clickSettings(showSettings: Boolean)
+        fun retrieveSpellEffectById(id: Int)
     }
 }

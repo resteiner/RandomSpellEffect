@@ -2,9 +2,15 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorSecondary">@color/colorGreenMoss</color>
+    <color name="colorSecondaryDark">@color/colorGreenEmerald</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="colorSpellInfoBG">@color/colorYellowBoogerBuster</color>
     <color name="colorTextPrimary">@color/colorBlackRich</color>
+    <color name="colorTextSecondary">@color/colorGrayStone</color>
+
+
+
+    <color name="colorSpellInfoBG">@color/colorYellowBoogerBuster</color>
     <color name="colorWhitePaper">#FFFFFF</color>
     <color name="colorWhiteSnow">#FFFAFA</color>
     <color name="colorWhitePearlescent">#EDEAE0</color>

@@ -4,4 +4,13 @@
     <string name="loading">Loading</string>
     <string name="generic_error_message">An error has occurred. Please try again.</string>
     <string name="spell_info_dice_roll">%1$i!d%1$i!</string>
+    <string name="rpg_system">RPG System</string>
+    <string name="dungeons_n_dragons_5th_edition">Dungeons &amp; Dragons - 5th Edition</string>
+    <string name="savage_worlds_adventure_edition">Savage Worlds Adventure Edition (SWADE)</string>
+    <string name="menu_title_game_effect">Game Play and Role Play Effects</string>
+    <string name="menu_affects_gameplay">Use Spell Effects that modify combat</string>
+    <string name="menu_affects_gameplay_details">These Spell Effects can modify the stats of spells being cast (damage, range, etc) and add new effects to the battlefield.</string>
+    <string name="menu_affects_roleplay">Use Spell Effects that modify Role Play</string>
+    <string name="menu_affects_roleplay_details">These Spell Effects can modify Role Playing situations, but will usually not have a drastic effect in combat.</string>
+    <string name="menu_affects_error">At least one type of Spell Effect must be selected</string>
 </resources>

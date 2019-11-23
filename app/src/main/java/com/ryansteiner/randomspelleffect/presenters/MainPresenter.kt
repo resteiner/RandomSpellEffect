@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
+import android.view.View.GONE
 import androidx.core.content.ContextCompat
 import com.ryansteiner.randomspelleffect.R
 import com.ryansteiner.randomspelleffect.contracts.BaseContract
@@ -36,6 +37,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         val view: MainContract.View? = getView()
         getPreferences()
 
+
         view?.onInitializedView()
     }
 
@@ -61,8 +63,8 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         Log.d(TAG, "generateSingleSpellEffect - randomSelection = $randomSelection")
         Log.d(TAG, "generateSingleSpellEffect - randomizedId = $randomizedId")
 
-        //val spellEffect = getSingleSpellEffect(randomizedId)
-        val spellEffect = getSingleSpellEffect("34") //DEBUG
+        val spellEffect = getSingleSpellEffect(randomizedId)
+        //val spellEffect = getSingleSpellEffect("34") //DEBUG
         if (spellEffect != null) {
             view?.onGeneratedSingleSpellEffect(spellEffect)
         } else {
@@ -120,9 +122,6 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
             RPG_SYSTEM_SAVAGEWORLDS -> "Savage Worlds"
             else -> "ERROR"
         }
-        Log.d(TAG, "getPreferences - mPreferencesManager = $mPreferencesManager")
-        Log.d(TAG, "getPreferences - systemInt = $systemInt")
-        Log.d(TAG, "getPreferences - systemString = $systemString")
 
         view?.updateDebugText(systemString)
         view?.updatePreferences(mPreferencesManager)
@@ -131,7 +130,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
 
     override fun parseSpellStringForVariables(string: String?, system: Int): String? {
         mSystem = system
-        var finalString: String? = null
+        var finalString: String?
         var workingString = string
         when (workingString) {
             null -> return workingString
@@ -412,5 +411,30 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
 
     override fun updateSpellList(spellsList: SpellsList) {
         mSpellsList = spellsList
+    }
+
+    override fun clickSettings(showSettings: Boolean) {
+        val view: MainContract.View? = getView()
+        view?.onClickSettings(showSettings)
+    }
+
+    override fun retrieveSpellEffectById(id: Int) {
+        val view: MainContract.View? = getView()
+        
+        if (id > 0) {
+
+            val stringedId = id.toString()
+            val spellEffect = getSingleSpellEffect(stringedId)
+            if (spellEffect != null) {
+                view?.onGeneratedSingleSpellEffect(spellEffect)
+            } else {
+                view?.test()
+            }
+
+
+        } else {
+            view?.test()
+
+        }
     }
 }

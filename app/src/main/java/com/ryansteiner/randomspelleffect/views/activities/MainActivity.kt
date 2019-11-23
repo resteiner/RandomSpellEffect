@@ -3,6 +3,7 @@ package com.ryansteiner.randomspelleffect.views.activities
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.FrameLayout
@@ -20,7 +21,9 @@ import jp.wasabeef.glide.transformations.CropTransformation
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.math.roundToInt
 import android.view.View.MeasureSpec
-
+import android.widget.CheckBox
+import android.widget.RadioButton
+import com.ryansteiner.randomspelleffect.contracts.BaseContract
 
 
 /**
@@ -35,6 +38,7 @@ class MainActivity : BaseActivity(), MainContract.View {
     private var mDatabase: SQLiteDatabase? = null
     private var mPreferencesManager: PreferencesManager? = null
     private val mSpellsList = SpellsList(this)
+    private var mCurrentSpellEffect: SpellEffect? = null
     private val mBorderColors = mapOf<Int, Int>(
         Pair(SEVERITY_NEUTRAL, R.color.colorBlueYonder),
         Pair(SEVERITY_GOOD_HIGH, R.color.colorGreenApple),
@@ -72,6 +76,7 @@ class MainActivity : BaseActivity(), MainContract.View {
     }
 
     override fun onInitializedView() {
+        mSettingsContainer.visibility = GONE
         mMainActivityText?.text = "View Initialized"
         Glide.with(this)
             .load(R.drawable.card_image_placeholder)
@@ -87,10 +92,23 @@ class MainActivity : BaseActivity(), MainContract.View {
         mGenerateNewSpellEffectButton?.setOnClickListener {
             mPresenter?.generateSingleSpellEffect()
         }
+
+        iSpellInfoCollapseButton?.setOnClickListener {
+            //
+        }
+
+        mSettingsButton.setOnClickListener {
+            mPresenter?.clickSettings(true)
+        }
+
+        iSettingsBackButton.setOnClickListener {
+            mPresenter?.clickSettings(false)
+        }
     }
 
     override fun onGeneratedSingleSpellEffect(spellEffect: SpellEffect) {
-        Log.d(TAG, "onGeneratedSingleSpellEffect - spellEffect.mDescription = ${spellEffect.mDescription}")
+
+        mCurrentSpellEffect = spellEffect
 
         vColorLayer.visibility = GONE
         vPatternLayer.visibility = GONE
@@ -105,6 +123,7 @@ class MainActivity : BaseActivity(), MainContract.View {
 
 
         //Find an image to use with iCardCenterImage
+        /* Probably cut for first release
         if (!spellEffect.mUsesImage.isNullOrBlank()) {
 
             iCardCenterImage.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
@@ -125,23 +144,20 @@ class MainActivity : BaseActivity(), MainContract.View {
         }
 
 
-        Log.d(TAG, "onGeneratedSingleSpellEffect - spellEffect.mUsesImage = ${spellEffect.mUsesImage}")
+
         iCardCenterImage.visibility = when {
             spellEffect.mUsesImage.isNullOrBlank() -> GONE
             else -> VISIBLE
         }
+         */
 
         val system = mPreferencesManager?.getSystem() ?: -1
         val damagePrefs = mPreferencesManager?.getDamagePreferences()
 
         mPresenter?.updateDamagePreferences(damagePrefs)
 
-
         spellEffectText = mPresenter?.parseSpellStringForVariables(spellEffectText, system)
         Log.d(TAG, "onGeneratedSingleSpellEffect - spellEffectText 1 = ${spellEffectText}")
-
-
-
 
         val borderContainers = listOf<FrameLayout>(fBorderLeft, fBorderRight, fBorderTop, fBorderBottom)
 
@@ -153,7 +169,6 @@ class MainActivity : BaseActivity(), MainContract.View {
 
         }
         spellEffectText = spellEffectText?.capitalize()
-        Log.d(TAG, "onGeneratedSingleSpellEffect - spellEffectText 2 = ${spellEffectText}")
 
         val finalSpellEffectText = spellEffectText ?: "Something went very wrong."
 
@@ -325,6 +340,104 @@ class MainActivity : BaseActivity(), MainContract.View {
 
     override fun updatePreferences(prefs: PreferencesManager?) {
         mPreferencesManager = prefs
+        val system = prefs?.getSystem()
+        when (system) {
+            RPG_SYSTEM_D20 -> {radioSystemDND5E.isChecked = true}
+            RPG_SYSTEM_SAVAGEWORLDS -> {radioSystemSWADE.isChecked = true}
+        }
+        val gameEffects = prefs?.getGameEffects()
+        val gameplayBool = gameEffects!![SPELL_EFFECTS_GAMEPLAY] ?: true
+        val roleplayBool = gameEffects!![SPELL_EFFECTS_ROLEPLAY] ?: true
+        checkBoxGamePlayEffects.isChecked = gameplayBool
+        checkBoxRolePlayEffects.isChecked = roleplayBool
+    }
+
+    fun onRadioButtonClicked(view: View) {
+        if (view is RadioButton) {
+            val checked = view.isChecked
+
+            val system = mPreferencesManager?.getSystem()
+
+            when (view.id) {
+                R.id.radioSystemDND5E ->
+                    if (checked) {
+                        when (system) {
+                            RPG_SYSTEM_D20 -> { } //Do nothing
+                            else -> {
+                                mPreferencesManager?.selectSystem(RPG_SYSTEM_D20)
+                                val id = mCurrentSpellEffect?.mId ?: -1
+                                mPresenter?.retrieveSpellEffectById(id)
+                            }
+                        }
+                    }
+                R.id.radioSystemSWADE ->
+                    if (checked) {
+                        when (system) {
+                            RPG_SYSTEM_SAVAGEWORLDS -> { } //Do nothing
+                            else -> {
+                                mPreferencesManager?.selectSystem(RPG_SYSTEM_SAVAGEWORLDS)
+                                val id = mCurrentSpellEffect?.mId ?: -1
+                                mPresenter?.retrieveSpellEffectById(id)
+                            }
+                        }
+                    }
+            }
+        }
+    }
+
+    fun onClickCheckBox(view: View) {
+        Log.d(TAG, "onClickCheckBox - view = ${view}")
+        if (view is CheckBox) {
+            val checked: Boolean = view.isChecked
+
+            val gameEffects = mPreferencesManager?.getGameEffects()
+            val gameplayBool = gameEffects!![SPELL_EFFECTS_GAMEPLAY] ?: true
+            val roleplayBool = gameEffects!![SPELL_EFFECTS_ROLEPLAY] ?: true
+            //checkBoxGamePlayEffects.isChecked = gameplayBool
+            //checkBoxRolePlayEffects.isChecked = roleplayBool
+
+            val defaultCheckBoxErrorMessage = resources.getString(R.string.menu_affects_error)
+
+            val system = mPreferencesManager?.getSystem()
+
+            when (view.id) {
+                R.id.checkBoxGamePlayEffects -> {
+                    if (checked) {
+                        mPreferencesManager?.setGameEffects(true, roleplayBool)
+                    } else {
+                        if (checkBoxRolePlayEffects.isChecked) {
+                            mPreferencesManager?.setGameEffects(false, roleplayBool)
+                        } else {
+                            onShowToastMessage(defaultCheckBoxErrorMessage)
+                            checkBoxGamePlayEffects.isChecked = true
+                        }
+                    }
+                }
+                R.id.checkBoxRolePlayEffects -> {
+                    if (checked) {
+                        mPreferencesManager?.setGameEffects(gameplayBool, true)
+                    } else {
+                        if (checkBoxGamePlayEffects.isChecked) {
+                            mPreferencesManager?.setGameEffects(gameplayBool, false)
+                        } else {
+                            onShowToastMessage(defaultCheckBoxErrorMessage)
+                            checkBoxRolePlayEffects.isChecked = true
+
+                        }
+                    }
+                }
+            }
+
+            Log.d(TAG, "onClickCheckBox - mPreferencesManager?.getGameEffects() = ${mPreferencesManager?.getGameEffects()}")
+        }
+    }
+
+    override fun onClickSettings(showSettings: Boolean) {
+        //These will need animations at some point
+        when (showSettings) {
+            true -> {mSettingsContainer.visibility = VISIBLE}
+            else -> {mSettingsContainer.visibility = GONE}
+        }
     }
 
 

@@ -3,6 +3,17 @@ package com.ryansteiner.randomspelleffect.utils
 import com.ryansteiner.randomspelleffect.R
 import com.ryansteiner.randomspelleffect.data.models.GameEffect
 
+/**
+ * Created by Ryan Steiner on 2019/11/06.
+ */
+
+//
+//
+//This app was inspired by The Net Libram of Random Magical Effects by Orrex. I have tried not to copy directly from his list, but given
+//the nature of these random spell effects, there is certainly a high probability that we have covered similar effects.
+//
+//
+
 class GameEffectsList() {
     var mGameEffectMap: Map<String, GameEffect>? = null
 
