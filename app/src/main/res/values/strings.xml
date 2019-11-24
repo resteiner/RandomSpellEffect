@@ -12,5 +12,12 @@
     <string name="menu_affects_gameplay_details">These Spell Effects can modify the stats of spells being cast (damage, range, etc) and add new effects to the battlefield.</string>
     <string name="menu_affects_roleplay">Use Spell Effects that modify Role Play</string>
     <string name="menu_affects_roleplay_details">These Spell Effects can modify Role Playing situations, but will usually not have a drastic effect in combat.</string>
-    <string name="menu_affects_error">At least one type of Spell Effect must be selected</string>
+    <string name="menu_affects_error">At least one type of Spell Effect must be selected.</string>
+    <string name="menu_targets_error">At least one type of Target must be selected.</string>
+    <string name="menu_title_targets">Targets</string>
+    <string name="caster">caster</string>
+    <string name="nearest_enemy">nearest enemy</string>
+    <string name="nearest_ally">nearest ally</string>
+    <string name="closest_living_creature">closest living creature to the caster</string>
+    <string name="target_string_error">There was an error parsing the TARGET string…</string>
 </resources>

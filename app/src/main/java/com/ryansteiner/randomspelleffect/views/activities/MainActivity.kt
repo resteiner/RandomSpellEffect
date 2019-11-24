@@ -10,20 +10,22 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.ryansteiner.randomspelleffect.R
 import com.ryansteiner.randomspelleffect.contracts.MainContract
 import com.ryansteiner.randomspelleffect.data.*
 import com.ryansteiner.randomspelleffect.data.models.SpellEffect
 import com.ryansteiner.randomspelleffect.presenters.MainPresenter
 import com.ryansteiner.randomspelleffect.utils.*
-import jp.wasabeef.glide.transformations.CropTransformation
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.math.roundToInt
-import android.view.View.MeasureSpec
 import android.widget.CheckBox
 import android.widget.RadioButton
-import com.ryansteiner.randomspelleffect.contracts.BaseContract
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+import com.ryansteiner.randomspelleffect.data.models.Song
 
 
 /**
@@ -39,6 +41,8 @@ class MainActivity : BaseActivity(), MainContract.View {
     private var mPreferencesManager: PreferencesManager? = null
     private val mSpellsList = SpellsList(this)
     private var mCurrentSpellEffect: SpellEffect? = null
+    private var mYouTubePlayerView: YouTubePlayerView? = null
+    private var mYouTubePlayer: YouTubePlayer? = null
     private val mBorderColors = mapOf<Int, Int>(
         Pair(SEVERITY_NEUTRAL, R.color.colorBlueYonder),
         Pair(SEVERITY_GOOD_HIGH, R.color.colorGreenApple),
@@ -77,6 +81,7 @@ class MainActivity : BaseActivity(), MainContract.View {
 
     override fun onInitializedView() {
         mSettingsContainer.visibility = GONE
+        vYouTubeVideoView.visibility = GONE
         mMainActivityText?.text = "View Initialized"
         Glide.with(this)
             .load(R.drawable.card_image_placeholder)
@@ -85,6 +90,7 @@ class MainActivity : BaseActivity(), MainContract.View {
             .centerCrop()
             .into(iCardCenterImage)
 
+        initializeSettingsPopup()
         setupClickListeners()
     }
 
@@ -350,6 +356,16 @@ class MainActivity : BaseActivity(), MainContract.View {
         val roleplayBool = gameEffects!![SPELL_EFFECTS_ROLEPLAY] ?: true
         checkBoxGamePlayEffects.isChecked = gameplayBool
         checkBoxRolePlayEffects.isChecked = roleplayBool
+
+        val targets = prefs?.getTargets()
+        val targetCasterBool = targets!![TARGET_CASTER] ?: true
+        val targetNearestAllyBool = targets!![TARGET_NEAREST_ALLY] ?: true
+        val targetNearestEnemyBool = targets!![TARGET_NEAREST_ENEMY] ?: true
+        val targetNearestCreatureBool = targets!![TARGET_NEAREST_CREATURE] ?: true
+        checkBoxTargetCaster.isChecked = targetCasterBool
+        checkBoxTargetNearestAlly.isChecked = targetNearestAllyBool
+        checkBoxTargetNearestEnemy.isChecked = targetNearestEnemyBool
+        checkBoxTargetNearestCreature.isChecked = targetNearestCreatureBool
     }
 
     fun onRadioButtonClicked(view: View) {
@@ -391,22 +407,24 @@ class MainActivity : BaseActivity(), MainContract.View {
             val checked: Boolean = view.isChecked
 
             val gameEffects = mPreferencesManager?.getGameEffects()
-            val gameplayBool = gameEffects!![SPELL_EFFECTS_GAMEPLAY] ?: true
-            val roleplayBool = gameEffects!![SPELL_EFFECTS_ROLEPLAY] ?: true
+            val gamePlayBool = gameEffects!![SPELL_EFFECTS_GAMEPLAY] ?: true
+            val rolePlayBool = gameEffects!![SPELL_EFFECTS_ROLEPLAY] ?: true
             //checkBoxGamePlayEffects.isChecked = gameplayBool
             //checkBoxRolePlayEffects.isChecked = roleplayBool
 
             val defaultCheckBoxErrorMessage = resources.getString(R.string.menu_affects_error)
+            val targetCheckBoxErrorMessage = resources.getString(R.string.menu_targets_error)
 
             val system = mPreferencesManager?.getSystem()
 
             when (view.id) {
+                //----------------GAME PLAY AND ROLE PLAY EFFECTS----------------
                 R.id.checkBoxGamePlayEffects -> {
                     if (checked) {
-                        mPreferencesManager?.setGameEffects(true, roleplayBool)
+                        mPreferencesManager?.setGameEffects(true, rolePlayBool)
                     } else {
                         if (checkBoxRolePlayEffects.isChecked) {
-                            mPreferencesManager?.setGameEffects(false, roleplayBool)
+                            mPreferencesManager?.setGameEffects(false, rolePlayBool)
                         } else {
                             onShowToastMessage(defaultCheckBoxErrorMessage)
                             checkBoxGamePlayEffects.isChecked = true
@@ -415,10 +433,10 @@ class MainActivity : BaseActivity(), MainContract.View {
                 }
                 R.id.checkBoxRolePlayEffects -> {
                     if (checked) {
-                        mPreferencesManager?.setGameEffects(gameplayBool, true)
+                        mPreferencesManager?.setGameEffects(gamePlayBool, true)
                     } else {
                         if (checkBoxGamePlayEffects.isChecked) {
-                            mPreferencesManager?.setGameEffects(gameplayBool, false)
+                            mPreferencesManager?.setGameEffects(gamePlayBool, false)
                         } else {
                             onShowToastMessage(defaultCheckBoxErrorMessage)
                             checkBoxRolePlayEffects.isChecked = true
@@ -426,9 +444,59 @@ class MainActivity : BaseActivity(), MainContract.View {
                         }
                     }
                 }
+                //----------------TARGETS----------------
+                R.id.checkBoxTargetCaster -> {
+                    if (checked) {
+                        mPreferencesManager?.setTargets(caster = true, nearestAlly = null, nearestEnemy = null, nearestCreature = null)
+                    } else {
+                        if (checkBoxTargetNearestAlly.isChecked || checkBoxTargetNearestEnemy.isChecked || checkBoxTargetNearestCreature.isChecked) {
+                            mPreferencesManager?.setTargets(caster = false, nearestAlly = null, nearestEnemy = null, nearestCreature = null)
+                        } else {
+                            onShowToastMessage(targetCheckBoxErrorMessage)
+                            checkBoxTargetCaster.isChecked = true
+                        }
+                    }
+                }
+                R.id.checkBoxTargetNearestAlly -> {
+                    if (checked) {
+                        mPreferencesManager?.setTargets(caster = null, nearestAlly = true, nearestEnemy = null, nearestCreature = null)
+                    } else {
+                        if (checkBoxTargetCaster.isChecked || checkBoxTargetNearestEnemy.isChecked || checkBoxTargetNearestCreature.isChecked) {
+                            mPreferencesManager?.setTargets(caster = null, nearestAlly = false, nearestEnemy = null, nearestCreature = null)
+                        } else {
+                            onShowToastMessage(targetCheckBoxErrorMessage)
+                            checkBoxTargetNearestAlly.isChecked = true
+                        }
+                    }
+                }
+                R.id.checkBoxTargetNearestEnemy -> {
+                    if (checked) {
+                        mPreferencesManager?.setTargets(caster = null, nearestAlly = null, nearestEnemy = true, nearestCreature = null)
+                    } else {
+                        if (checkBoxTargetCaster.isChecked || checkBoxTargetNearestAlly.isChecked || checkBoxTargetNearestCreature.isChecked) {
+                            mPreferencesManager?.setTargets(caster = null, nearestAlly = null, nearestEnemy = false, nearestCreature = null)
+                        } else {
+                            onShowToastMessage(targetCheckBoxErrorMessage)
+                            checkBoxTargetNearestEnemy.isChecked = true
+                        }
+                    }
+                }
+                R.id.checkBoxTargetNearestCreature -> {
+                    if (checked) {
+                        mPreferencesManager?.setTargets(caster = null, nearestAlly = null, nearestEnemy = null, nearestCreature = true)
+                    } else {
+                        if (checkBoxTargetCaster.isChecked || checkBoxTargetNearestEnemy.isChecked || checkBoxTargetNearestAlly.isChecked) {
+                            mPreferencesManager?.setTargets(caster = null, nearestAlly = null, nearestEnemy = null, nearestCreature = false)
+                        } else {
+                            onShowToastMessage(targetCheckBoxErrorMessage)
+                            checkBoxTargetNearestCreature.isChecked = true
+                        }
+                    }
+                }
             }
 
             Log.d(TAG, "onClickCheckBox - mPreferencesManager?.getGameEffects() = ${mPreferencesManager?.getGameEffects()}")
+            Log.d(TAG, "onClickCheckBox - mPreferencesManager?.getTargets() = ${mPreferencesManager?.getTargets()}")
         }
     }
 
@@ -440,8 +508,65 @@ class MainActivity : BaseActivity(), MainContract.View {
         }
     }
 
+    private fun initializeSettingsPopup() {
+        val casterCapitalize = checkBoxTargetCaster.text.toString().split(' ').joinToString(" ") { it.capitalize() }
+        checkBoxTargetCaster.text = casterCapitalize
+        val nearestAllyCapitalize = checkBoxTargetNearestAlly.text.toString().split(' ').joinToString(" ") { it.capitalize() }
+        checkBoxTargetNearestAlly.text = nearestAllyCapitalize
+        val nearestEnemyCapitalize = checkBoxTargetNearestEnemy.text.toString().split(' ').joinToString(" ") { it.capitalize() }
+        checkBoxTargetNearestEnemy.text = nearestEnemyCapitalize
+        val closeCreatureCapitalize = checkBoxTargetNearestCreature.text.toString().split(' ').joinToString(" ") { it.capitalize() }
+        checkBoxTargetNearestCreature.text = closeCreatureCapitalize
+    }
+
+    override fun songVideoInit(showVideo: Boolean, song: Song?) {
+
+        val videoId = song?.mUrl ?: ""
+        val startSeconds = 0f
+
+        if (mYouTubePlayerView == null) {
+            val youTubePlayerView: YouTubePlayerView = findViewById(R.id.vYouTubeVideoView)
+            mYouTubePlayerView = youTubePlayerView
+
+            lifecycle.addObserver(youTubePlayerView)
+
+            val uiController = youTubePlayerView.getPlayerUiController()
+            uiController.showFullscreenButton(false)
 
 
+
+
+            youTubePlayerView.addYouTubePlayerListener(object: AbstractYouTubePlayerListener() {
+                override fun onReady(youTubePlayer: YouTubePlayer) {
+                    if (!videoId.isNullOrBlank()) {
+                        youTubePlayer.loadVideo(videoId, startSeconds)
+                        youTubePlayer.pause()
+                    }
+                    mYouTubePlayer = youTubePlayer
+                }
+            })
+        } else {
+            mYouTubePlayer?.loadVideo(videoId, startSeconds)
+            mYouTubePlayer?.pause()
+
+        }
+
+        when (showVideo) {
+            true -> {
+
+
+
+                vYouTubeVideoView.visibility = VISIBLE
+            }
+            else -> {vYouTubeVideoView.visibility = GONE}
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mYouTubePlayerView?.release()
+    }
 
 }
+
 

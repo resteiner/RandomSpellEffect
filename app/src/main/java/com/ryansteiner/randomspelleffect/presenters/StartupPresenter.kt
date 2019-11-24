@@ -46,6 +46,27 @@ class StartupPresenter(context: Context) : BasePresenter<StartupContract.View>(c
         Log.d(TAG, "load - currentRPGSystem = $currentRPGSystem")
         Log.d(TAG, "load - mPreferencesManager?.getSystem() = ${mPreferencesManager?.getSystem()}")
 
+        val currentTargetSettings = mPreferencesManager?.getTargets()
+        Log.d(TAG, "load - mPreferencesManager?.getTargets() BEFORE = ${mPreferencesManager?.getTargets()}")
+        var setDefaultTargets = false
+        if (currentTargetSettings.isNullOrEmpty()) {
+            setDefaultTargets = true
+        } else {
+            var counter = 0
+            for ((k,v) in currentTargetSettings) {
+                    if (v) {
+                        counter++
+                    }
+            }
+            setDefaultTargets = counter <= 0
+
+        }
+
+        if (setDefaultTargets) {
+            mPreferencesManager?.setTargets(true, true, true, true)
+        }
+        Log.d(TAG, "load - mPreferencesManager?.getTargets() AFTER = ${mPreferencesManager?.getTargets()}")
+
         view?.onLoaded()
     }
 }

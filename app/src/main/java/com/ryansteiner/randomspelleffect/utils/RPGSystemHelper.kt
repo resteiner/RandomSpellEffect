@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import com.ryansteiner.randomspelleffect.data.*
 import com.ryansteiner.randomspelleffect.data.models.Creature
+import com.ryansteiner.randomspelleffect.data.models.Song
 
 class RPGSystemHelper(context: Context) {
     companion object {
@@ -81,8 +82,24 @@ fun getCreatureById(database: SQLiteDatabase?, id: Int): Creature? {
         if (it!!.moveToFirst()) {
             result.mId = it.getInt(it.getColumnIndex(TABLE_COL_ID))
             result.mName = it.getString(it.getColumnIndex(TABLE_COL_NAME))
-            result.mDND5EPage = it.getString(it.getColumnIndex(TABLE_COL_NAME))
-            result.mSWADEPage = it.getString(it.getColumnIndex(TABLE_COL_NAME))
+            result.mDND5EPage = it.getString(it.getColumnIndex(TABLE_COL_DND5E_PAGE))
+            result.mSWADEPage = it.getString(it.getColumnIndex(TABLE_COL_SWADE_PAGE))
+        }
+    }
+    return result
+}
+fun getSongById(database: SQLiteDatabase?, id: Int): Song? {
+    val db = database
+    val idString = id.toString()
+    val selectQuery = "SELECT  * FROM $DB_SONGS_TABLE_NAME WHERE $TABLE_COL_ID = ?"
+    val result = Song()
+
+    db?.rawQuery(selectQuery, arrayOf(idString)).use { // .use requires API 16
+        if (it!!.moveToFirst()) {
+            result.mId = it.getInt(it.getColumnIndex(TABLE_COL_ID))
+            result.mName = it.getString(it.getColumnIndex(TABLE_COL_NAME))
+            result.mArtist = it.getString(it.getColumnIndex(TABLE_COL_ARTIST))
+            result.mUrl = it.getString(it.getColumnIndex(TABLE_COL_URL))
         }
     }
     return result

@@ -2,10 +2,8 @@ package com.ryansteiner.randomspelleffect.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
 import android.util.Log
 import com.ryansteiner.randomspelleffect.data.*
-import java.util.*
 
 class PreferencesManager(context: Context) {
 
@@ -39,10 +37,7 @@ class PreferencesManager(context: Context) {
                 val storedString = mPreferences!!.getString(RPG_DAMAGE_PREFERENCES, "")
                 val splitString = storedString.split(",")
                 val mutList = mutableListOf<Int>()
-                Log.d(TAG, "getDamagePreferences - splitString = ${splitString}")
-                Log.d(TAG, "getDamagePreferences - splitString.count() = ${splitString.count()}")
                 for (i in 0 until splitString.count()) {
-                    Log.d(TAG, "getDamagePreferences - splitString[i] = ${splitString[i]}")
                     val thisString = splitString[i]
                     if (!thisString.isNullOrBlank()) {
                         val thisInt = Integer.parseInt(thisString)
@@ -77,22 +72,22 @@ class PreferencesManager(context: Context) {
     fun getGameEffects(): Map<String, Boolean>? {
         return when {
             mPreferences != null -> {
-                val storedIntGameplay = mPreferences!!.getInt(SPELL_EFFECTS_GAMEPLAY, 1)
-                val storedIntRoleplay = mPreferences!!.getInt(SPELL_EFFECTS_ROLEPLAY, 1)
+                val storedIntGamePlay = mPreferences!!.getInt(SPELL_EFFECTS_GAMEPLAY, 1)
+                val storedIntRolePlay = mPreferences!!.getInt(SPELL_EFFECTS_ROLEPLAY, 1)
 
-                val gameplayBool = when {
-                    (storedIntGameplay > 0) -> true
+                val gamePlayBool = when {
+                    (storedIntGamePlay > 0) -> true
                     else -> false
                 }
 
-                val roleplayBool = when {
-                    (storedIntRoleplay > 0) -> true
+                val rolePlayBool = when {
+                    (storedIntRolePlay > 0) -> true
                     else -> false
                 }
 
                 val map: MutableMap<String, Boolean> = mutableMapOf()
-                map[SPELL_EFFECTS_GAMEPLAY] = gameplayBool
-                map[SPELL_EFFECTS_ROLEPLAY] = roleplayBool
+                map[SPELL_EFFECTS_GAMEPLAY] = gamePlayBool
+                map[SPELL_EFFECTS_ROLEPLAY] = rolePlayBool
 
                 map
 
@@ -103,21 +98,96 @@ class PreferencesManager(context: Context) {
         }
     }
 
-    fun setGameEffects(gameplay: Boolean, roleplay: Boolean) {
+    fun setGameEffects(gamePlay: Boolean, rolePlay: Boolean) {
         Log.d(TAG, "")
 
 
-        val gameplayInt = when (gameplay) {
+        val gamePlayInt = when (gamePlay) {
             true -> 1
             else -> 0
         }
-        val roleplayInt = when (roleplay) {
+        val rolePlayInt = when (rolePlay) {
             true -> 1
             else -> 0
         }
 
-        mPreferences?.edit()?.putInt(SPELL_EFFECTS_GAMEPLAY, gameplayInt)?.apply()
-        mPreferences?.edit()?.putInt(SPELL_EFFECTS_ROLEPLAY, roleplayInt)?.apply()
+        mPreferences?.edit()?.putInt(SPELL_EFFECTS_GAMEPLAY, gamePlayInt)?.apply()
+        mPreferences?.edit()?.putInt(SPELL_EFFECTS_ROLEPLAY, rolePlayInt)?.apply()
+    }
+
+    fun getTargets(): Map<String, Boolean>? {
+        return when {
+            mPreferences != null -> {
+                val storedIntTargetCaster = mPreferences!!.getInt(TARGET_CASTER, 1)
+                val storedIntTargetNearestAlly = mPreferences!!.getInt(TARGET_NEAREST_ALLY, 1)
+                val storedIntTargetNearestEnemy = mPreferences!!.getInt(TARGET_NEAREST_ENEMY, 1)
+                val storedIntTargetNearestCreature = mPreferences!!.getInt(TARGET_NEAREST_CREATURE, 1)
+
+                val targetCasterBool = when {
+                    (storedIntTargetCaster > 0) -> true
+                    else -> false
+                }
+
+                val targetNearestAllyBool = when {
+                    (storedIntTargetNearestAlly > 0) -> true
+                    else -> false
+                }
+
+                val targetNearestEnemyBool = when {
+                    (storedIntTargetNearestEnemy > 0) -> true
+                    else -> false
+                }
+
+                val targetNearestCreatureBool = when {
+                    (storedIntTargetNearestCreature > 0) -> true
+                    else -> false
+                }
+
+
+                val map: MutableMap<String, Boolean> = mutableMapOf()
+                map[TARGET_CASTER] = targetCasterBool
+                map[TARGET_NEAREST_ALLY] = targetNearestAllyBool
+                map[TARGET_NEAREST_ENEMY] = targetNearestEnemyBool
+                map[TARGET_NEAREST_CREATURE] = targetNearestCreatureBool
+
+                map
+
+            }
+            else -> {
+                null
+            }
+        }
+    }
+
+    fun setTargets(caster: Boolean?, nearestAlly: Boolean?, nearestEnemy: Boolean?, nearestCreature: Boolean?) {
+        if (caster != null) {
+            val casterInt = when (caster) {
+                true -> 1
+                else -> 0
+            }
+            mPreferences?.edit()?.putInt(TARGET_CASTER, casterInt)?.apply()
+        }
+        if (nearestAlly != null) {
+            val nearestAllyInt = when (nearestAlly) {
+                true -> 1
+                else -> 0
+            }
+            mPreferences?.edit()?.putInt(TARGET_NEAREST_ALLY, nearestAllyInt)?.apply()
+        }
+        if (nearestEnemy != null) {
+            val nearestEnemyInt = when (nearestEnemy) {
+                true -> 1
+                else -> 0
+            }
+            mPreferences?.edit()?.putInt(TARGET_NEAREST_ENEMY, nearestEnemyInt)?.apply()
+        }
+        if (nearestCreature != null) {
+            val nearestCreatureInt = when (nearestCreature) {
+                true -> 1
+                else -> 0
+            }
+            mPreferences?.edit()?.putInt(TARGET_NEAREST_CREATURE, nearestCreatureInt)?.apply()
+        }
     }
 
 }

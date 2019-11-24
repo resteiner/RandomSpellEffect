@@ -4,19 +4,15 @@ import android.content.Context
 import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
-import android.view.View.GONE
 import androidx.core.content.ContextCompat
 import com.ryansteiner.randomspelleffect.R
-import com.ryansteiner.randomspelleffect.contracts.BaseContract
 import com.ryansteiner.randomspelleffect.contracts.MainContract
-import com.ryansteiner.randomspelleffect.contracts.StartupContract
 import com.ryansteiner.randomspelleffect.data.*
+import com.ryansteiner.randomspelleffect.data.models.Song
 import com.ryansteiner.randomspelleffect.data.models.SpellEffect
 import com.ryansteiner.randomspelleffect.utils.*
-import kotlinx.android.synthetic.main.activity_main.*
-import java.lang.ref.WeakReference
-import kotlin.math.roundToInt
-import androidx.room.RoomMasterTable.TABLE_NAME
+
+
 
 
 
@@ -53,7 +49,14 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         val view: MainContract.View? = getView()
 
         val totalCount = DatabaseUtils.queryNumEntries(mDatabase, DB_SPELLEFFECT_TABLE_NAME)
-        val randomSelection = (1..totalCount).random()
+        //DEBUGval randomSelection = (1..totalCount).random()
+        //DEBUG
+        //DEBUG
+        //DEBUG
+        val randomSelection = (35..totalCount).random()
+        //DEBUG
+        //DEBUG
+        //DEBUG
         val randomizedId = randomSelection.toString()
 
 
@@ -132,6 +135,8 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         mSystem = system
         var finalString: String?
         var workingString = string
+
+        //TODO Need to make sure that if Settings doesn't have "CASTER" that it will exclude DB entries with requiresCaster=1
         when (workingString) {
             null -> return workingString
             else -> {
@@ -151,6 +156,8 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
                 Log.d(TAG, "parseSpellStringForVariables - parseHiccupsVariable(workingString) = $workingString")
                 workingString = parseMaterialVariable(workingString)
                 Log.d(TAG, "parseSpellStringForVariables - parseMaterialVariable(workingString) = $workingString")
+                workingString = parseSongVariable(workingString)
+                Log.d(TAG, "parseSpellStringForVariables - parseSongVariable(workingString) = $workingString")
                 workingString = parseSpellVariable(workingString)
                 Log.d(TAG, "parseSpellStringForVariables - parseSpellVariable(workingString) = $workingString")
 
@@ -162,17 +169,49 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
 
     private fun parseTargetVariable(string: String?): String? {
         //Change any TARGET text
+
+        val targets = mPreferencesManager?.getTargets()
+
         var workingString = string
+        Log.d(TAG, "parseTargetVariable - string = $string")
         if (workingString != null && workingString.contains("TARGET")) {
-            Log.d(TAG, "parseTargetVariable - TARGET condition true")
-            val targetRandomSelect = (1..100).random()
-            val targetText = when {
-                targetRandomSelect > 75 -> "caster"
-                targetRandomSelect > 50 -> "nearest enemy"
-                targetRandomSelect > 25 -> "nearest ally"
-                targetRandomSelect > 0 -> "closest living creature to the caster"
-                else -> "TARGET ERROR"
+            Log.d(TAG, "parseTargetVariable - targets = $targets")
+            var targetText = ""
+            val availableTargets: MutableMap<String, Int> = mutableMapOf()
+            if (!targets.isNullOrEmpty()) {
+                for ((k, v) in targets) {
+                    if (v) {
+                        availableTargets[k] = 100
+                    }
+                }
             }
+            if (availableTargets.isNullOrEmpty()) {
+                return workingString
+            } else {
+                for (i in 0 until availableTargets.count()) {
+                    val div = 100 / availableTargets.count()
+                    Log.d(TAG, "parseTargetVariable - div = $div")
+                    val keys = availableTargets.keys.toTypedArray()
+                    val currentKey = keys[i]
+                    val multiplier = i + 1
+                    availableTargets[currentKey] = div * multiplier
+                    Log.d(TAG, "parseTargetVariable - currentKey - availableTargets[currentKey] = $currentKey - ${availableTargets[currentKey]}")
+                }
+            }
+            val targetRandomSelect = (1..100).random()
+            Log.d(TAG, "parseTargetVariable - targetRandomSelect = ${targetRandomSelect}")
+            val filteredTargets = availableTargets.filter { it.value > targetRandomSelect }
+            val selectedTargetKey = filteredTargets.keys.toTypedArray().firstOrNull()
+            Log.d(TAG, "parseTargetVariable - selectedTargetKey = ${selectedTargetKey}")
+            targetText = when (selectedTargetKey) {
+                TARGET_CASTER -> mContext.resources.getString(R.string.caster)
+                TARGET_NEAREST_ALLY -> mContext.resources.getString(R.string.nearest_ally)
+                TARGET_NEAREST_ENEMY -> mContext.resources.getString(R.string.nearest_enemy)
+                TARGET_NEAREST_CREATURE -> mContext.resources.getString(R.string.closest_living_creature)
+                else -> mContext.resources.getString(R.string.target_string_error)
+
+            }
+
             workingString = workingString.replace("TARGET", targetText)
             Log.d(TAG, "parseTargetVariable - workingString = $workingString")
             return workingString
@@ -398,6 +437,41 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
 
 
         Log.d(TAG, "parseSpellVariable - workingString 4 = $workingString")
+        return workingString
+    }
+
+
+    private fun parseSongVariable(string: String?): String? {
+        val view: MainContract.View? = getView()
+
+        var workingString = string
+        var song: Song? = null
+
+        if (workingString != null && workingString.contains("SONG")) {
+
+            val db = mDatabase
+            val count = DatabaseUtils.queryNumEntries(db, DB_SONGS_TABLE_NAME)
+            val safeCount = count.toInt()
+            //db?.close()
+            val random = (1..safeCount).random()
+
+            val song = getSongById(db, random)
+            val songTitle = song?.mName ?: "SONG TITLE ERROR"
+            val songArtist = song?.mArtist ?: ""
+            val fullSongString = when (songArtist.isNullOrBlank()) {
+                true -> "\"$songTitle\""
+                else -> "\"$songTitle\" by $songArtist"
+            }
+            workingString = workingString.replace("SONG", fullSongString)
+            val url = song?.mUrl
+            if (!url.isNullOrBlank()) {
+                view?.songVideoInit(true, song)
+            }
+
+        } else {
+            view?.songVideoInit(false, null)
+        }
+
         return workingString
     }
 

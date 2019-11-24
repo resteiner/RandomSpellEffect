@@ -65,14 +65,34 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/pattern_tile_spectrum_swirl" />
 
-                <ImageView
-                    android:id="@+id/iCardCenterImage"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
+                    android:orientation="vertical">
 
-                    android:src="@drawable/card_image_placeholder" />
+                    <ImageView
+                        android:id="@+id/iCardCenterImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:scaleType="centerCrop"
 
+                        android:src="@drawable/card_image_placeholder" />
+
+                    <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+                        android:id="@+id/vYouTubeVideoView"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:paddingBottom="30dp"
+                        app:videoId=""
+                        app:autoPlay="false"
+                        app:showFullScreenButton="true"
+                        app:enableAutomaticInitialization="true"
+                        />
+
+
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/mMainActivityText"
@@ -807,7 +827,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:onClick="onClickCheckBox"
-                    android:text="@string/menu_affects_gameplay" />
+                    android:text="@string/menu_affects_gameplay"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="@dimen/normal_text_size" />
 
                 <TextView
                     android:id="@+id/tSettingsSubGamePlayEffects"
@@ -825,7 +847,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:onClick="onClickCheckBox"
-                    android:text="@string/menu_affects_roleplay" />
+                    android:text="@string/menu_affects_roleplay"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="@dimen/normal_text_size" />
 
                 <TextView
                     android:id="@+id/tSettingsSubGamePlayEffects2"
@@ -837,6 +861,61 @@
                     android:textColor="@color/colorTextSecondary"
                     android:textSize="@dimen/normal_text_size"
                     android:textStyle="italic" />
+
+                <TextView
+                    android:id="@+id/tSettingsTitleTargets"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/primary_margin_vertical"
+                    android:text="@string/menu_title_targets"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="@dimen/heading_1_text_size" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/primary_margin_vertical"
+                    android:layout_marginBottom="@dimen/primary_margin_vertical"
+                    android:background="@color/colorSecondary"/>
+
+                <CheckBox
+                    android:id="@+id/checkBoxTargetCaster"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onClickCheckBox"
+                    android:text="@string/caster"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="@dimen/normal_text_size" />
+
+                <CheckBox
+                    android:id="@+id/checkBoxTargetNearestAlly"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onClickCheckBox"
+                    android:text="@string/nearest_ally"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="@dimen/normal_text_size" />
+
+                <CheckBox
+                    android:id="@+id/checkBoxTargetNearestEnemy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onClickCheckBox"
+                    android:text="@string/nearest_enemy"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="@dimen/normal_text_size" />
+
+                <CheckBox
+                    android:id="@+id/checkBoxTargetNearestCreature"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onClickCheckBox"
+                    android:text="@string/closest_living_creature"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="@dimen/normal_text_size" />
 
             </LinearLayout>
             </LinearLayout>

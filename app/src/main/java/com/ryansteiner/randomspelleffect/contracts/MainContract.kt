@@ -2,6 +2,7 @@ package com.ryansteiner.randomspelleffect.contracts
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import com.ryansteiner.randomspelleffect.data.models.Song
 import com.ryansteiner.randomspelleffect.data.models.SpellEffect
 import com.ryansteiner.randomspelleffect.utils.PreferencesManager
 import com.ryansteiner.randomspelleffect.utils.SpellsList
@@ -25,6 +26,7 @@ interface MainContract {
         fun updateDiceRoll(selectedSpellDice: String?)
         fun updateSpellInfoContainer(visibility: Boolean, spellText: String?, selectedSpellDescriptionWithDamageLevel: String?, selectedSpellPageNumber: String?)
         fun onClickSettings(showSettings: Boolean)
+        fun songVideoInit(showVideo: Boolean, song: Song?)
     }
 
     interface Presenter : BaseContract.Presenter {

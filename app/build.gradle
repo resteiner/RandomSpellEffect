@@ -45,4 +45,6 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     //Glide Transformation library
     implementation 'jp.wasabeef:glide-transformations:4.0.0'
+    //PierfrancescoSoffritti Android YouTube Player
+    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
 }

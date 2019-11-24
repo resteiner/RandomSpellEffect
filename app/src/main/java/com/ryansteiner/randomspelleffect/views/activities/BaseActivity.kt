@@ -39,5 +39,9 @@ abstract class BaseActivity : AppCompatActivity(), BaseContract.View {
     override fun onProgressViewToggle(visible: Boolean) {
         onShowToastMessage("onToggleProgressView was called")
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
 }
 
