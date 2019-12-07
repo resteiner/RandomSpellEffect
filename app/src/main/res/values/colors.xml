@@ -7,6 +7,7 @@
     <color name="colorAccent">#D81B60</color>
     <color name="colorTextPrimary">@color/colorBlackRich</color>
     <color name="colorTextSecondary">@color/colorGrayStone</color>
+    <color name="colorTextLink">@color/colorBlueCobalt</color>
 
 
 

@@ -27,22 +27,7 @@ class SpellEffect(
     var mRequiresCaster: Int? = null,
     var mRequiresSpecificSpell: String? = null,
     var mUsesImage: String? = null,
+    var mIsNetLibram: Boolean? = null
 
-    val colors: List<String> = listOf(
-        "snow white", "pearlescent white", "ivory",
-        "ink black", "midnight black", "obsidian black",
-        "stone gray",
-        "blood red", "strawberry red", "deep burgandy", "crimson red", "glowing ember red", "ruby red",
-        "cobalt blue", "turquoise", "sky blue", "periwinkle blue", "deep indigo",
-        "emerald green", "moss green", "olive green",
-        "pumpkin orange", "sunset orange",
-        "canary yellow", "mustard yellow", "butter yellow", "banana yellow",
-        "salmon pink", "flamingo pink", "neon pink", "carnation pink",
-        "lavender", "eggplant purple", "amethyst purple",
-        "reflective chrome", "shining silver", "brilliant gold",
-        "candy cane stripes", "zebra stripes", "rainbow stripes", "tiger stripes",
-        "ladybug patches", "salt and pepper patches",
-        "leopard spots",
-        "every color of the spectrum swirling together"
-        )
+
 )

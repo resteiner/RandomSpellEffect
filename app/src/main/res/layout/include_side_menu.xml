@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/colorBlackRich"
+        android:paddingTop="@dimen/primary_margin_left_right"
+        android:paddingBottom="@dimen/primary_margin_left_right"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tSideMenuSettingsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="serif"
+            android:background="@color/colorBlackEerie"
+            android:layout_marginTop="@dimen/primary_margin_left_right"
+            android:paddingTop="@dimen/primary_margin_left_right"
+            android:paddingBottom="@dimen/primary_margin_left_right"
+            android:paddingLeft="@dimen/primary_margin_top_bottom"
+            android:paddingRight="@dimen/primary_margin_top_bottom"
+            android:text="@string/menu_settings"
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="@dimen/heading_1_text_size" />
+
+        <TextView
+            android:id="@+id/tSideMenuAboutButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="serif"
+            android:background="@color/colorBlackEerie"
+            android:layout_marginTop="@dimen/primary_margin_left_right"
+            android:paddingTop="@dimen/primary_margin_left_right"
+            android:paddingBottom="@dimen/primary_margin_left_right"
+            android:paddingLeft="@dimen/primary_margin_top_bottom"
+            android:paddingRight="@dimen/primary_margin_top_bottom"
+            android:text="@string/menu_about"
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="@dimen/heading_1_text_size" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/view4"
+        android:layout_width="1dp"
+        android:layout_height="wrap_content"
+        android:background="@color/colorBlackInk" />
+
+    <View
+        android:layout_width="3dp"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent" />
+
+    <View
+        android:id="@+id/view3"
+        android:layout_width="1dp"
+        android:layout_height="wrap_content"
+        android:background="@color/colorBlackInk" />
+
+    <FrameLayout
+        android:id="@+id/mMenuTab"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="-30dp"
+            android:src="@drawable/menu_bookmark_tab"/>
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@android:drawable/ic_menu_more"/>
+    </FrameLayout>
+
+</LinearLayout>

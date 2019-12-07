@@ -4,12 +4,6 @@ import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import android.widget.FrameLayout
-import android.widget.TextView
-import androidx.core.content.ContextCompat
-import com.bumptech.glide.Glide
 import com.ryansteiner.randomspelleffect.R
 import com.ryansteiner.randomspelleffect.contracts.MainContract
 import com.ryansteiner.randomspelleffect.data.*
@@ -17,25 +11,39 @@ import com.ryansteiner.randomspelleffect.data.models.SpellEffect
 import com.ryansteiner.randomspelleffect.presenters.MainPresenter
 import com.ryansteiner.randomspelleffect.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlin.math.roundToInt
 import android.widget.CheckBox
 import android.widget.RadioButton
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.ryansteiner.randomspelleffect.data.models.Song
+import kotlinx.android.synthetic.main.include_net_libram_info_page.*
+import android.content.Intent
+import android.net.Uri
+import androidx.viewpager.widget.ViewPager
+import com.ryansteiner.randomspelleffect.data.models.FullCard
+import android.util.DisplayMetrics
+import kotlinx.android.synthetic.main.include_side_menu.*
+import android.animation.ObjectAnimator
+import android.animation.Animator
+import android.view.View.*
+import android.view.animation.AccelerateDecelerateInterpolator
+import kotlinx.android.synthetic.main.fragment_main_card.*
+import android.view.ViewAnimationUtils
+import android.os.Build
+import com.ryansteiner.randomspelleffect.data.models.Spell
+import kotlin.math.roundToInt
 
 
 /**
  * Created by Ryan Steiner on 2019/11/06.
  */
 
-class MainActivity : BaseActivity(), MainContract.View {
+class MainActivity : BaseActivity(), MainContract.View,
+    MainCardFragment.OnFragmentInteractionListener {
 
     private val TAG = "MainActivity"
 
+    private lateinit var mViewPager: ViewPager
     private var mPresenter: MainPresenter? = null
     private var mDatabase: SQLiteDatabase? = null
     private var mPreferencesManager: PreferencesManager? = null
@@ -43,6 +51,12 @@ class MainActivity : BaseActivity(), MainContract.View {
     private var mCurrentSpellEffect: SpellEffect? = null
     private var mYouTubePlayerView: YouTubePlayerView? = null
     private var mYouTubePlayer: YouTubePlayer? = null
+    private var mScreenWidth = 0
+    private var mScreenHeight = 0
+    private var mMenuStartingLocation = 0f
+    private var mMenuClosedLocation = 0f
+    private var mMenuIsClosed = true
+    private var mMenuIsAnimating = false
     private val mBorderColors = mapOf<Int, Int>(
         Pair(SEVERITY_NEUTRAL, R.color.colorBlueYonder),
         Pair(SEVERITY_GOOD_HIGH, R.color.colorGreenApple),
@@ -63,32 +77,190 @@ class MainActivity : BaseActivity(), MainContract.View {
         mPresenter = MainPresenter(this)
         mPresenter?.bindView(this)
 
+        mViewPager = findViewById(R.id.mMainCardPager)
 
             //mPreferencesManager = PreferencesManager(this)
         mPresenter?.getPreferences()
+        mPresenter?.loadDatabase(this)
+        val spellsList = SpellsList(this)
+        mPresenter?.updateSpellList(spellsList)
 
-        mPresenter?.updateSpellList(mSpellsList)
+        //mPresenter?.updateSpellList(mSpellsList)
 
         mPresenter?.initializeView()
-        mPresenter?.loadDatabase(this)
 
     }
 
-    override fun onLoadedDatabase(database: SQLiteDatabase) {
-        mDatabase = database
-        mPresenter?.generateSingleSpellEffect()
+    override fun onLoadedDatabase() {
+        mPresenter?.getSpellEffects()
+    }
+
+    override fun onGetSpellEffects(spellEffects: List<SpellEffect>?) {
+
+        Log.d(TAG, "onGetSpellEffects - spellEffects = $spellEffects")
+        val system = mPreferencesManager?.getSystem() ?: -1
+        val fullCards: MutableList<FullCard?> = mutableListOf()
+        if (spellEffects != null && spellEffects.count() > 0) {
+            for (i in 0 until spellEffects.count()) {
+                val fullCard = FullCard()
+                val spellEffect = spellEffects[i]
+                val desc = spellEffect?.mDescription
+                val spellPair: Pair<String?, Spell?>? = mPresenter?.parseSpellStringForVariables(desc, system)
+                Log.d(TAG, "onGetSpellEffects - spellEffect?.mDescription = ${spellEffect?.mDescription}")
+                Log.d(TAG, "onGetSpellEffects - spellPair?.first = ${spellPair?.first}")
+                Log.d(TAG, "onGetSpellEffects - spellPair?.second = ${spellPair?.second}")
+                val cardText =  spellPair?.first ?: "ERROR Parsing Spell Pair in onGetSpellEffects"
+                fullCard.setSpellEffect(spellEffect)
+                fullCard.setMainText(cardText)
+                fullCard.setSpell(spellPair?.second)
+                fullCards.add(fullCard)
+            }
+        }
+
+        setupViewPager(fullCards.toList())
+    }
+
+
+
+    private fun setupViewPager(fullCards: List<FullCard?>?) {
+        if (fullCards != null && fullCards.count() > 0) {
+
+            val system = mPreferencesManager?.getSystem() ?: -1
+            val damagePrefs = mPreferencesManager?.getDamagePreferences()
+            mViewPager = findViewById(R.id.mMainCardPager)
+            mViewPager.pageMargin = 120
+            mViewPager.setPageTransformer(true, TiltAnglePageTransformer())
+            val pagerAdapter = MainCardPageViewAdapter(supportFragmentManager)
+            fullCards.forEach {
+                if (it != null) {
+                    val spellEffect = it.getSpellEffect()
+                    val title = spellEffect?.mId.toString()
+                    val id = spellEffect?.mId ?: -1
+                    Log.d(TAG, "setupViewPager - it(full card) = ${it}")
+                    val fragment = MainCardFragment.newInstance(this, it)
+                    fragment.setCallback(this)
+                    fragment.setSystem(system)
+                    fragment.setDamagePrefs(damagePrefs)
+                    pagerAdapter.addFragment(fragment, title)
+                }
+
+            }
+            Log.d(TAG, "setupViewPager - pagerAdapter = ${pagerAdapter}")
+            mViewPager.adapter = pagerAdapter
+        }
+        val count = mViewPager.adapter?.count
+        Log.d(TAG, "setupViewPager - count = ${count}")
+
+        mPreviousPageButton.visibility = GONE
+
+        mViewPager?.addOnPageChangeListener(object: ViewPager.OnPageChangeListener {
+
+            override fun onPageScrollStateChanged(state: Int) {
+                Log.d(TAG, "onPageScrollStateChanged - state = $state")
+            }
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+                Log.d(TAG, "onPageScrolled - position = $position")
+                val max = mViewPager?.adapter?.count ?: -1
+                Log.d(TAG, "onPageScrolled - max = $max")
+                when {
+                    position == max - 2 -> {
+                        mNextPageButton.visibility = GONE
+                        mPreviousPageButton.visibility = VISIBLE
+                    }
+                    position == 0 -> {
+                        mNextPageButton.visibility = VISIBLE
+                        mPreviousPageButton.visibility = GONE
+                    }
+                    else -> {
+                        mNextPageButton.visibility = VISIBLE
+                        mPreviousPageButton.visibility = VISIBLE
+                    }
+                }
+
+
+            }
+
+            override fun onPageSelected(position: Int) {
+                Log.d(TAG, "onPageSelected - position = $position")
+
+
+            }
+
+        })
     }
 
     override fun onInitializedView() {
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val height = displayMetrics.heightPixels
+        mScreenHeight = height
+        val width = displayMetrics.widthPixels
+        mScreenWidth = width
+
+        val menuStartingLocation = mSideMenu.translationX
+        Log.d(TAG, "onInitializedView - menuStartingLocation = $menuStartingLocation")
+        mMenuStartingLocation = menuStartingLocation
+        val menuClosedLocation = menuStartingLocation - (width * 0.8f)
+        Log.d(TAG, "onInitializedView - menuStartingLocation = $menuClosedLocation")
+        mMenuClosedLocation = menuClosedLocation
+        //mSideMenu.translationX = menuClosedLocation
+
+        mMenuIsAnimating = true
+        val transAnimation = ObjectAnimator.ofFloat(mSideMenu, "translationX", mMenuStartingLocation, mMenuClosedLocation)
+        transAnimation.setDuration(1)
+        //transAnimation.interpolator =
+        transAnimation.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationEnd(p0: Animator?) {
+                mMenuIsAnimating = false
+                mMenuIsClosed = true
+            }
+            override fun onAnimationStart(p0: Animator?) {
+                //do nothing
+            }
+            override fun onAnimationRepeat(p0: Animator?) {
+                //do nothing
+            }
+            override fun onAnimationCancel(p0: Animator?) {
+                //do nothing
+            }
+        })
+        transAnimation.start()
+        /*val animation = TranslateAnimation(0f, mMenuClosedLocation, 0f, 0f)
+        animation.duration = 1
+        animation.fillAfter = true
+        animation.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationStart(animation: Animation) {
+
+            }
+
+            override fun onAnimationEnd(animation: Animation) {
+
+                //mSideMenu.translationX = mMenuClosedLocation
+                mMenuIsAnimating = false
+            }
+
+            override fun onAnimationRepeat(animation: Animation) {
+
+            }
+        })
+        mSideMenu.startAnimation(animation)*/
+
+        //mSpellEffectAdditionalInfoContainer?.visibility = INVISIBLE
+        //mSpellEffectAdditionalInfoContainer?.isEnabled = false
+
         mSettingsContainer.visibility = GONE
-        vYouTubeVideoView.visibility = GONE
-        mMainActivityText?.text = "View Initialized"
-        Glide.with(this)
+        //TODO Move to Frag vYouTubeVideoView.visibility = GONE
+
+        mNetLibramInfo.visibility = GONE
+        //TODO Move to Frag tNetLibramMoreInfo.visibility = GONE
+        //TODO Move to Frag mMainActivityText?.text = "View Initialized"
+            /*TODO Move to Frag Glide.with(this)
             .load(R.drawable.card_image_placeholder)
             .placeholder(R.drawable.card_image_placeholder)
             .error(R.drawable.card_image_placeholder)
             .centerCrop()
-            .into(iCardCenterImage)
+            .into(iCardCenterImage)*/
 
         initializeSettingsPopup()
         setupClickListeners()
@@ -110,14 +282,123 @@ class MainActivity : BaseActivity(), MainContract.View {
         iSettingsBackButton.setOnClickListener {
             mPresenter?.clickSettings(false)
         }
+
+        tNetLibramLink.setOnClickListener {
+            val uri = Uri.parse("https://www.facebook.com/The-Net-Libram-of-Random-Magical-Effects-106043207533296")
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            startActivity(intent)
+        }
+
+        iPreviousPageButton.setOnClickListener {
+            val index = mViewPager?.currentItem
+            val prev = index - 1
+            if (index > 0) {
+                mViewPager?.setCurrentItem(prev, true)
+            }
+        }
+        mPreviousPageButton.setOnClickListener {
+            iPreviousPageButton.performClick()
+        }
+
+        iNextPageButton.setOnClickListener {
+            val index = mViewPager?.currentItem
+            val next = index + 1
+            val total = mViewPager?.adapter?.count ?: 999
+            if (index < total) {
+                mViewPager?.setCurrentItem(next, true)
+            }
+        }
+        mNextPageButton.setOnClickListener {
+            iNextPageButton.performClick()
+        }
+
+
+        //TODO Move to Frag tNetLibramMoreInfo.setOnClickListener {
+        //TODO Move to Frag     mNetLibramInfo.visibility = VISIBLE
+        //TODO Move to Frag }
+
+        mNetLibramInfo.setOnClickListener {
+            mNetLibramInfo.visibility = GONE
+        }
+
+        mMenuTab?.setOnClickListener {
+            when {
+                mMenuIsClosed -> {
+                    toggleSideMenu(false)
+                }
+                else -> {
+                    toggleSideMenu(true)
+                }
+            }
+        }
+
+        tSideMenuSettingsButton.setOnClickListener {
+            toggleSideMenu(false)
+            mPresenter?.clickSettings(true)
+        }
+        tSideMenuAboutButton.setOnClickListener {
+            onShowToastMessage("About")
+            toggleSideMenu(false)
+        }
+
+    }
+
+    private fun toggleSideMenu(shouldOpen: Boolean) {
+        if (!mMenuIsAnimating) {
+            mMenuIsAnimating = true
+            when (mMenuIsClosed) {
+                true -> {
+                    val transAnimation = ObjectAnimator.ofFloat(mSideMenu, "translationX", mMenuClosedLocation, mMenuStartingLocation)
+                    transAnimation.setDuration(250)
+                    //transAnimation.interpolator =
+                    transAnimation.addListener(object : Animator.AnimatorListener {
+                        override fun onAnimationEnd(p0: Animator?) {
+                            mMenuIsAnimating = false
+                            mMenuIsClosed = false
+                        }
+                        override fun onAnimationStart(p0: Animator?) {
+                            //do nothing
+                        }
+                        override fun onAnimationRepeat(p0: Animator?) {
+                            //do nothing
+                        }
+                        override fun onAnimationCancel(p0: Animator?) {
+                            //do nothing
+                        }
+                    })
+                    transAnimation.start()
+                }
+                else -> {
+                    val transAnimation = ObjectAnimator.ofFloat(mSideMenu, "translationX", mMenuStartingLocation, mMenuClosedLocation)
+                    transAnimation.setDuration(250)
+                    //transAnimation.interpolator =
+                    transAnimation.addListener(object : Animator.AnimatorListener {
+                        override fun onAnimationEnd(p0: Animator?) {
+                            mMenuIsAnimating = false
+                            mMenuIsClosed = true
+                        }
+                        override fun onAnimationStart(p0: Animator?) {
+                            //do nothing
+                        }
+                        override fun onAnimationRepeat(p0: Animator?) {
+                            //do nothing
+                        }
+                        override fun onAnimationCancel(p0: Animator?) {
+                            //do nothing
+                        }
+                    })
+                    transAnimation.start()
+                }
+            }
+        }
     }
 
     override fun onGeneratedSingleSpellEffect(spellEffect: SpellEffect) {
 
         mCurrentSpellEffect = spellEffect
 
-        vColorLayer.visibility = GONE
-        vPatternLayer.visibility = GONE
+        //TODO Move to Frag vColorLayer.visibility = GONE
+        //TODO Move to Frag vPatternLayer.visibility = GONE
 
         var spellEffectText: String? = ""
         spellEffectText = when {
@@ -162,49 +443,56 @@ class MainActivity : BaseActivity(), MainContract.View {
 
         mPresenter?.updateDamagePreferences(damagePrefs)
 
-        spellEffectText = mPresenter?.parseSpellStringForVariables(spellEffectText, system)
+        val spellPair = mPresenter?.parseSpellStringForVariables(spellEffectText, system)
+        spellEffectText = spellPair?.first ?: "ERROR parsing string in onGeneratedSingleSpellEffect"
         Log.d(TAG, "onGeneratedSingleSpellEffect - spellEffectText 1 = ${spellEffectText}")
 
-        val borderContainers = listOf<FrameLayout>(fBorderLeft, fBorderRight, fBorderTop, fBorderBottom)
+        //TODO Move to Frag val borderContainers = listOf<FrameLayout>(fBorderLeft, fBorderRight, fBorderTop, fBorderBottom)
 
-        borderContainers.forEach{
+        /*TODO Move to Frag borderContainers.forEach{
             val resourceInt = mBorderColors[spellEffect.mHowBadIsIt] ?: -1
             val resourceColor = ContextCompat.getColor(this, resourceInt)
             it.setBackgroundColor(resourceColor)
 
 
-        }
+        }*/
         spellEffectText = spellEffectText?.capitalize()
 
         val finalSpellEffectText = spellEffectText ?: "Something went very wrong."
 
-        mMainActivityText?.text = finalSpellEffectText
+        //TODO Move to Frag mMainActivityText?.text = finalSpellEffectText
+
+        Log.d(TAG, "onGeneratedSingleSpellEffect - spellEffect?.mIsNetLibram = ${spellEffect?.mIsNetLibram}")
+        /*TODO Move to Frag tNetLibramMoreInfo.visibility = when {
+            spellEffect?.mIsNetLibram == true -> VISIBLE
+            else -> GONE
+        }*/
     }
 
     override fun updateColorLayer(colorId: Int?, visibility: Boolean) {
         if (colorId != null) {
-            vColorLayer.setBackgroundColor(colorId!!)
+            //TODO Move to Frag vColorLayer.setBackgroundColor(colorId!!)
         }
 
-        vColorLayer.visibility = when (visibility) {
+        /*TODO Move to Frag vColorLayer.visibility = when (visibility) {
             true -> VISIBLE
             else -> GONE
-        }
+        }*/
     }
 
     override fun updatePatternLayer(patternId: Int?, visibility: Boolean) {
         if (patternId != null) {
-            vPatternLayer.background = ContextCompat.getDrawable(this, patternId)
+            //TODO Move to Frag vPatternLayer.background = ContextCompat.getDrawable(this, patternId)
         }
 
-        vPatternLayer.visibility = when (visibility) {
+        /*TODO Move to Frag vPatternLayer.visibility = when (visibility) {
             true -> VISIBLE
             else -> GONE
-        }
+        }*/
     }
 
     override fun updateDiceRoll(selectedSpellDice: String?) {
-        val diceRollImages = listOf<TextView>(
+        /*TODO Move to Frag val diceRollImages = listOf<TextView>(
             tDiceRollImage1, tDiceRollImage2, tDiceRollImage3, tDiceRollImage4, tDiceRollImage5,
             tDiceRollImage6, tDiceRollImage7, tDiceRollImage8, tDiceRollImage9, tDiceRollImage10,
             tDiceRollImage11, tDiceRollImage12, tDiceRollImage13, tDiceRollImage14, tDiceRollImage15,
@@ -320,24 +608,24 @@ class MainActivity : BaseActivity(), MainContract.View {
                 else -> VISIBLE
             }
 
-        }
+        }*/
 
     }
 
     override fun updateSpellInfoContainer(visibility: Boolean, spellText: String?, selectedSpellDescriptionWithDamageLevel: String?, selectedSpellPageNumber: String?) {
-        tSpellTitle.text = spellText
-        tSpellDescription.text = selectedSpellDescriptionWithDamageLevel
+        //TODO Move to Frag  tSpellTitle.text = spellText
+        //TODO Move to Frag tSpellDescription.text = selectedSpellDescriptionWithDamageLevel
         val spellPageFullText = "$spellText can be found on $selectedSpellPageNumber"
-        tSpellPage.text = spellPageFullText
+        //TODO Move to Frag tSpellPage.text = spellPageFullText
 
-        when (visibility) {
+        /*TODO Move to Frag  when (visibility) {
             true -> mSpellInfoContainer.visibility = VISIBLE
             else -> mSpellInfoContainer.visibility = GONE
-        }
+        }*/
     }
 
     override fun test() {
-        mMainActivityText?.text = "spellEffect was null"
+        //TODO Move to Frag mMainActivityText?.text = "spellEffect was null"
     }
 
     override fun updateDebugText(systemText: String?){
@@ -399,6 +687,102 @@ class MainActivity : BaseActivity(), MainContract.View {
                     }
             }
         }
+    }
+
+    fun onFABClick(view: View) {
+        val frag = supportFragmentManager.fragments?.get(mViewPager?.currentItem)
+        onShowToastMessage("Click")
+
+        frag?.mSpellEffectAdditionalInfoContainer?.visibility = VISIBLE
+        frag?.mSpellEffectAdditionalInfoContainer?.isEnabled = true
+        val measuredW = frag?.mSpellEffectAdditionalInfoContainer?.measuredWidth ?: 0
+        val measuredH = frag?.mSpellEffectAdditionalInfoContainer?.measuredHeight ?: 0
+        val width = (measuredW * 0.5).roundToInt()
+        val height = (measuredH * 0.5).roundToInt()
+        Log.d(TAG, "onFABClick - width = $width")
+        Log.d(TAG, "onFABClick - height = $height")
+        val shape = frag?.mSpellEffectAdditionalInfoContainer
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && shape != null) {
+            val anim = ViewAnimationUtils.createCircularReveal(
+                shape,
+                width,
+                height,
+                0f,
+                Math.hypot(shape.getWidth().toDouble(), shape.getHeight().toDouble()).toFloat()
+            )
+            anim.duration = 500
+            anim.interpolator = AccelerateDecelerateInterpolator()
+            anim.addListener(object : Animator.AnimatorListener {
+                override fun onAnimationEnd(p0: Animator?) {
+                    frag?.mSpellEffectAdditionalInfoContainer?.setOnClickListener {
+                        onShowToastMessage("Container CLose")
+                        val widthB = (frag?.mSpellEffectAdditionalInfoContainer.measuredWidth * 0.5).roundToInt()
+                        val heightB = (frag?.mSpellEffectAdditionalInfoContainer.measuredHeight * 0.5).roundToInt()
+                        Log.d(TAG, "onFABClick - width = $width")
+                        Log.d(TAG, "onFABClick - height = $height")
+                        val shapeB = frag?.mSpellEffectAdditionalInfoContainer
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            val anim = ViewAnimationUtils.createCircularReveal(
+                                shapeB,
+                                widthB,
+                                heightB,
+                                1000f,
+                                0f
+                            )
+                            anim.interpolator = AccelerateDecelerateInterpolator()
+                            anim.addListener(object : Animator.AnimatorListener {
+                                override fun onAnimationEnd(p0: Animator?) {
+                                    frag?.mSpellEffectAdditionalInfoContainer?.visibility = INVISIBLE
+                                    frag?.mSpellEffectAdditionalInfoContainer?.isEnabled = false
+
+                                }
+                                override fun onAnimationStart(p0: Animator?) {
+                                    //do nothing
+                                }
+
+                                override fun onAnimationRepeat(p0: Animator?) {
+                                    //do nothing
+                                }
+
+                                override fun onAnimationCancel(p0: Animator?) {
+                                    //do nothing
+                                }
+                            })
+                            anim.start()
+                        }
+                    }
+                }
+                override fun onAnimationStart(p0: Animator?) {
+                    //do nothing
+                }
+
+                override fun onAnimationRepeat(p0: Animator?) {
+                    //do nothing
+                }
+
+                override fun onAnimationCancel(p0: Animator?) {
+                    //do nothing
+                }
+            })
+            anim.start()
+        }
+
+
+
+
+        /*mFloatingActionButtonInfo.animate()
+            //.scaleX(0.0f)
+            //.scaleY(0.0f)
+            .rotation(720f)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .setDuration(1000)
+            .setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    super.onAnimationEnd(animation)
+                    onShowToastMessage("Animation Ended")
+                    mFloatingActionButtonInfo.rotation = 0f
+                }
+            })*/
     }
 
     fun onClickCheckBox(view: View) {
@@ -523,7 +907,7 @@ class MainActivity : BaseActivity(), MainContract.View {
 
         val videoId = song?.mUrl ?: ""
         val startSeconds = 0f
-
+/*
         if (mYouTubePlayerView == null) {
             val youTubePlayerView: YouTubePlayerView = findViewById(R.id.vYouTubeVideoView)
             mYouTubePlayerView = youTubePlayerView
@@ -556,15 +940,22 @@ class MainActivity : BaseActivity(), MainContract.View {
 
 
 
-                vYouTubeVideoView.visibility = VISIBLE
+                //TODO fragment vYouTubeVideoView.visibility = VISIBLE
             }
-            else -> {vYouTubeVideoView.visibility = GONE}
+            else -> {
+                //TODO fragment vvYouTubeVideoView.visibility = GONE
+                }
         }
+        */
     }
 
     override fun onDestroy() {
         super.onDestroy()
         mYouTubePlayerView?.release()
+    }
+
+    override fun onFragmentInteraction(uri: Uri) {
+        Log.d(TAG, "onFragmentInteraction")
     }
 
 }

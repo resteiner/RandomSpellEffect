@@ -9,6 +9,7 @@ import com.ryansteiner.randomspelleffect.R
 import com.ryansteiner.randomspelleffect.contracts.MainContract
 import com.ryansteiner.randomspelleffect.data.*
 import com.ryansteiner.randomspelleffect.data.models.Song
+import com.ryansteiner.randomspelleffect.data.models.Spell
 import com.ryansteiner.randomspelleffect.data.models.SpellEffect
 import com.ryansteiner.randomspelleffect.utils.*
 
@@ -39,34 +40,15 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
 
     override fun loadDatabase(context: Context) {
         val view: MainContract.View? = getView()
-
-        val database = DatabaseHelper(context).readableDatabase
+        val database = MyDatabaseUtils(mContext).loadDatabase()
         mDatabase = database
-        view?.onLoadedDatabase(database)
+        view?.onLoadedDatabase()
     }
 
     override fun generateSingleSpellEffect() {
         val view: MainContract.View? = getView()
 
-        val totalCount = DatabaseUtils.queryNumEntries(mDatabase, DB_SPELLEFFECT_TABLE_NAME)
-        //DEBUGval randomSelection = (1..totalCount).random()
-        //DEBUG
-        //DEBUG
-        //DEBUG
-        val randomSelection = (35..totalCount).random()
-        //DEBUG
-        //DEBUG
-        //DEBUG
-        val randomizedId = randomSelection.toString()
-
-
-
-        Log.d(TAG, "generateSingleSpellEffect - DB_SPELLEFFECT_TABLE_NAME = $DB_SPELLEFFECT_TABLE_NAME")
-        Log.d(TAG, "generateSingleSpellEffect - totalCount = $totalCount")
-        Log.d(TAG, "generateSingleSpellEffect - randomSelection = $randomSelection")
-        Log.d(TAG, "generateSingleSpellEffect - randomizedId = $randomizedId")
-
-        val spellEffect = getSingleSpellEffect(randomizedId)
+        val spellEffect = MyDatabaseUtils(mContext).getRandomSpellEffect()
         //val spellEffect = getSingleSpellEffect("34") //DEBUG
         if (spellEffect != null) {
             view?.onGeneratedSingleSpellEffect(spellEffect)
@@ -75,6 +57,25 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         }
 
 
+    }
+
+    override fun getSpellEffects() {
+        val view: MainContract.View? = getView()
+        //val testSpellEffectIds = listOf<String>("1", "2", "3", "4", "15", "22", "37", "44")
+        val count = DatabaseUtils.queryNumEntries(mDatabase, DB_SPELLEFFECT_TABLE_NAME).toInt()
+        val mutList: MutableList<String> = mutableListOf()
+        mutList.add("13")
+        mutList.add("14")
+        while (mutList.count() < 40){
+            val random = (1..count).random().toString()
+            if (!mutList.contains(random)) {
+                mutList.add(random)
+            }
+        }
+
+        val listOfSpellEffects = MyDatabaseUtils(mContext).getSpellEffectsByIds(mutList)
+        Log.d(TAG, "onGetSpellEffects - listOfSpellEffects = $listOfSpellEffects")
+        view?.onGetSpellEffects(listOfSpellEffects)
     }
 
     private fun getSingleSpellEffect(id: String): SpellEffect? {
@@ -93,6 +94,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         Log.d(TAG, "getSingleSpellEffect - TABLE_COL_HASGAMEPLAYIMPACT = $TABLE_COL_HASGAMEPLAYIMPACT")
         Log.d(TAG, "getSingleSpellEffect - TABLE_COL_TAGS = $TABLE_COL_TAGS")
         Log.d(TAG, "getSingleSpellEffect - TABLE_COL_HOWBADISIT = $TABLE_COL_HOWBADISIT")
+        Log.d(TAG, "getSingleSpellEffect - TABLE_COL_ISNETLIBRAM = $TABLE_COL_ISNETLIBRAM")
 
 
         db?.rawQuery(selectQuery, arrayOf(id)).use { // .use requires API 16
@@ -106,6 +108,11 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
                 result.mTags = it.getString(it.getColumnIndex(TABLE_COL_TAGS))
                 result.mHowBadIsIt = it.getInt(it.getColumnIndex(TABLE_COL_HOWBADISIT))
                 result.mUsesImage = it.getString(it.getColumnIndex(TABLE_COL_USESIMAGE))
+                val isNetLibramInt = it.getInt(it.getColumnIndex(TABLE_COL_ISNETLIBRAM))
+                result.mIsNetLibram = when {
+                    (isNetLibramInt >= 1) -> true
+                    else -> false
+                }
                 return result
             }
         }
@@ -131,14 +138,15 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
 
     }
 
-    override fun parseSpellStringForVariables(string: String?, system: Int): String? {
+    override fun parseSpellStringForVariables(string: String?, system: Int): Pair<String?, Spell?> {
         mSystem = system
         var finalString: String?
         var workingString = string
+        var pair = Pair<String?, Spell?>(null, null)
 
         //TODO Need to make sure that if Settings doesn't have "CASTER" that it will exclude DB entries with requiresCaster=1
         when (workingString) {
-            null -> return workingString
+            null -> return pair
             else -> {
                 workingString = parseTargetVariable(workingString)
                 Log.d(TAG, "parseSpellStringForVariables - parseTargetVariable(workingString) = $workingString")
@@ -158,11 +166,14 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
                 Log.d(TAG, "parseSpellStringForVariables - parseMaterialVariable(workingString) = $workingString")
                 workingString = parseSongVariable(workingString)
                 Log.d(TAG, "parseSpellStringForVariables - parseSongVariable(workingString) = $workingString")
-                workingString = parseSpellVariable(workingString)
+                val spellPair = parseSpellVariable(workingString)
+                Log.d(TAG, "parseSpellStringForVariables - spellPair.second = ${spellPair.second}")
+                workingString = spellPair.first
                 Log.d(TAG, "parseSpellStringForVariables - parseSpellVariable(workingString) = $workingString")
 
                 finalString = workingString
-                return finalString
+                pair = Pair(finalString, spellPair.second)
+                return pair
             }
         }
     }
@@ -349,15 +360,18 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     private fun parseCreatureVariable(string: String?): String? {
         var workingString = string
 
-        if (workingString != null && workingString.contains("CREATURE")) {
+        val db = mDatabase
+        val count = DatabaseUtils.queryNumEntries(db, DB_CREATURE_TABLE_NAME)
+        val safeCount = count.toInt()
+        //db?.close()
+        val random = (1..safeCount).random()
 
-            val db = mDatabase
-            val count = DatabaseUtils.queryNumEntries(db, DB_CREATURE_TABLE_NAME)
-            val safeCount = count.toInt()
-            //db?.close()
-            val random = (1..safeCount).random()
+        val creature = getCreatureById(db, random)
 
-            val creature = getCreatureById(db, random)
+        if (workingString != null && workingString.contains("CREATURES")) {
+            val creatureName = creature?.mNamePlural ?: ""
+            workingString = workingString.replace("CREATURES", creatureName)
+        } else if (workingString != null && workingString.contains("CREATURE")) {
             val creatureName = creature?.mName ?: ""
             workingString = workingString.replace("CREATURE", creatureName)
 
@@ -366,7 +380,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         return workingString
     }
 
-    private fun parseSpellVariable(string: String?): String? {
+    private fun parseSpellVariable(string: String?): Pair<String?, Spell?> {
         val view: MainContract.View? = getView()
         var workingString = string
         var visibility = false
@@ -374,6 +388,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         var selectedSpellDice = ""
         var selectedSpellPageNumber = ""
         var spellText = ""
+        var selectedSpell: Spell? = null
         Log.d(TAG, "parseSpellVariable - workingString 1 = $workingString")
 
 
@@ -400,23 +415,34 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
             }
 
             val selectedDamageLevel = damageOptions.random()
-            val selectedSpell = mSpellsList?.getRandomSpell()
+            if (mSpellsList == null) {
+                mSpellsList = SpellsList(mContext)
+            }
+            selectedSpell = mSpellsList?.getRandomSpell()
+            Log.d(TAG, "parseSpellVariable - mSpellsList = $mSpellsList")
+            Log.d(TAG, "parseSpellVariable - selectedSpell = $selectedSpell")
             spellText = selectedSpell?.mTitle ?: "ERROR"
-            when (mSystem) {
-                RPG_SYSTEM_D20 -> {
-                    selectedSpellDescriptionWithDamageLevel = selectedSpell!!.mDND5EDescriptions!![selectedDamageLevel] ?: ""
-                    selectedSpellDice = selectedSpell!!.mDND5EDice!![selectedDamageLevel] ?: ""
-                    selectedSpellPageNumber = selectedSpell!!.mDND5EPageNumber ?: ""
-                }
-                RPG_SYSTEM_SAVAGEWORLDS -> {
-                    selectedSpellDescriptionWithDamageLevel = selectedSpell!!.mSWADEDescriptions!![selectedDamageLevel] ?: ""
-                    selectedSpellDice = selectedSpell!!.mSWADEDice!![selectedDamageLevel] ?: ""
-                    selectedSpellPageNumber = selectedSpell!!.mSWADEPageNumber ?: ""
-                }
-                else -> {
-                    selectedSpellDescriptionWithDamageLevel = selectedSpell!!.mSWADEDescriptions!![selectedDamageLevel] ?: "NO SYSTEM"
-                    selectedSpellDice = selectedSpell!!.mSWADEDice!![selectedDamageLevel] ?: "NO SYSTEM"
-                    selectedSpellPageNumber = selectedSpell!!.mSWADEPageNumber ?: "NO SYSTEM"
+            if (selectedSpell != null) {
+                when (mSystem) {
+                    RPG_SYSTEM_D20 -> {
+                        selectedSpellDescriptionWithDamageLevel =
+                            selectedSpell!!.mDND5EDescriptions!![selectedDamageLevel] ?: ""
+                        selectedSpellDice = selectedSpell!!.mDND5EDice!![selectedDamageLevel] ?: ""
+                        selectedSpellPageNumber = selectedSpell!!.mDND5EPageNumber ?: ""
+                    }
+                    RPG_SYSTEM_SAVAGEWORLDS -> {
+                        selectedSpellDescriptionWithDamageLevel =
+                            selectedSpell!!.mSWADEDescriptions!![selectedDamageLevel] ?: ""
+                        selectedSpellDice = selectedSpell!!.mSWADEDice!![selectedDamageLevel] ?: ""
+                        selectedSpellPageNumber = selectedSpell!!.mSWADEPageNumber ?: ""
+                    }
+                    else -> {
+                        selectedSpellDescriptionWithDamageLevel =
+                            selectedSpell!!.mSWADEDescriptions!![selectedDamageLevel] ?: "NO SYSTEM"
+                        selectedSpellDice =
+                            selectedSpell!!.mSWADEDice!![selectedDamageLevel] ?: "NO SYSTEM"
+                        selectedSpellPageNumber = selectedSpell!!.mSWADEPageNumber ?: "NO SYSTEM"
+                    }
                 }
             }
 
@@ -437,7 +463,8 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
 
 
         Log.d(TAG, "parseSpellVariable - workingString 4 = $workingString")
-        return workingString
+        Log.d(TAG, "parseSpellVariable - selectedSpell = $selectedSpell")
+        return Pair(workingString, selectedSpell)
     }
 
 

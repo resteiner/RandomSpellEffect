@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="20dp"
+    android:layout_marginTop="20dp"
+    android:layout_marginRight="20dp"
+    android:layout_marginBottom="20dp"
+    android:background="@drawable/background_scroll"
+    android:paddingLeft="40dp"
+    android:paddingTop="40dp"
+    android:paddingRight="40dp"
+    android:paddingBottom="40dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_weight="75"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/net_libram_this_effect_comes_from"
+                android:textAlignment="center"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="@dimen/normal_text_size"
+                android:textStyle="italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/net_libram_title"
+                android:textAlignment="center"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="@dimen/title_text_size" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/net_libram_by_author"
+                android:textAlignment="center"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="@dimen/heading_1_text_size" />
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/net_libram_used_with_permission"
+                android:textAlignment="center"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="@dimen/normal_text_size"
+                android:textStyle="italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_weight="25"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/net_libram_for_information"
+                android:textAlignment="center"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/tNetLibramLink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/net_libram_url"
+                android:textAlignment="center"
+                android:textColor="@color/colorTextLink"
+                android:textSize="@dimen/normal_text_size" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

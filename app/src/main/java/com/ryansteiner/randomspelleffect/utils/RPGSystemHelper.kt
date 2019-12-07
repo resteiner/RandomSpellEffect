@@ -82,6 +82,7 @@ fun getCreatureById(database: SQLiteDatabase?, id: Int): Creature? {
         if (it!!.moveToFirst()) {
             result.mId = it.getInt(it.getColumnIndex(TABLE_COL_ID))
             result.mName = it.getString(it.getColumnIndex(TABLE_COL_NAME))
+            result.mNamePlural = it.getString(it.getColumnIndex(TABLE_COL_NAME_PLURAL))
             result.mDND5EPage = it.getString(it.getColumnIndex(TABLE_COL_DND5E_PAGE))
             result.mSWADEPage = it.getString(it.getColumnIndex(TABLE_COL_SWADE_PAGE))
         }

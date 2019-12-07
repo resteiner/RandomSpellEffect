@@ -3,6 +3,7 @@ package com.ryansteiner.randomspelleffect.contracts
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import com.ryansteiner.randomspelleffect.data.models.Song
+import com.ryansteiner.randomspelleffect.data.models.Spell
 import com.ryansteiner.randomspelleffect.data.models.SpellEffect
 import com.ryansteiner.randomspelleffect.utils.PreferencesManager
 import com.ryansteiner.randomspelleffect.utils.SpellsList
@@ -17,7 +18,7 @@ interface MainContract {
     interface View : BaseContract.View {
         fun onInitializedView()
         fun onGeneratedSingleSpellEffect(spellEffect: SpellEffect)
-        fun onLoadedDatabase(database: SQLiteDatabase)
+        fun onLoadedDatabase()
         fun test()
         fun updateDebugText(systemText: String?)
         fun updatePreferences(prefs: PreferencesManager?)
@@ -27,6 +28,7 @@ interface MainContract {
         fun updateSpellInfoContainer(visibility: Boolean, spellText: String?, selectedSpellDescriptionWithDamageLevel: String?, selectedSpellPageNumber: String?)
         fun onClickSettings(showSettings: Boolean)
         fun songVideoInit(showVideo: Boolean, song: Song?)
+        fun onGetSpellEffects(spellEffects: List<SpellEffect>?)
     }
 
     interface Presenter : BaseContract.Presenter {
@@ -34,10 +36,11 @@ interface MainContract {
         fun generateSingleSpellEffect()
         fun loadDatabase(context: Context)
         fun getPreferences()
-        fun parseSpellStringForVariables(string: String?, system: Int): String?
+        fun parseSpellStringForVariables(string: String?, system: Int): Pair<String?, Spell?>
         fun updateDamagePreferences(damagePrefs: List<Int>?)
         fun updateSpellList(spellsList: SpellsList)
         fun clickSettings(showSettings: Boolean)
         fun retrieveSpellEffectById(id: Int)
+        fun getSpellEffects()
     }
 }
