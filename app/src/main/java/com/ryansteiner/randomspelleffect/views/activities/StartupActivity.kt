@@ -43,6 +43,7 @@ class StartupActivity : BaseActivity(), StartupContract.View/*, StartupListAdapt
 
         Log.d(TAG, "initializeView")
         Log.d(TAG, "initializeView - mPresenter = $mPresenter")
+        mStartupText?.text = "Loading"
 
         mPresenter?.load()
 
@@ -84,9 +85,9 @@ class StartupActivity : BaseActivity(), StartupContract.View/*, StartupListAdapt
         Log.d(TAG, "onLoaded")
 
         val intent = Intent(this, MainActivity::class.java)
-        mStartupText?.text = "3"
-        Handler().postDelayed({startActivity(intent)}, 100)
-
+        mStartupText?.text = "Loaded"
+        //Handler().postDelayed({}, 100)
+        startActivity(intent)
 
     }
 

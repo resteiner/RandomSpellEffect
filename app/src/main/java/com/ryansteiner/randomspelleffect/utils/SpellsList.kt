@@ -5,6 +5,8 @@ import com.ryansteiner.randomspelleffect.data.*
 import com.ryansteiner.randomspelleffect.data.models.Spell
 
 class SpellsList(context: Context) {
+//Moved this to its own database table. I should be able to remove it, but I want to keep it here until I'm sure.
+/*
     val mContext: Context = context
     var mSpellList: List<Spell>? = null
 
@@ -47,6 +49,7 @@ class SpellsList(context: Context) {
             1,
             "Fireball",
             "A swirling ball of fire",
+            "",
             fireballDND5EDescs,
             fireballDND5EDice,
             fireballDND5EPageNumber,
@@ -95,6 +98,7 @@ class SpellsList(context: Context) {
             1,
             "Insect Plague",
             "A swirling ball of fire",
+            "",
             insectPlagueDND5EDescs,
             insectPlagueDND5EDice,
             insectPlagueDND5EPageNumber,
@@ -132,5 +136,5 @@ class SpellsList(context: Context) {
         }
 
     }
-
+*/
 }

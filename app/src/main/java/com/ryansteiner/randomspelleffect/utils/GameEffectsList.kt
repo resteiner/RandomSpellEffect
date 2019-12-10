@@ -96,18 +96,6 @@ class GameEffectsList() {
     }
 
     class gameColors{
-        val mAllColors: List<String> = listOf(
-            "snow white", "pearlescent white", "ivory",
-            "ink black", "midnight black", "obsidian black",
-            "stone gray",
-            "blood red", "strawberry red", "deep burgundy", "crimson red", "glowing ember red", "ruby red",
-            "cobalt blue", "turquoise", "sky blue", "periwinkle blue", "deep indigo",
-            "emerald green", "moss green", "olive green",
-            "pumpkin orange", "sunset orange",
-            "canary yellow", "mustard yellow", "butter yellow", "banana yellow",
-            "salmon pink", "flamingo pink", "neon pink", "carnation pink",
-            "lavender", "eggplant purple", "amethyst purple"
-        )
         val mMapOfColors: Map<String, Int> = mapOf(
             Pair("snow white", R.color.colorWhiteSnow), Pair("pearlescent white", R.color.colorWhitePearlescent), Pair("ivory", R.color.colorWhiteIvory),
             Pair("ink black", R.color.colorBlackInk), Pair("midnight black", R.color.colorBlackMidnight), Pair("obsidian black", R.color.colorBlackObsidian),

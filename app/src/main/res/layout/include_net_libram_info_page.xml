@@ -33,6 +33,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/berkshire_swash"
                 android:text="@string/net_libram_this_effect_comes_from"
                 android:textAlignment="center"
                 android:textColor="@color/colorTextPrimary"
@@ -47,6 +48,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/berkshire_swash"
                 android:text="@string/net_libram_title"
                 android:textAlignment="center"
                 android:textColor="@color/colorTextPrimary"
@@ -55,6 +57,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/berkshire_swash"
                 android:text="@string/net_libram_by_author"
                 android:textAlignment="center"
                 android:textColor="@color/colorTextPrimary"
@@ -69,6 +72,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/berkshire_swash"
                 android:text="@string/net_libram_used_with_permission"
                 android:textAlignment="center"
                 android:textColor="@color/colorTextPrimary"
@@ -93,6 +97,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/berkshire_swash"
                 android:text="@string/net_libram_for_information"
                 android:textAlignment="center"
                 android:textColor="@color/colorTextPrimary"

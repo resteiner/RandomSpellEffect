@@ -7,7 +7,6 @@ import android.view.View
 import com.ryansteiner.randomspelleffect.R
 import com.ryansteiner.randomspelleffect.contracts.MainContract
 import com.ryansteiner.randomspelleffect.data.*
-import com.ryansteiner.randomspelleffect.data.models.SpellEffect
 import com.ryansteiner.randomspelleffect.presenters.MainPresenter
 import com.ryansteiner.randomspelleffect.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -15,12 +14,10 @@ import android.widget.CheckBox
 import android.widget.RadioButton
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-import com.ryansteiner.randomspelleffect.data.models.Song
 import kotlinx.android.synthetic.main.include_net_libram_info_page.*
 import android.content.Intent
 import android.net.Uri
 import androidx.viewpager.widget.ViewPager
-import com.ryansteiner.randomspelleffect.data.models.FullCard
 import android.util.DisplayMetrics
 import kotlinx.android.synthetic.main.include_side_menu.*
 import android.animation.ObjectAnimator
@@ -30,7 +27,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import kotlinx.android.synthetic.main.fragment_main_card.*
 import android.view.ViewAnimationUtils
 import android.os.Build
-import com.ryansteiner.randomspelleffect.data.models.Spell
+import com.ryansteiner.randomspelleffect.data.models.*
 import kotlin.math.roundToInt
 
 
@@ -49,8 +46,6 @@ class MainActivity : BaseActivity(), MainContract.View,
     private var mPreferencesManager: PreferencesManager? = null
     private val mSpellsList = SpellsList(this)
     private var mCurrentSpellEffect: SpellEffect? = null
-    private var mYouTubePlayerView: YouTubePlayerView? = null
-    private var mYouTubePlayer: YouTubePlayer? = null
     private var mScreenWidth = 0
     private var mScreenHeight = 0
     private var mMenuStartingLocation = 0f
@@ -82,8 +77,8 @@ class MainActivity : BaseActivity(), MainContract.View,
             //mPreferencesManager = PreferencesManager(this)
         mPresenter?.getPreferences()
         mPresenter?.loadDatabase(this)
-        val spellsList = SpellsList(this)
-        mPresenter?.updateSpellList(spellsList)
+        //val spellsList = SpellsList(this)
+        //mPresenter?.updateSpellList(spellsList)
 
         //mPresenter?.updateSpellList(mSpellsList)
 
@@ -105,14 +100,13 @@ class MainActivity : BaseActivity(), MainContract.View,
                 val fullCard = FullCard()
                 val spellEffect = spellEffects[i]
                 val desc = spellEffect?.mDescription
-                val spellPair: Pair<String?, Spell?>? = mPresenter?.parseSpellStringForVariables(desc, system)
-                Log.d(TAG, "onGetSpellEffects - spellEffect?.mDescription = ${spellEffect?.mDescription}")
-                Log.d(TAG, "onGetSpellEffects - spellPair?.first = ${spellPair?.first}")
-                Log.d(TAG, "onGetSpellEffects - spellPair?.second = ${spellPair?.second}")
-                val cardText =  spellPair?.first ?: "ERROR Parsing Spell Pair in onGetSpellEffects"
+                val parsedResult: ParseSpellEffectStringResult? = mPresenter?.parseSpellStringForVariables(desc, system)
+                val cardText =  parsedResult?.mFullString ?: "ERROR Parsing Spell Pair in onGetSpellEffects"
                 fullCard.setSpellEffect(spellEffect)
                 fullCard.setMainText(cardText)
-                fullCard.setSpell(spellPair?.second)
+                fullCard.setSpell(parsedResult?.mSpell)
+                fullCard.setGameplayModifier(parsedResult?.mGameplayModifier)
+                fullCard.setSong(parsedResult?.mSong)
                 fullCards.add(fullCard)
             }
         }
@@ -250,17 +244,8 @@ class MainActivity : BaseActivity(), MainContract.View,
         //mSpellEffectAdditionalInfoContainer?.isEnabled = false
 
         mSettingsContainer.visibility = GONE
-        //TODO Move to Frag vYouTubeVideoView.visibility = GONE
 
         mNetLibramInfo.visibility = GONE
-        //TODO Move to Frag tNetLibramMoreInfo.visibility = GONE
-        //TODO Move to Frag mMainActivityText?.text = "View Initialized"
-            /*TODO Move to Frag Glide.with(this)
-            .load(R.drawable.card_image_placeholder)
-            .placeholder(R.drawable.card_image_placeholder)
-            .error(R.drawable.card_image_placeholder)
-            .centerCrop()
-            .into(iCardCenterImage)*/
 
         initializeSettingsPopup()
         setupClickListeners()
@@ -312,13 +297,8 @@ class MainActivity : BaseActivity(), MainContract.View,
             iNextPageButton.performClick()
         }
 
-
-        //TODO Move to Frag tNetLibramMoreInfo.setOnClickListener {
-        //TODO Move to Frag     mNetLibramInfo.visibility = VISIBLE
-        //TODO Move to Frag }
-
         mNetLibramInfo.setOnClickListener {
-            mNetLibramInfo.visibility = GONE
+            toggleNetLibramInfoOverlay()
         }
 
         mMenuTab?.setOnClickListener {
@@ -443,9 +423,9 @@ class MainActivity : BaseActivity(), MainContract.View,
 
         mPresenter?.updateDamagePreferences(damagePrefs)
 
-        val spellPair = mPresenter?.parseSpellStringForVariables(spellEffectText, system)
-        spellEffectText = spellPair?.first ?: "ERROR parsing string in onGeneratedSingleSpellEffect"
-        Log.d(TAG, "onGeneratedSingleSpellEffect - spellEffectText 1 = ${spellEffectText}")
+        //val spellPair = mPresenter?.parseSpellStringForVariables(spellEffectText, system)
+        //spellEffectText = spellPair?.first ?: "ERROR parsing string in onGeneratedSingleSpellEffect"
+        //Log.d(TAG, "onGeneratedSingleSpellEffect - spellEffectText 1 = ${spellEffectText}")
 
         //TODO Move to Frag val borderContainers = listOf<FrameLayout>(fBorderLeft, fBorderRight, fBorderTop, fBorderBottom)
 
@@ -949,13 +929,20 @@ class MainActivity : BaseActivity(), MainContract.View,
         */
     }
 
-    override fun onDestroy() {
+    /*override fun onDestroy() {
         super.onDestroy()
         mYouTubePlayerView?.release()
-    }
+    }*/
 
     override fun onFragmentInteraction(uri: Uri) {
         Log.d(TAG, "onFragmentInteraction")
+    }
+
+    override fun toggleNetLibramInfoOverlay() {
+        mNetLibramInfo.visibility = when (mNetLibramInfo.visibility) {
+            VISIBLE -> GONE
+            else -> VISIBLE
+        }
     }
 
 }

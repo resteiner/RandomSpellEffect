@@ -8,9 +8,7 @@ import androidx.core.content.ContextCompat
 import com.ryansteiner.randomspelleffect.R
 import com.ryansteiner.randomspelleffect.contracts.MainContract
 import com.ryansteiner.randomspelleffect.data.*
-import com.ryansteiner.randomspelleffect.data.models.Song
-import com.ryansteiner.randomspelleffect.data.models.Spell
-import com.ryansteiner.randomspelleffect.data.models.SpellEffect
+import com.ryansteiner.randomspelleffect.data.models.*
 import com.ryansteiner.randomspelleffect.utils.*
 
 
@@ -65,7 +63,8 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         val count = DatabaseUtils.queryNumEntries(mDatabase, DB_SPELLEFFECT_TABLE_NAME).toInt()
         val mutList: MutableList<String> = mutableListOf()
         mutList.add("13")
-        mutList.add("14")
+        mutList.add("36")
+        mutList.add("10")
         while (mutList.count() < 40){
             val random = (1..count).random().toString()
             if (!mutList.contains(random)) {
@@ -81,21 +80,6 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     private fun getSingleSpellEffect(id: String): SpellEffect? {
         val db = mDatabase
         val selectQuery = "SELECT  * FROM $DB_SPELLEFFECT_TABLE_NAME WHERE $TABLE_COL_ID = ?"
-
-
-        Log.d(TAG, "getSingleSpellEffect - id = $id")
-        Log.d(TAG, "getSingleSpellEffect - selectQuery = $selectQuery")
-        Log.d(TAG, "getSingleSpellEffect - db = $db")
-        Log.d(TAG, "getSingleSpellEffect - DB_SPELLEFFECT_TABLE_NAME = $DB_SPELLEFFECT_TABLE_NAME")
-        Log.d(TAG, "getSingleSpellEffect - TABLE_COL_ID = $TABLE_COL_ID")
-        Log.d(TAG, "getSingleSpellEffect - TABLE_COL_DESCRIPTION = $TABLE_COL_DESCRIPTION")
-        Log.d(TAG, "getSingleSpellEffect - TABLE_COL_TYPE = $TABLE_COL_TYPE")
-        Log.d(TAG, "getSingleSpellEffect - TABLE_COL_TARGET = $TABLE_COL_TARGET")
-        Log.d(TAG, "getSingleSpellEffect - TABLE_COL_HASGAMEPLAYIMPACT = $TABLE_COL_HASGAMEPLAYIMPACT")
-        Log.d(TAG, "getSingleSpellEffect - TABLE_COL_TAGS = $TABLE_COL_TAGS")
-        Log.d(TAG, "getSingleSpellEffect - TABLE_COL_HOWBADISIT = $TABLE_COL_HOWBADISIT")
-        Log.d(TAG, "getSingleSpellEffect - TABLE_COL_ISNETLIBRAM = $TABLE_COL_ISNETLIBRAM")
-
 
         db?.rawQuery(selectQuery, arrayOf(id)).use { // .use requires API 16
             if (it!!.moveToFirst()) {
@@ -138,42 +122,47 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
 
     }
 
-    override fun parseSpellStringForVariables(string: String?, system: Int): Pair<String?, Spell?> {
+    override fun parseSpellStringForVariables(string: String?, system: Int): ParseSpellEffectStringResult? {
         mSystem = system
         var finalString: String?
         var workingString = string
-        var pair = Pair<String?, Spell?>(null, null)
+        var result = ParseSpellEffectStringResult()
 
         //TODO Need to make sure that if Settings doesn't have "CASTER" that it will exclude DB entries with requiresCaster=1
         when (workingString) {
-            null -> return pair
+            null -> return null
             else -> {
                 workingString = parseTargetVariable(workingString)
-                Log.d(TAG, "parseSpellStringForVariables - parseTargetVariable(workingString) = $workingString")
+
                 workingString = parseColorVariable(workingString)
-                Log.d(TAG, "parseSpellStringForVariables - parseColorVariable(workingString) = $workingString")
+
                 workingString = parseSingleInanimateObjectVariable(workingString)
-                Log.d(TAG, "parseSpellStringForVariables - parseSingleInanimateObjectVariable(workingString) = $workingString")
+
                 workingString = parsePluralInanimateObjectsVariable(workingString)
-                Log.d(TAG, "parseSpellStringForVariables - parsePluralInanimateObjectsVariable(workingString) = $workingString")
+
                 workingString = parseCreatureVariable(workingString)
-                Log.d(TAG, "parseSpellStringForVariables - parseCreatureVariable(workingString) = $workingString")
-                workingString = parseDifficultTerrainVariable(workingString)
-                Log.d(TAG, "parseSpellStringForVariables - parseDifficultTerrainVariable(workingString) = $workingString")
+
+                val difficultTerrainResult = parseDifficultTerrainVariable(workingString)
+                workingString = difficultTerrainResult?.mFullString
+                result.mGameplayModifier = difficultTerrainResult.mGameplayModifier
+
                 workingString = parseHiccupsVariable(workingString)
-                Log.d(TAG, "parseSpellStringForVariables - parseHiccupsVariable(workingString) = $workingString")
+
                 workingString = parseMaterialVariable(workingString)
-                Log.d(TAG, "parseSpellStringForVariables - parseMaterialVariable(workingString) = $workingString")
-                workingString = parseSongVariable(workingString)
-                Log.d(TAG, "parseSpellStringForVariables - parseSongVariable(workingString) = $workingString")
+
+                val songPair = parseSongVariable(workingString)
+                workingString = songPair.first
+                result.mSong = songPair.second
+
                 val spellPair = parseSpellVariable(workingString)
-                Log.d(TAG, "parseSpellStringForVariables - spellPair.second = ${spellPair.second}")
                 workingString = spellPair.first
-                Log.d(TAG, "parseSpellStringForVariables - parseSpellVariable(workingString) = $workingString")
+                result.mSpell = spellPair.second
 
                 finalString = workingString
-                pair = Pair(finalString, spellPair.second)
-                return pair
+
+                result.mFullString = finalString
+
+                return result
             }
         }
     }
@@ -311,21 +300,36 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         }
         return workingString
     }
-    private fun parseDifficultTerrainVariable(string: String?): String? {
+
+    private fun parseDifficultTerrainVariable(string: String?): ParseSpellEffectStringResult {
+        var result = ParseSpellEffectStringResult()
+        var gameplayModifier: GameplayModifier? = null
         var workingString = string
+        val db = mDatabase
 
         if (workingString != null && workingString.contains("DIFFICULTTERRAIN")) {
-            val dTEffect = GameEffectsList().getEffectByName("Difficult Terrain")
-            val difficultTerrainText = when (mSystem) {
-                RPG_SYSTEM_D20 -> dTEffect?.mDND5EName ?: ""
-                RPG_SYSTEM_SAVAGEWORLDS -> dTEffect?.mSWADEName ?: ""
-                else -> "ERROR"
-            }
-            workingString = workingString.replace("DIFFICULTTERRAIN", difficultTerrainText)
+            val name = "DIFFICULTTERRAIN"
+            gameplayModifier = MyDatabaseUtils(mContext).getGameplayModifierByName(name)
 
+            var selectedModifierName = ""
+
+            if (gameplayModifier != null) {
+                selectedModifierName = when (mSystem) {
+                    RPG_SYSTEM_D20 -> gameplayModifier!!.mDND5EName ?: "ERROR with DND5E/Name"
+                    RPG_SYSTEM_SAVAGEWORLDS -> gameplayModifier!!.mSWADEName ?: "ERROR with SWADE/Name"
+                    else -> gameplayModifier!!.mGenericName ?: "ERROR with Generic/Name"
+                }
+            }
+
+            workingString = workingString.replace("DIFFICULTTERRAIN", selectedModifierName)
         }
-        return workingString
+
+        result.mFullString = workingString
+        result.mGameplayModifier = gameplayModifier
+
+        return result
     }
+
     private fun parseHiccupsVariable(string: String?): String? {
         var workingString = string
 
@@ -415,13 +419,13 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
             }
 
             val selectedDamageLevel = damageOptions.random()
-            if (mSpellsList == null) {
+            /*if (mSpellsList == null) {
                 mSpellsList = SpellsList(mContext)
-            }
-            selectedSpell = mSpellsList?.getRandomSpell()
+            }*/
+            selectedSpell = MyDatabaseUtils(mContext).getRandomSpell()
             Log.d(TAG, "parseSpellVariable - mSpellsList = $mSpellsList")
             Log.d(TAG, "parseSpellVariable - selectedSpell = $selectedSpell")
-            spellText = selectedSpell?.mTitle ?: "ERROR"
+            spellText = selectedSpell?.mNameWithAAn ?: "ERROR"
             if (selectedSpell != null) {
                 when (mSystem) {
                     RPG_SYSTEM_D20 -> {
@@ -468,7 +472,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     }
 
 
-    private fun parseSongVariable(string: String?): String? {
+    private fun parseSongVariable(string: String?): Pair<String?, Song?> {
         val view: MainContract.View? = getView()
 
         var workingString = string
@@ -482,7 +486,8 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
             //db?.close()
             val random = (1..safeCount).random()
 
-            val song = getSongById(db, random)
+            song = getSongById(db, random)
+            Log.d(TAG, "parseSongVariable - song = $song")
             val songTitle = song?.mName ?: "SONG TITLE ERROR"
             val songArtist = song?.mArtist ?: ""
             val fullSongString = when (songArtist.isNullOrBlank()) {
@@ -491,15 +496,13 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
             }
             workingString = workingString.replace("SONG", fullSongString)
             val url = song?.mUrl
-            if (!url.isNullOrBlank()) {
+            /*if (!url.isNullOrBlank()) {
                 view?.songVideoInit(true, song)
-            }
+            }*/
 
-        } else {
-            view?.songVideoInit(false, null)
         }
 
-        return workingString
+        return Pair(workingString, song)
     }
 
     private fun rollDice() {
@@ -538,4 +541,5 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
 
         }
     }
+
 }

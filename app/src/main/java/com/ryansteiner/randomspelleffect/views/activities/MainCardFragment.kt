@@ -27,6 +27,9 @@ import com.ryansteiner.randomspelleffect.data.models.FullCard
 import android.widget.Toast
 import android.widget.TextView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.ryansteiner.randomspelleffect.utils.MyMathUtils
 import kotlin.math.roundToInt
 
@@ -42,6 +45,8 @@ class MainCardFragment(private val c: Context)// Required empty public construct
     private var mSystem: Int? = null
     private var mView: View? = null
     private var mDamagePreferences: List<Int>? = null
+    private var mYouTubePlayerView: YouTubePlayerView? = null
+    private var mYouTubePlayer: YouTubePlayer? = null
 
     private var mListener: OnFragmentInteractionListener? = null
 
@@ -62,30 +67,36 @@ class MainCardFragment(private val c: Context)// Required empty public construct
         val tSpellEffectInfoDescription: TextView =
             v.findViewById((R.id.tSpellEffectInfoDescription))
         val tSpellEffectInfoPageInfo: TextView = v.findViewById((R.id.tSpellEffectInfoPageInfo))
+        val mNetLibramLabel: LinearLayout = v.findViewById((R.id.mNetLibramLabel))
+        val mYouTubeVideoReloadButton: LinearLayout = v.findViewById((R.id.mYouTubeVideoReloadButton))
         tMainCardText?.text = mFullText
 
         mFloatingActionButton?.setOnClickListener {
-            Log.d(TAG, "mFloatingActionButton?.setOnClickListener")
             extraInfoButtonClicked()
+        }
+        mNetLibramLabel?.setOnClickListener {
+            mCallback?.toggleNetLibramInfoOverlay()
+        }
+
+        mYouTubeVideoReloadButton.setOnClickListener {
+            val song = mFullCard?.getSong()
+            val videoId = song?.mUrl ?: ""
+            val startSeconds = song?.mStartAt ?: 0
+            val startSecondsFloat = startSeconds.toFloat()
+            mYouTubePlayer?.loadVideo(videoId, startSecondsFloat)
+            mYouTubePlayer?.pause()
         }
 
         val spellEffect = mFullCard?.getSpellEffect()
         val spell = mFullCard?.getSpell()
+        val gameplayModifier = mFullCard?.getGameplayModifier()
 
-        Log.d(TAG, "init - mFullCard?.getSpellEffect() = ${mFullCard?.getSpellEffect()}")
-        Log.d(TAG, "init - mFullCard?.getSpell() = ${mFullCard?.getSpell()}")
-        Log.d(TAG, "init - spellEffect = $spellEffect")
-        Log.d(TAG, "init - spell = $spell")
         if (spell != null && mSystem != null) {
             if (!spell?.mTitle.isNullOrBlank()) {
                 tSpellEffectInfoTitle.text = spell?.mTitle
             }
             if (!spell?.mTitle.isNullOrBlank()) {
                 val damageOptions = mutableListOf<String>()
-                var selectedSpellDescriptionWithDamageLevel = ""
-                var selectedSpellDice = ""
-                var selectedSpellPageNumber = ""
-
                 if (mDamagePreferences != null && mDamagePreferences!!.count() > 0) {
                     if (mDamagePreferences!!.contains(DAMAGE_INT_LOW)) {
                         damageOptions.add(DAMAGE_STRING_LOW)
@@ -101,20 +112,48 @@ class MainCardFragment(private val c: Context)// Required empty public construct
                     damageOptions.add(DAMAGE_STRING_MED)
                     damageOptions.add(DAMAGE_STRING_HIGH)
                 }
-
                 val selectedDamageLevel = damageOptions.random()
+
+                var selectedSpellDescriptionWithDamageLevel = ""
+                var selectedSpellDice = ""
+                var selectedSpellPageNumber = ""
 
                 when (mSystem) {
                     RPG_SYSTEM_D20 -> {
-                        selectedSpellDescriptionWithDamageLevel = spell!!.mDND5EDescriptions!![selectedDamageLevel] ?: ""
-                        selectedSpellDice = spell!!.mDND5EDice!![selectedDamageLevel] ?: ""
+                        val safeSelectedSpell = spell!!.mDND5EDescriptions!![selectedDamageLevel]
+                        val safeMedSpell = spell!!.mDND5EDescriptions!![DAMAGE_STRING_MED]
+                        val safeSelectedDice = spell!!.mDND5EDice!![selectedDamageLevel]
+                        val safeMedDice = spell!!.mDND5EDice!![DAMAGE_STRING_MED]
+                        selectedSpellDescriptionWithDamageLevel = when {
+                            !safeSelectedSpell.isNullOrBlank() -> safeSelectedSpell
+                            !safeMedSpell.isNullOrBlank() -> safeMedSpell
+                            else -> "ERROR with selectedSpell"
+                        }
+                        selectedSpellDice = when {
+                            !safeSelectedDice.isNullOrBlank() -> safeSelectedDice
+                            !safeMedDice.isNullOrBlank() -> safeMedDice
+                            else -> "ERROR with selectedDice"
+                        }
                         selectedSpellPageNumber = spell!!.mDND5EPageNumber ?: ""
                     }
                     RPG_SYSTEM_SAVAGEWORLDS -> {
-                        selectedSpellDescriptionWithDamageLevel = spell!!.mSWADEDescriptions!![selectedDamageLevel] ?: ""
-                        selectedSpellDice = spell!!.mSWADEDice!![selectedDamageLevel] ?: ""
+                        val safeSelectedSpell = spell!!.mSWADEDescriptions!![selectedDamageLevel]
+                        val safeMedSpell = spell!!.mSWADEDescriptions!![DAMAGE_STRING_MED]
+                        val safeSelectedDice = spell!!.mSWADEDice!![selectedDamageLevel]
+                        val safeMedDice = spell!!.mSWADEDice!![DAMAGE_STRING_MED]
+                        selectedSpellDescriptionWithDamageLevel = when {
+                            !safeSelectedSpell.isNullOrBlank() -> safeSelectedSpell
+                            !safeMedSpell.isNullOrBlank() -> safeMedSpell
+                            else -> "ERROR with selectedSpell"
+                        }
+                        selectedSpellDice = when {
+                            !safeSelectedDice.isNullOrBlank() -> safeSelectedDice
+                            !safeMedDice.isNullOrBlank() -> safeMedDice
+                            else -> "ERROR with selectedDice"
+                        }
                         selectedSpellPageNumber = spell!!.mSWADEPageNumber ?: ""
                     }
+                    //TODO Need to add generics to spells
                     else -> {
                         selectedSpellDescriptionWithDamageLevel = "NO SYSTEM"
                         selectedSpellDice = "NO SYSTEM"
@@ -126,14 +165,117 @@ class MainCardFragment(private val c: Context)// Required empty public construct
                 tSpellEffectInfoPageInfo.text = selectedSpellPageNumber
                 updateDiceRoll(v, selectedSpellDice)
             }
+        } else if (gameplayModifier != null) {
+            val damageOptions = mutableListOf<String>()
+            if (mDamagePreferences != null && mDamagePreferences!!.count() > 0) {
+                if (mDamagePreferences!!.contains(DAMAGE_INT_LOW)) {
+                    damageOptions.add(DAMAGE_STRING_LOW)
+                }
+                if (mDamagePreferences!!.contains(DAMAGE_INT_MED)) {
+                    damageOptions.add(DAMAGE_STRING_MED)
+                }
+                if (mDamagePreferences!!.contains(DAMAGE_INT_HIGH)) {
+                    damageOptions.add(DAMAGE_STRING_HIGH)
+                }
+            } else {
+                damageOptions.add(DAMAGE_STRING_LOW)
+                damageOptions.add(DAMAGE_STRING_MED)
+                damageOptions.add(DAMAGE_STRING_HIGH)
+            }
+            val selectedDamageLevel = damageOptions.random()
+
+            var selectedModifierWithSeverity = ""
+            var selectedModifierPageInfo = ""
+            var selectedModifierName = ""
+
+            when (mSystem) {
+                RPG_SYSTEM_D20 -> {
+                    val safeSelected = gameplayModifier!!.mDND5EDescriptions!![selectedDamageLevel]
+                    val safeMed = gameplayModifier!!.mDND5EDescriptions!![DAMAGE_STRING_MED]
+                    selectedModifierWithSeverity = when {
+                        !safeSelected.isNullOrBlank() -> safeSelected
+                        !safeMed.isNullOrBlank() -> safeMed
+                        else -> "ERROR with DND5E/Severity"
+                    }
+                    selectedModifierPageInfo = gameplayModifier!!.mDND5EPageInfo ?: "ERROR with DND5E/Page Number Info"
+                    selectedModifierName = gameplayModifier!!.mDND5EName ?: "ERROR with DND5E/Name"
+                }
+                RPG_SYSTEM_SAVAGEWORLDS -> {
+                    val safeSelected = gameplayModifier?.mSWADEDescriptions!![selectedDamageLevel]
+                    val safeMed = gameplayModifier!!.mSWADEDescriptions!![DAMAGE_STRING_MED]
+                    selectedModifierWithSeverity = when {
+                        !safeSelected.isNullOrBlank() -> safeSelected
+                        !safeMed.isNullOrBlank() -> safeMed
+                        else -> "ERROR with SWADE/Severity"
+                    }
+                    selectedModifierPageInfo = gameplayModifier!!.mSWADEPageInfo ?: "ERROR with SWADE/Page Number Info"
+                    selectedModifierName = gameplayModifier!!.mSWADEName ?: "ERROR with SWADE/Name"
+                }
+                else -> {
+                    val safeSelected = gameplayModifier!!.mGenericDescriptions!![selectedDamageLevel]
+                    val safeMed = gameplayModifier!!.mGenericDescriptions!![DAMAGE_STRING_MED]
+                    selectedModifierWithSeverity = when {
+                        !safeSelected.isNullOrBlank() -> safeSelected
+                        !safeMed.isNullOrBlank() -> safeMed
+                        else -> "ERROR with Generic/Severity"
+                    }
+                    selectedModifierName = gameplayModifier!!.mGenericName ?: "ERROR with Generic/Name"
+                }
+            }
+            tSpellEffectInfoTitle.text = selectedModifierName
+            tSpellEffectInfoDescription.text = selectedModifierWithSeverity
+            tSpellEffectInfoPageInfo.text = selectedModifierPageInfo
+            updateDiceRoll(v, null)
         } else {
             mFloatingActionButton?.hide()
         }
+        mNetLibramLabel.visibility = when {
+            spellEffect?.mIsNetLibram == true -> VISIBLE
+            else -> GONE
+        }
 
-
+        Log.d(TAG, "init")
+        initYouTubeView(v)
     }
 
-    private fun updateDiceRoll(v: View?, selectedSpellDice: String?){
+    private fun initYouTubeView(v: View) {
+        val song = mFullCard?.getSong()
+        val vYouTubeVideoView: YouTubePlayerView = v.findViewById((R.id.vYouTubeVideoView))
+        val mYoutubeVideoContainer: FrameLayout = v.findViewById((R.id.mYoutubeVideoContainer))
+        Log.d(TAG, "initYouTubeView - song = $song")
+
+        if (song != null) {
+            val videoId = song?.mUrl ?: ""
+            val startSeconds = song?.mStartAt ?: 0
+            val startSecondsFloat = startSeconds.toFloat()
+            if (mYouTubePlayerView == null) {
+                mYouTubePlayerView = vYouTubeVideoView
+
+                lifecycle.addObserver(vYouTubeVideoView)
+
+                val uiController = mYouTubePlayerView?.getPlayerUiController()
+                uiController?.showFullscreenButton(false)
+
+                mYouTubePlayerView?.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
+                    override fun onReady(youTubePlayer: YouTubePlayer) {
+                        if (!videoId.isNullOrBlank()) {
+                            youTubePlayer.loadVideo(videoId, startSecondsFloat)
+                            youTubePlayer.pause()
+                        }
+                        mYouTubePlayer = youTubePlayer
+                    }
+                })
+            } else {
+                mYouTubePlayer?.loadVideo(videoId, startSecondsFloat)
+                mYouTubePlayer?.pause()
+            }
+            mYoutubeVideoContainer.visibility = VISIBLE
+        } else {
+            mYoutubeVideoContainer.visibility = GONE
+        }
+    }
+
+    private fun updateDiceRoll(v: View?, selectedSpellDice: String?) {
         if (v != null) {
             val tSpellEffectInfoRollMultiplierX: TextView = v.findViewById(R.id.tSpellEffectInfoRollMultiplierX)
             val tSpellEffectInfoRollMultiplierNumber: TextView = v.findViewById(R.id.tSpellEffectInfoRollMultiplierNumber)
@@ -206,13 +348,27 @@ class MainCardFragment(private val c: Context)// Required empty public construct
                             val img = diceRollImages[i]
                             img.text = random.toString()
                             img.background = when (typeOfDie) {
-                                4 -> {resources.getDrawable(R.drawable.dice_silhouette_d4)}
-                                6 -> {resources.getDrawable(R.drawable.dice_silhouette_d6)}
-                                8 -> {resources.getDrawable(R.drawable.dice_silhouette_d8)}
-                                10 -> {resources.getDrawable(R.drawable.dice_silhouette_d10)}
-                                12 -> {resources.getDrawable(R.drawable.dice_silhouette_d12)}
-                                20 -> {resources.getDrawable(R.drawable.dice_silhouette_d20)}
-                                else -> {resources.getDrawable(R.drawable.dice_silhouette_d6)}
+                                4 -> {
+                                    resources.getDrawable(R.drawable.dice_silhouette_d4)
+                                }
+                                6 -> {
+                                    resources.getDrawable(R.drawable.dice_silhouette_d6)
+                                }
+                                8 -> {
+                                    resources.getDrawable(R.drawable.dice_silhouette_d8)
+                                }
+                                10 -> {
+                                    resources.getDrawable(R.drawable.dice_silhouette_d10)
+                                }
+                                12 -> {
+                                    resources.getDrawable(R.drawable.dice_silhouette_d12)
+                                }
+                                20 -> {
+                                    resources.getDrawable(R.drawable.dice_silhouette_d20)
+                                }
+                                else -> {
+                                    resources.getDrawable(R.drawable.dice_silhouette_d6)
+                                }
                             }
                         }
                     }
@@ -317,6 +473,11 @@ class MainCardFragment(private val c: Context)// Required empty public construct
     override fun onDetach() {
         super.onDetach()
         mListener = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mYouTubePlayerView?.release()
     }
 
     fun setCallback(callback: MainActivity) {

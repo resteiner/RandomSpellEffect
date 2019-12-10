@@ -3,12 +3,11 @@ package com.ryansteiner.randomspelleffect.utils
 import android.content.Context
 import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteQueryBuilder
 import android.util.Log
 import com.ryansteiner.randomspelleffect.data.*
 import com.ryansteiner.randomspelleffect.data.models.SpellEffect
-import android.R.id
-
+import com.ryansteiner.randomspelleffect.data.models.GameplayModifier
+import com.ryansteiner.randomspelleffect.data.models.Spell
 
 
 class MyDatabaseUtils(context: Context) {
@@ -116,5 +115,136 @@ class MyDatabaseUtils(context: Context) {
             }
         }
         return list
+    }
+
+    fun getRandomSpell(): Spell? {
+        //TODO need to find out why mDatabase is null here...
+        val db = when {
+            (mDatabase == null) -> {
+                DatabaseHelper(mContext).readableDatabase
+            }
+            else -> mDatabase
+        }
+        val totalCount = DatabaseUtils.queryNumEntries(db, DB_SPELLS_TABLE_NAME)
+        val randomSelection = (1..totalCount).random()
+        val randomizedId = randomSelection.toString()
+        return getSpellById(randomizedId)
+    }
+
+    fun getSpellById(id: String): Spell? {
+        val spell: Spell = Spell()
+
+        //TODO need to find out why mDatabase is null here...
+        val db = when {
+            (mDatabase == null) -> {
+                DatabaseHelper(mContext).readableDatabase
+            }
+            else -> mDatabase
+        }
+        if (db != null) {
+            val selectQuery = "SELECT * FROM $DB_SPELLS_TABLE_NAME WHERE $TABLE_COL_ID = ?"
+
+            db?.rawQuery(selectQuery, arrayOf(id)).use {
+                // .use requires API 16
+                if (it!!.moveToFirst()) {
+                    spell.mId = it.getInt(it.getColumnIndex(TABLE_COL_ID))
+                    spell.mTitle = it.getString(it.getColumnIndex(TABLE_COL_NAME))
+                    spell.mNameWithAAn = it.getString(it.getColumnIndex(TABLE_COL_NAME_WITH_A_AN))
+                    spell.mDescription = it.getString(it.getColumnIndex(TABLE_COL_GENERIC_DESCRIPTION))
+                    val dnd5eDescLow = it.getString(it.getColumnIndex(TABLE_COL_DND5E_DESC_LOW))
+                    val dnd5eDescMed = it.getString(it.getColumnIndex(TABLE_COL_DND5E_DESC_MEDIUM))
+                    val dnd5eDescHigh = it.getString(it.getColumnIndex(TABLE_COL_DND5E_DESC_HIGH))
+                    val mut5eDescsList: MutableMap<String, String> = mutableMapOf()
+                    mut5eDescsList[DAMAGE_STRING_LOW] = dnd5eDescLow
+                    mut5eDescsList[DAMAGE_STRING_MED] = dnd5eDescMed
+                    mut5eDescsList[DAMAGE_STRING_HIGH] = dnd5eDescHigh
+                    spell.mDND5EDescriptions = mut5eDescsList
+                    val swadeDescLow = it.getString(it.getColumnIndex(TABLE_COL_SWADE_DESC_LOW))
+                    val swadeDescMed = it.getString(it.getColumnIndex(TABLE_COL_SWADE_DESC_MEDIUM))
+                    val swadeDescHigh = it.getString(it.getColumnIndex(TABLE_COL_SWADE_DESC_HIGH))
+                    val mutSwadeDescsList: MutableMap<String, String> = mutableMapOf()
+                    mutSwadeDescsList[DAMAGE_STRING_LOW] = swadeDescLow
+                    mutSwadeDescsList[DAMAGE_STRING_MED] = swadeDescMed
+                    mutSwadeDescsList[DAMAGE_STRING_HIGH] = swadeDescHigh
+                    spell.mSWADEDescriptions = mutSwadeDescsList
+                    val mut5eDiceList: MutableMap<String, String> = mutableMapOf()
+                    val dnd5eDiceLow = it.getString(it.getColumnIndex(TABLE_COL_DND5E_DICE_LOW))
+                    val dnd5eDiceMed = it.getString(it.getColumnIndex(TABLE_COL_DND5E_DICE_MEDIUM))
+                    val dnd5eDiceHigh = it.getString(it.getColumnIndex(TABLE_COL_DND5E_DICE_HIGH))
+                    mut5eDiceList[DAMAGE_STRING_LOW] = dnd5eDiceLow
+                    mut5eDiceList[DAMAGE_STRING_MED] = dnd5eDiceMed
+                    mut5eDiceList[DAMAGE_STRING_HIGH] = dnd5eDiceHigh
+                    spell.mDND5EDice = mut5eDiceList
+                    val mutSwadeDiceList: MutableMap<String, String> = mutableMapOf()
+                    val swadeDiceLow = it.getString(it.getColumnIndex(TABLE_COL_SWADE_DICE_LOW))
+                    val swadeDiceMed = it.getString(it.getColumnIndex(TABLE_COL_SWADE_DICE_MEDIUM))
+                    val swadeDiceHigh = it.getString(it.getColumnIndex(TABLE_COL_SWADE_DICE_HIGH))
+                    mutSwadeDiceList[DAMAGE_STRING_LOW] = swadeDiceLow
+                    mutSwadeDiceList[DAMAGE_STRING_MED] = swadeDiceMed
+                    mutSwadeDiceList[DAMAGE_STRING_HIGH] = swadeDiceHigh
+                    spell.mSWADEDice = mut5eDiceList
+                    spell.mDND5EPageNumber = it.getString(it.getColumnIndex(TABLE_COL_DND5E_PAGE))
+                    spell.mSWADEPageNumber = it.getString(it.getColumnIndex(TABLE_COL_SWADE_PAGE))
+                }
+            }
+            db?.close()
+        }
+
+        return when {
+            spell.mTitle != null -> {spell}
+            else -> {null}
+        }
+    }
+
+    fun getGameplayModifierByName(name: String): GameplayModifier? {
+        var modifier: GameplayModifier? = null
+
+        //TODO need to find out why mDatabase is null here...
+        val db = when {
+            (mDatabase == null) -> {
+                DatabaseHelper(mContext).readableDatabase
+            }
+            else -> mDatabase
+        }
+        if (db != null) {
+            val selectQuery = "SELECT * FROM $DB_GAMEPLAY_MODIFIERS_TABLE_NAME WHERE $TABLE_COL_NAME = ?"
+
+            db?.rawQuery(selectQuery, arrayOf(name)).use {
+                // .use requires API 16
+                if (it!!.moveToFirst()) {
+                    modifier = GameplayModifier()
+                    modifier?.mId = it.getInt(it.getColumnIndex(TABLE_COL_ID))
+                    modifier?.mName = it.getString(it.getColumnIndex(TABLE_COL_NAME))
+                    modifier?.mGenericName = it.getString(it.getColumnIndex(TABLE_COL_GENERIC_NAME))
+                    modifier?.mDND5EName = it.getString(it.getColumnIndex(TABLE_COL_DND5E_NAME))
+                    modifier?.mSWADEName = it.getString(it.getColumnIndex(TABLE_COL_SWADE_NAME))
+                    val genericDescriptionLow = it.getString(it.getColumnIndex(TABLE_COL_GENERIC_DESCRIPTION_LOW))
+                    val genericDescriptionMed = it.getString(it.getColumnIndex(TABLE_COL_GENERIC_DESCRIPTION_MED))
+                    val genericDescriptionHigh = it.getString(it.getColumnIndex(TABLE_COL_GENERIC_DESCRIPTION_HIGH))
+                    val genericPairLow = Pair<String, String?>(DAMAGE_STRING_LOW, genericDescriptionLow)
+                    val genericPairMed = Pair<String, String?>(DAMAGE_STRING_MED, genericDescriptionMed)
+                    val genericPairHigh = Pair<String, String?>(DAMAGE_STRING_HIGH, genericDescriptionHigh)
+                    modifier?.mGenericDescriptions = mapOf(genericPairLow, genericPairMed, genericPairHigh)
+                    val dnd5eDescriptionLow = it.getString(it.getColumnIndex(TABLE_COL_DND5E_DESC_LOW))
+                    val dnd5eDescriptionMed = it.getString(it.getColumnIndex(TABLE_COL_DND5E_DESC_MEDIUM))
+                    val dnd5eDescriptionHigh = it.getString(it.getColumnIndex(TABLE_COL_DND5E_DESC_HIGH))
+                    val dnd5ePairLow = Pair<String, String?>(DAMAGE_STRING_LOW, dnd5eDescriptionLow)
+                    val dnd5ePairMed = Pair<String, String?>(DAMAGE_STRING_MED, dnd5eDescriptionMed)
+                    val dnd5ePairHigh = Pair<String, String?>(DAMAGE_STRING_HIGH, dnd5eDescriptionHigh)
+                    modifier?.mDND5EDescriptions = mapOf(dnd5ePairLow, dnd5ePairMed, dnd5ePairHigh)
+                    val swadeDescriptionLow = it.getString(it.getColumnIndex(TABLE_COL_SWADE_DESC_LOW))
+                    val swadeDescriptionMed = it.getString(it.getColumnIndex(TABLE_COL_SWADE_DESC_MEDIUM))
+                    val swadeDescriptionHigh = it.getString(it.getColumnIndex(TABLE_COL_SWADE_DESC_HIGH))
+                    val swadePairLow = Pair<String, String?>(DAMAGE_STRING_LOW, swadeDescriptionLow)
+                    val swadePairMed = Pair<String, String?>(DAMAGE_STRING_MED, swadeDescriptionMed)
+                    val swadePairHigh = Pair<String, String?>(DAMAGE_STRING_HIGH, swadeDescriptionHigh)
+                    modifier?.mSWADEDescriptions = mapOf(swadePairLow, swadePairMed, swadePairHigh)
+                    modifier?.mDND5EPageInfo = it.getString(it.getColumnIndex(TABLE_COL_DND5E_PAGE))
+                    modifier?.mSWADEPageInfo = it.getString(it.getColumnIndex(TABLE_COL_SWADE_PAGE))
+                }
+            }
+        }
+
+        return modifier
     }
 }

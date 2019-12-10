@@ -2,6 +2,7 @@ package com.ryansteiner.randomspelleffect.contracts
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import com.ryansteiner.randomspelleffect.data.models.ParseSpellEffectStringResult
 import com.ryansteiner.randomspelleffect.data.models.Song
 import com.ryansteiner.randomspelleffect.data.models.Spell
 import com.ryansteiner.randomspelleffect.data.models.SpellEffect
@@ -29,6 +30,7 @@ interface MainContract {
         fun onClickSettings(showSettings: Boolean)
         fun songVideoInit(showVideo: Boolean, song: Song?)
         fun onGetSpellEffects(spellEffects: List<SpellEffect>?)
+        fun toggleNetLibramInfoOverlay()
     }
 
     interface Presenter : BaseContract.Presenter {
@@ -36,7 +38,7 @@ interface MainContract {
         fun generateSingleSpellEffect()
         fun loadDatabase(context: Context)
         fun getPreferences()
-        fun parseSpellStringForVariables(string: String?, system: Int): Pair<String?, Spell?>
+        fun parseSpellStringForVariables(string: String?, system: Int): ParseSpellEffectStringResult?
         fun updateDamagePreferences(damagePrefs: List<Int>?)
         fun updateSpellList(spellsList: SpellsList)
         fun clickSettings(showSettings: Boolean)

@@ -29,4 +29,5 @@
     <string name="net_libram_used_with_permission">It is used with permission of the author.</string>
     <string name="net_libram_for_information">For more information, please visit</string>
     <string name="net_libram_url">https://www.facebook.com/The-Net-Libram-of-Random-Magical-Effects-106043207533296</string>
+    <string name="reload_video">Reload video</string>
 </resources>

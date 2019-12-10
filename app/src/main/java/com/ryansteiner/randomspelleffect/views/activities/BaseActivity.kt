@@ -11,7 +11,7 @@ import com.ryansteiner.randomspelleffect.presenters.BasePresenter
  * Created by Ryan Steiner on 2019/11/06.
  */
 
-abstract class BaseActivity : FragmentActivity(), BaseContract.View {
+abstract class BaseActivity : AppCompatActivity(), BaseContract.View {
 
     private val TAG = "BaseActivity"
 

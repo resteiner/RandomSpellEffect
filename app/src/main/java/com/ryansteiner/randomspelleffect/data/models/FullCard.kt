@@ -1,7 +1,5 @@
 package com.ryansteiner.randomspelleffect.data.models
 
-import android.os.Parcel
-import android.os.Parcelable
 import java.io.Serializable
 
 
@@ -14,6 +12,8 @@ class FullCard : Serializable {
     private var mSpellEffect: SpellEffect? = null
     private var mMainText: String? = null
     private var mSpell: Spell? = null
+    private var mSong: Song? = null
+    private var mGameplayModifier: GameplayModifier? = null
 
 
     fun FullCard(spellEffect: SpellEffect, mainText: String, spell: Spell) {
@@ -46,6 +46,26 @@ class FullCard : Serializable {
 
     fun getSpell(): Spell? {
         return mSpell
+    }
+
+    fun setSong(song: Song?) {
+        if (song != null) {
+            this.mSong = song
+        }
+    }
+
+    fun getSong(): Song? {
+        return mSong
+    }
+
+    fun setGameplayModifier(mod: GameplayModifier?) {
+        if (mod != null) {
+            this.mGameplayModifier = mod
+        }
+    }
+
+    fun getGameplayModifier(): GameplayModifier? {
+        return mGameplayModifier
     }
 
 
