@@ -1,16 +1,20 @@
 package com.ryansteiner.randomspelleffect.views.activities
 
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.View
+import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
 import com.ryansteiner.randomspelleffect.R
 import com.ryansteiner.randomspelleffect.contracts.StartupContract
 import com.ryansteiner.randomspelleffect.presenters.StartupPresenter
 import com.ryansteiner.randomspelleffect.utils.PreferencesManager
 import kotlinx.android.synthetic.main.activity_startup.*
+import kotlinx.android.synthetic.main.include_full_loading_screen.*
 
 /**
  * Created by Ryan Steiner on 2019/11/06.
@@ -29,11 +33,10 @@ class StartupActivity : BaseActivity(), StartupContract.View/*, StartupListAdapt
         mPresenter = StartupPresenter(this)
         mPresenter?.bindView(this)
 
+        glideAnimatedLoadingIcon(this)
+        mPresenter?.loadingViewToggle(true)
 
 
-
-
-        Log.d(TAG, "onCreate")
         initializeView()
         setupOnClickListeners()
 
@@ -41,7 +44,6 @@ class StartupActivity : BaseActivity(), StartupContract.View/*, StartupListAdapt
 
     private fun initializeView(){
 
-        Log.d(TAG, "initializeView")
         Log.d(TAG, "initializeView - mPresenter = $mPresenter")
         mStartupText?.text = "Loading"
 
@@ -82,12 +84,16 @@ class StartupActivity : BaseActivity(), StartupContract.View/*, StartupListAdapt
 
     override fun onLoaded() {
 
-        Log.d(TAG, "onLoaded")
 
         val intent = Intent(this, MainActivity::class.java)
         mStartupText?.text = "Loaded"
         //Handler().postDelayed({}, 100)
-        startActivity(intent)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.exitTransition = null
+        }
+        Handler().postDelayed({
+            startActivity(intent)
+        }, 500)
 
     }
 

@@ -1,7 +1,6 @@
 package com.ryansteiner.randomspelleffect.presenters
 
 import android.content.Context
-import android.util.Log
 import com.ryansteiner.randomspelleffect.contracts.BaseContract
 import java.lang.ref.WeakReference
 
@@ -30,9 +29,9 @@ open class BasePresenter<V : BaseContract.View>(context: Context) : BaseContract
         } else null
     }
 
-    override fun progressViewToggle(visible: Boolean) {
+    override fun loadingViewToggle(visible: Boolean) {
         val view: V? = getView()
-        view?.onProgressViewToggle(false)
+        view?.onLoadingViewToggle(visible)
     }
 
 }

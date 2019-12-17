@@ -23,7 +23,7 @@ class MyDatabaseUtils(context: Context) {
         return database
     }
 
-    fun updateDatabaseReference(db: SQLiteDatabase?) {
+    private fun updateDatabaseReference(db: SQLiteDatabase?) {
         if (db != null) {
             mDatabase = db
         }
@@ -34,23 +34,10 @@ class MyDatabaseUtils(context: Context) {
         val totalCount = DatabaseUtils.queryNumEntries(mDatabase, DB_SPELLEFFECT_TABLE_NAME)
         val randomSelection = (1..totalCount).random()
         val randomizedId = randomSelection.toString()
-
-
-
-        Log.d(
-            TAG,
-            "generateSingleSpellEffect - DB_SPELLEFFECT_TABLE_NAME = $DB_SPELLEFFECT_TABLE_NAME"
-        )
-        Log.d(TAG, "generateSingleSpellEffect - totalCount = $totalCount")
-        Log.d(TAG, "generateSingleSpellEffect - randomSelection = $randomSelection")
-        Log.d(TAG, "generateSingleSpellEffect - randomizedId = $randomizedId")
-
-        val spellEffect = getSpellEffectById(randomizedId)
-
-        return spellEffect
+        return getSpellEffectById(randomizedId)
     }
 
-    fun getSpellEffectById(id: String): SpellEffect? {
+    private fun getSpellEffectById(id: String): SpellEffect? {
         //TODO need to find out why mDatabase is null here...
         val db = when {
             (mDatabase == null) -> {
@@ -79,13 +66,14 @@ class MyDatabaseUtils(context: Context) {
                         (isNetLibramInt >= 1) -> true
                         else -> false
                     }
-                    db?.close()
+                    db.close()
                     return result
                 }
             }
-            db?.close()
+            db.close()
             return null
         } else {
+            db?.close()
             return null
         }
     }
@@ -98,8 +86,6 @@ class MyDatabaseUtils(context: Context) {
             }
             else -> mDatabase
         }
-        Log.d(TAG, "getSpellEffectsByIds - mDatabase = $mDatabase")
-        Log.d(TAG, "getSpellEffectsByIds - db = $db")
 
         //TODO There should be a way to get several results from one query, but I keep getting: Cannot bind argument at index 1 because the index is out of range.  The statement has 0 parameters.
         var list = mutableListOf<SpellEffect>()
@@ -114,6 +100,7 @@ class MyDatabaseUtils(context: Context) {
                 }
             }
         }
+        db?.close()
         return list
     }
 
@@ -128,11 +115,12 @@ class MyDatabaseUtils(context: Context) {
         val totalCount = DatabaseUtils.queryNumEntries(db, DB_SPELLS_TABLE_NAME)
         val randomSelection = (1..totalCount).random()
         val randomizedId = randomSelection.toString()
+        db?.close()
         return getSpellById(randomizedId)
     }
 
-    fun getSpellById(id: String): Spell? {
-        val spell: Spell = Spell()
+    private fun getSpellById(id: String): Spell? {
+        val spell = Spell()
 
         //TODO need to find out why mDatabase is null here...
         val db = when {
@@ -187,9 +175,8 @@ class MyDatabaseUtils(context: Context) {
                     spell.mSWADEPageNumber = it.getString(it.getColumnIndex(TABLE_COL_SWADE_PAGE))
                 }
             }
-            db?.close()
         }
-
+        db?.close()
         return when {
             spell.mTitle != null -> {spell}
             else -> {null}
@@ -244,7 +231,7 @@ class MyDatabaseUtils(context: Context) {
                 }
             }
         }
-
+        db?.close()
         return modifier
     }
 }

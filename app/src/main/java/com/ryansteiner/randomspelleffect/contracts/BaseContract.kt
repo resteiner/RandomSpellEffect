@@ -1,5 +1,7 @@
 package com.ryansteiner.randomspelleffect.contracts
 
+import android.content.Context
+
 /**
  * Created by Ryan Steiner on 2019/11/06.
  */
@@ -9,10 +11,11 @@ interface BaseContract {
     interface View {
         fun onShowToastMessage(message: String?)
         fun onShowToastMessage(messageResId: Int)
-        fun onProgressViewToggle(visible: Boolean)
+        fun onLoadingViewToggle(visible: Boolean)
+        fun glideAnimatedLoadingIcon(context: Context)
     }
 
     interface Presenter {
-        fun progressViewToggle(visible: Boolean)
+        fun loadingViewToggle(visible: Boolean)
     }
 }

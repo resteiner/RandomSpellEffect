@@ -1,13 +1,12 @@
 package com.ryansteiner.randomspelleffect.contracts
 
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
 import com.ryansteiner.randomspelleffect.data.models.ParseSpellEffectStringResult
 import com.ryansteiner.randomspelleffect.data.models.Song
-import com.ryansteiner.randomspelleffect.data.models.Spell
 import com.ryansteiner.randomspelleffect.data.models.SpellEffect
 import com.ryansteiner.randomspelleffect.utils.PreferencesManager
 import com.ryansteiner.randomspelleffect.utils.SpellsList
+import com.ryansteiner.randomspelleffect.views.activities.MainActivity
 
 
 /**

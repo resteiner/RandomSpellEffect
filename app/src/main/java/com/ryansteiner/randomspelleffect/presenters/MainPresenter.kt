@@ -10,9 +10,16 @@ import com.ryansteiner.randomspelleffect.contracts.MainContract
 import com.ryansteiner.randomspelleffect.data.*
 import com.ryansteiner.randomspelleffect.data.models.*
 import com.ryansteiner.randomspelleffect.utils.*
-
-
-
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
+import java.util.logging.Handler
+import android.R.attr.data
+import android.app.Activity
+import com.ryansteiner.randomspelleffect.data.models.Song
+import com.ryansteiner.randomspelleffect.data.models.Spell
+import com.ryansteiner.randomspelleffect.views.activities.MainActivity
 
 
 /**
@@ -29,6 +36,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     private var mSpellsList: SpellsList? = null
 
     override fun initializeView() {
+        Log.d(TAG, "initializeView  [${mPreferencesManager?.getCurrentLifeTime()}]")
         val view: MainContract.View? = getView()
         getPreferences()
 
@@ -37,6 +45,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     }
 
     override fun loadDatabase(context: Context) {
+        Log.d(TAG, "loadDatabase  [${mPreferencesManager?.getCurrentLifeTime()}]")
         val view: MainContract.View? = getView()
         val database = MyDatabaseUtils(mContext).loadDatabase()
         mDatabase = database
@@ -44,6 +53,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     }
 
     override fun generateSingleSpellEffect() {
+        Log.d(TAG, "generateSingleSpellEffect  [${mPreferencesManager?.getCurrentLifeTime()}]")
         val view: MainContract.View? = getView()
 
         val spellEffect = MyDatabaseUtils(mContext).getRandomSpellEffect()
@@ -58,26 +68,46 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     }
 
     override fun getSpellEffects() {
+        Log.d(TAG, "getSpellEffects  [${mPreferencesManager?.getCurrentLifeTime()}]")
+
         val view: MainContract.View? = getView()
-        //val testSpellEffectIds = listOf<String>("1", "2", "3", "4", "15", "22", "37", "44")
         val count = DatabaseUtils.queryNumEntries(mDatabase, DB_SPELLEFFECT_TABLE_NAME).toInt()
+        val previousCards = mPreferencesManager?.getPreviousCardsList() ?: listOf()
         val mutList: MutableList<String> = mutableListOf()
-        mutList.add("13")
-        mutList.add("36")
-        mutList.add("10")
-        while (mutList.count() < 40){
+        /*mutList.add("5") //0
+        mutList.add("16") //1
+        mutList.add("21") //2
+        mutList.add("1") //3
+        mutList.add("13") //4
+        mutList.add("49") //5
+        mutList.add("21") //6
+        mutList.add("4") //7
+        mutList.add("6") //8*/
+
+        while (mutList.count() < NUMBER_OF_CARDS_TO_LOAD){
+            Log.d(TAG, "getSpellEffects - while loop")
             val random = (1..count).random().toString()
-            if (!mutList.contains(random)) {
+            if (!mutList.contains(random) && !previousCards.contains(random)) {
                 mutList.add(random)
             }
         }
+        Log.d(TAG, "getSpellEffects - previousCards = $previousCards")
+        Log.d(TAG, "getSpellEffects - mutList = $mutList")
 
         val listOfSpellEffects = MyDatabaseUtils(mContext).getSpellEffectsByIds(mutList)
-        Log.d(TAG, "onGetSpellEffects - listOfSpellEffects = $listOfSpellEffects")
         view?.onGetSpellEffects(listOfSpellEffects)
+
+
+    }
+
+
+    private fun getSpellEffectsCompleted(list: List<SpellEffect>?){
+        val view: MainContract.View? = getView()
+
     }
 
     private fun getSingleSpellEffect(id: String): SpellEffect? {
+        Log.d(TAG, "getSingleSpellEffect  [${mPreferencesManager?.getCurrentLifeTime()}]")
         val db = mDatabase
         val selectQuery = "SELECT  * FROM $DB_SPELLEFFECT_TABLE_NAME WHERE $TABLE_COL_ID = ?"
 
@@ -104,6 +134,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     }
 
     override fun getPreferences() {
+        Log.d(TAG, "getPreferences  [${mPreferencesManager?.getCurrentLifeTime()}]")
         val view: MainContract.View? = getView()
 
         if (mPreferencesManager == null) {
@@ -123,6 +154,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     }
 
     override fun parseSpellStringForVariables(string: String?, system: Int): ParseSpellEffectStringResult? {
+        Log.d(TAG, "parseSpellStringForVariables  [${mPreferencesManager?.getCurrentLifeTime()}]")
         mSystem = system
         var finalString: String?
         var workingString = string
@@ -168,6 +200,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     }
 
     private fun parseTargetVariable(string: String?): String? {
+        Log.d(TAG, "parseTargetVariable  [${mPreferencesManager?.getCurrentLifeTime()}]")
         //Change any TARGET text
 
         val targets = mPreferencesManager?.getTargets()
@@ -223,6 +256,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     }
 
     private fun parseColorVariable(string: String?): String? {
+        Log.d(TAG, "parseColorVariable  [${mPreferencesManager?.getCurrentLifeTime()}]")
         val view: MainContract.View? = getView()
         var workingString = string
 
@@ -276,6 +310,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         return workingString
     }
     private fun parseSingleInanimateObjectVariable(string: String?): String? {
+        Log.d(TAG, "parseSingleInanimateObjectVariable  [${mPreferencesManager?.getCurrentLifeTime()}]")
         var workingString = string
 
         if (workingString != null && workingString.contains("SINGLEIO")) {
@@ -289,6 +324,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         return workingString
     }
     private fun parsePluralInanimateObjectsVariable(string: String?): String? {
+        Log.d(TAG, "parsePluralInanimateObjectsVariable  [${mPreferencesManager?.getCurrentLifeTime()}]")
         var workingString = string
 
         if (workingString != null && workingString.contains("PLURALIOS")) {
@@ -302,6 +338,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     }
 
     private fun parseDifficultTerrainVariable(string: String?): ParseSpellEffectStringResult {
+        Log.d(TAG, "parseDifficultTerrainVariable  [${mPreferencesManager?.getCurrentLifeTime()}]")
         var result = ParseSpellEffectStringResult()
         var gameplayModifier: GameplayModifier? = null
         var workingString = string
@@ -331,6 +368,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     }
 
     private fun parseHiccupsVariable(string: String?): String? {
+        Log.d(TAG, "parseHiccupsVariable  [${mPreferencesManager?.getCurrentLifeTime()}]")
         var workingString = string
 
         if (workingString != null && workingString.contains("HICCUPS")) {
@@ -362,6 +400,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     }
 
     private fun parseCreatureVariable(string: String?): String? {
+        Log.d(TAG, "parseCreatureVariable  [${mPreferencesManager?.getCurrentLifeTime()}]")
         var workingString = string
 
         val db = mDatabase
@@ -385,6 +424,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     }
 
     private fun parseSpellVariable(string: String?): Pair<String?, Spell?> {
+        Log.d(TAG, "parseSpellVariable  [${mPreferencesManager?.getCurrentLifeTime()}]")
         val view: MainContract.View? = getView()
         var workingString = string
         var visibility = false
@@ -473,6 +513,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
 
 
     private fun parseSongVariable(string: String?): Pair<String?, Song?> {
+        Log.d(TAG, "parseSongVariable  [${mPreferencesManager?.getCurrentLifeTime()}]")
         val view: MainContract.View? = getView()
 
         var workingString = string
@@ -510,10 +551,12 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     }
 
     override fun updateDamagePreferences(damagePrefs: List<Int>?) {
+        Log.d(TAG, "updateDamagePreferences  [${mPreferencesManager?.getCurrentLifeTime()}]")
         mDamagePreferences = damagePrefs
     }
 
     override fun updateSpellList(spellsList: SpellsList) {
+        Log.d(TAG, "updateSpellList  [${mPreferencesManager?.getCurrentLifeTime()}]")
         mSpellsList = spellsList
     }
 
@@ -523,6 +566,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     }
 
     override fun retrieveSpellEffectById(id: Int) {
+        Log.d(TAG, "retrieveSpellEffectById  [${mPreferencesManager?.getCurrentLifeTime()}]")
         val view: MainContract.View? = getView()
         
         if (id > 0) {

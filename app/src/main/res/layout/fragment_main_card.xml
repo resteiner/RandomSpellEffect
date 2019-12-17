@@ -16,15 +16,25 @@
         android:id="@+id/mCardContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@drawable/card_image_blank_background"
-        app:layout_constraintBottom_toTopOf="@id/iBorderBottomEdge"
-        app:layout_constraintLeft_toRightOf="@id/iBorderLeftEdge"
-        app:layout_constraintRight_toLeftOf="@id/iBorderRightEdge"
-        app:layout_constraintTop_toBottomOf="@id/iBorderTopEdge">
+        android:background="@drawable/tarot_card_back_1"
+        android:paddingBottom="22dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iCardImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:alpha="0.1"
+            android:src="@drawable/tarot_card_image_001" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_margin="20dp"
             android:orientation="vertical">
 
             <TextView
@@ -134,75 +144,9 @@
                 android:textStyle="italic" />
         </LinearLayout>
 
+
     </FrameLayout>
 
-    <ImageView
-        android:id="@+id/iBorderCornerBottomLeft"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:src="@drawable/border_corner_bottom_left" />
-
-    <ImageView
-        android:id="@+id/iBorderBottomEdge"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/border_tile_top_horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/iBorderCornerBottomLeft"
-        app:layout_constraintRight_toLeftOf="@id/iBorderCornerBottomRight" />
-
-    <ImageView
-        android:id="@+id/iBorderCornerBottomRight"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:src="@drawable/border_corner_bottom_right" />
-
-    <ImageView
-        android:id="@+id/iBorderLeftEdge"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:background="@drawable/border_tile_side_vertical"
-        app:layout_constraintBottom_toTopOf="@id/iBorderCornerBottomLeft"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iBorderCornerTopLeft" />
-
-    <ImageView
-        android:id="@+id/iBorderRightEdge"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:background="@drawable/border_tile_side_vertical"
-        app:layout_constraintBottom_toTopOf="@id/iBorderCornerBottomRight"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iBorderCornerTopRight" />
-
-    <ImageView
-        android:id="@+id/iBorderCornerTopLeft"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/border_corner_top_left" />
-
-    <ImageView
-        android:id="@+id/iBorderTopEdge"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/border_tile_top_horizontal"
-        app:layout_constraintLeft_toRightOf="@id/iBorderCornerTopLeft"
-        app:layout_constraintRight_toLeftOf="@id/iBorderCornerTopRight"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/iBorderCornerTopRight"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/border_corner_top_right" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/mFloatingActionButtonInfo"

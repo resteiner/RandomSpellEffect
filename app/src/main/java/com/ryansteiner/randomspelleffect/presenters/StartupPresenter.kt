@@ -24,6 +24,8 @@ class StartupPresenter(context: Context) : BasePresenter<StartupContract.View>(c
 
 
         mPreferencesManager = PreferencesManager(mContext)
+        mPreferencesManager?.setAppLifeTimeStart(System.currentTimeMillis())
+        Log.d(TAG, "load  [${mPreferencesManager?.getCurrentLifeTime()}]")
         var currentRPGSystem = mPreferencesManager?.getSystem()
         when {
 
@@ -43,11 +45,8 @@ class StartupPresenter(context: Context) : BasePresenter<StartupContract.View>(c
             }
             else -> {}
         }
-        Log.d(TAG, "load - currentRPGSystem = $currentRPGSystem")
-        Log.d(TAG, "load - mPreferencesManager?.getSystem() = ${mPreferencesManager?.getSystem()}")
 
         val currentTargetSettings = mPreferencesManager?.getTargets()
-        Log.d(TAG, "load - mPreferencesManager?.getTargets() BEFORE = ${mPreferencesManager?.getTargets()}")
         var setDefaultTargets = false
         if (currentTargetSettings.isNullOrEmpty()) {
             setDefaultTargets = true

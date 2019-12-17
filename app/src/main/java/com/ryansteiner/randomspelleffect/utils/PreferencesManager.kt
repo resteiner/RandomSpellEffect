@@ -10,6 +10,7 @@ class PreferencesManager(context: Context) {
     val TAG = "PreferencesManageredit"
     val PREFS_NAME = "${context.packageName}.prefs"
     var mPreferences: SharedPreferences? = null
+    var mPreviousCardIds: List<String>? = null
 
     init {
         mPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
@@ -190,4 +191,78 @@ class PreferencesManager(context: Context) {
         }
     }
 
+    fun setAppLifeTimeStart(time: Long) {
+        mPreferences?.edit()?.putLong(APP_LIFECYCLE_START_TIME, time)?.apply()
+    }
+
+    fun getCurrentLifeTime(): Long? {
+
+        return when (mPreferences) {
+            null -> null
+
+            else -> {
+                val startTime = mPreferences!!.getLong(APP_LIFECYCLE_START_TIME, -1)
+                val currentTime = System.currentTimeMillis()
+                return currentTime - startTime
+
+            }
+
+        }
+    }
+
+    fun addToPreviousCardsList(cardIds: MutableList<String>) {
+        val mutList = mutableListOf<String>()
+
+        if (mPreviousCardIds.isNullOrEmpty()) {
+            mPreviousCardIds = getPreviousCardsList()
+        }
+
+        if (mPreviousCardIds != null) {
+            if (mPreviousCardIds!!.count() > MAX_NUMBER_OF_CARDS_TO_REMEMBER) {
+                for (i in 0 until mPreviousCardIds!!.count()) {
+                    if (i > 9) {
+                        val card = mPreviousCardIds!![i]
+                        mutList.add(card)
+                    }
+                }
+            } else {
+                mutList.addAll(mPreviousCardIds!!)
+            }
+        }
+
+        mutList.addAll(cardIds)
+        mPreviousCardIds = mutList
+        val workingList = mPreviousCardIds ?: listOf()
+
+        val stringBuilder = StringBuilder()
+            for (i in 0 until workingList.count()) {
+                stringBuilder.append(workingList[i])
+                if (i < workingList.count()) {
+                    stringBuilder.append(",")
+                }
+            }
+
+        val previousCardsString = stringBuilder.toString()
+        mPreferences?.edit()?.putString(PREVIOUSLY_VIEWED_CARDS, previousCardsString)?.apply()
+
+    }
+
+    fun getPreviousCardsList(): List<String>? {
+        return when {
+            mPreferences != null -> {
+                val storedString = mPreferences!!.getString(PREVIOUSLY_VIEWED_CARDS, "")
+                val splitString = storedString.split(",")
+                val mutList = mutableListOf<String>()
+                for (i in 0 until splitString.count()) {
+                    val thisString = splitString[i]
+                    if (!thisString.isNullOrBlank()) {
+                        mutList.add(thisString)
+                    }
+                }
+                val list = mutList.toList()
+                list
+            }
+            else -> null
+        }
+    }
 }
