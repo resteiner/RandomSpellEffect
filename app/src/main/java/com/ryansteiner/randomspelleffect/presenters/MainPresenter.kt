@@ -83,8 +83,11 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         mutList.add("21") //6
         mutList.add("4") //7
         mutList.add("6") //8*/
+        mutList.add("50")
+        mutList.add("51")
+        mutList.add("10")
 
-        while (mutList.count() < NUMBER_OF_CARDS_TO_LOAD){
+        while (mutList.count() < NUMBER_OF_CARDS_TO_LOAD) {
             Log.d(TAG, "getSpellEffects - while loop")
             val random = (1..count).random().toString()
             if (!mutList.contains(random) && !previousCards.contains(random)) {
@@ -101,7 +104,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     }
 
 
-    private fun getSpellEffectsCompleted(list: List<SpellEffect>?){
+    private fun getSpellEffectsCompleted(list: List<SpellEffect>?) {
         val view: MainContract.View? = getView()
 
     }
@@ -111,7 +114,8 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         val db = mDatabase
         val selectQuery = "SELECT  * FROM $DB_SPELLEFFECT_TABLE_NAME WHERE $TABLE_COL_ID = ?"
 
-        db?.rawQuery(selectQuery, arrayOf(id)).use { // .use requires API 16
+        db?.rawQuery(selectQuery, arrayOf(id)).use {
+            // .use requires API 16
             if (it!!.moveToFirst()) {
                 val result = SpellEffect()
                 result.mId = it.getInt(it.getColumnIndex(TABLE_COL_ID))
@@ -176,11 +180,21 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
 
                 val difficultTerrainResult = parseDifficultTerrainVariable(workingString)
                 workingString = difficultTerrainResult?.mFullString
-                result.mGameplayModifier = difficultTerrainResult.mGameplayModifier
+                if (difficultTerrainResult.mGameplayModifier != null) {
+                    result.mGameplayModifier = difficultTerrainResult.mGameplayModifier
+                }
 
                 workingString = parseHiccupsVariable(workingString)
 
                 workingString = parseMaterialVariable(workingString)
+
+
+                val toughnessResult = parseToughnessVariable(workingString)
+                workingString = toughnessResult?.mFullString
+                if (toughnessResult.mGameplayModifier != null) {
+                    result.mGameplayModifier = toughnessResult.mGameplayModifier
+                }
+
 
                 val songPair = parseSongVariable(workingString)
                 workingString = songPair.first
@@ -258,10 +272,11 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     private fun parseColorVariable(string: String?): String? {
         Log.d(TAG, "parseColorVariable  [${mPreferencesManager?.getCurrentLifeTime()}]")
         val view: MainContract.View? = getView()
+        val gameEffectName = GAME_EFFECT_COLOR
         var workingString = string
 
         //Change any COLOR text
-        if (workingString != null && workingString.contains("COLOR")) {
+        if (workingString != null && workingString.contains(gameEffectName)) {
             //val totalNumberOfColors = spellEffect.colors.count()
             //val randomSelection = ((1..totalNumberOfColors).random()) - 1
 
@@ -283,7 +298,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
                     Log.d(TAG, "onGeneratedSingleSpellEffect - COLOR colorId = $colorId")
 
 
-                    workingString = workingString.replace("COLOR", colorString)
+                    workingString = workingString.replace(gameEffectName, colorString)
                     view?.updateColorLayer(colorId, true)
                     view?.updatePatternLayer(null, false)
                 }
@@ -300,7 +315,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
                     Log.d(TAG, "onGeneratedSingleSpellEffect - COLOR patternId = $patternId")
 
 
-                    workingString = workingString.replace("COLOR", patternString)
+                    workingString = workingString.replace(gameEffectName, patternString)
                     view?.updateColorLayer(null, false)
                     view?.updatePatternLayer(patternId, true)
 
@@ -309,43 +324,48 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         }
         return workingString
     }
+
     private fun parseSingleInanimateObjectVariable(string: String?): String? {
         Log.d(TAG, "parseSingleInanimateObjectVariable  [${mPreferencesManager?.getCurrentLifeTime()}]")
         var workingString = string
+        val gameEffectName = GAME_EFFECT_SINGLE_INANIMATE_OBJECT
 
-        if (workingString != null && workingString.contains("SINGLEIO")) {
+        if (workingString != null && workingString.contains(gameEffectName)) {
             Log.d(TAG, "Deal with any SINGLEIO in the text - workingString = $workingString")
 
             val randomObject = GameEffectsList.InanimateObjectsSingular().mAllObjects.random()
 
-            workingString = workingString.replace("SINGLEIO", randomObject)
+            workingString = workingString.replace(gameEffectName, randomObject)
         }
 
         return workingString
     }
+
     private fun parsePluralInanimateObjectsVariable(string: String?): String? {
         Log.d(TAG, "parsePluralInanimateObjectsVariable  [${mPreferencesManager?.getCurrentLifeTime()}]")
         var workingString = string
+        val gameEffectName = GAME_EFFECT_MULTIPLE_INANIMATE_OBJECTS
 
-        if (workingString != null && workingString.contains("PLURALIOS")) {
+        if (workingString != null && workingString.contains(gameEffectName)) {
             Log.d(TAG, "Deal with any PLURALIOS in the text - workingString = $workingString")
 
             val randomObject = GameEffectsList.InanimateObjectsPlural().mAllObjects.random()
 
-            workingString = workingString.replace("PLURALIOS", randomObject)
+            workingString = workingString.replace(gameEffectName, randomObject)
         }
         return workingString
     }
 
     private fun parseDifficultTerrainVariable(string: String?): ParseSpellEffectStringResult {
         Log.d(TAG, "parseDifficultTerrainVariable  [${mPreferencesManager?.getCurrentLifeTime()}]")
+        val gameEffectName = GAME_EFFECT_DIFFICULT_TERRAIN
         var result = ParseSpellEffectStringResult()
         var gameplayModifier: GameplayModifier? = null
         var workingString = string
         val db = mDatabase
 
-        if (workingString != null && workingString.contains("DIFFICULTTERRAIN")) {
-            val name = "DIFFICULTTERRAIN"
+        if (workingString != null && workingString.contains(gameEffectName)) {
+            val name = gameEffectName
             gameplayModifier = MyDatabaseUtils(mContext).getGameplayModifierByName(name)
 
             var selectedModifierName = ""
@@ -358,7 +378,45 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
                 }
             }
 
-            workingString = workingString.replace("DIFFICULTTERRAIN", selectedModifierName)
+            workingString = workingString.replace(gameEffectName, selectedModifierName)
+        }
+
+        result.mFullString = workingString
+        result.mGameplayModifier = gameplayModifier
+
+        return result
+    }
+
+    private fun parseToughnessVariable(string: String?): ParseSpellEffectStringResult {
+        Log.d(TAG, "parseDifficultTerrainVariable  [${mPreferencesManager?.getCurrentLifeTime()}]")
+        val result = ParseSpellEffectStringResult()
+        var gameplayModifier: GameplayModifier? = null
+        var workingString = string
+        val db = mDatabase
+        val gameEffectNameReduce = GAME_EFFECT_REDUCE_TOUGHNESS
+        val gameEffectNameIncrease = GAME_EFFECT_INCREASE_TOUGHNESS
+
+        val damageOptions = mPreferencesManager?.getDamagePreferences() ?: listOf(DAMAGE_INT_LOW, DAMAGE_INT_MED, DAMAGE_INT_HIGH)
+
+        val selectedDamageLevel = damageOptions.random()
+
+        if (workingString != null && workingString.contains(gameEffectNameReduce)) {
+            gameplayModifier = MyDatabaseUtils(mContext).getGameplayModifierByName(gameEffectNameReduce)
+
+            val replacementName = gameplayModifier?.getNameBySystem(mSystem) ?: "ERROR"
+            //val replacementDesc = gameplayModifier?.getDescriptionsBySystemAndLevel(mSystem, selectedDamageLevel) ?: "ERROR"
+            //val replacementText = "$replacementName ($replacementDesc)"
+
+            workingString = workingString.replace(gameEffectNameReduce, replacementName)
+
+        } else if (workingString != null && workingString.contains(gameEffectNameIncrease)) {
+            gameplayModifier = MyDatabaseUtils(mContext).getGameplayModifierByName(gameEffectNameIncrease)
+
+            val replacementName = gameplayModifier?.getNameBySystem(mSystem) ?: "ERROR"
+            //val replacementDesc = gameplayModifier?.getDescriptionsBySystemAndLevel(mSystem, selectedDamageLevel) ?: "ERROR"
+            //val replacementText = "$replacementName ($replacementDesc)"
+
+            workingString = workingString.replace(gameEffectNameIncrease, replacementName)
         }
 
         result.mFullString = workingString
@@ -375,9 +433,15 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
             Log.d(TAG, "Deal with any HICCUPS in the text - workingString = $workingString")
             val hiccupEffect = GameEffectsList().getEffectByName("Hiccups")
             val hiccupBySystem = when (mSystem) {
-                RPG_SYSTEM_D20 -> {hiccupEffect?.mDND5EDescription}
-                RPG_SYSTEM_SAVAGEWORLDS -> {hiccupEffect?.mSWADEDescription}
-                else -> {"SYSTEM ERROR"}
+                RPG_SYSTEM_D20 -> {
+                    hiccupEffect?.mDND5EDescription
+                }
+                RPG_SYSTEM_SAVAGEWORLDS -> {
+                    hiccupEffect?.mSWADEDescription
+                }
+                else -> {
+                    "SYSTEM ERROR"
+                }
             }
             val hiccupText = "${hiccupEffect?.mName} causes $hiccupBySystem"
             workingString = workingString.replace("HICCUPS", hiccupText)
@@ -386,6 +450,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
 
         return workingString
     }
+
     private fun parseMaterialVariable(string: String?): String? {
         var workingString = string
 
@@ -400,6 +465,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     }
 
     private fun parseCreatureVariable(string: String?): String? {
+        //TODO this needs to return a Results object so that I can do extra info for the critters
         Log.d(TAG, "parseCreatureVariable  [${mPreferencesManager?.getCurrentLifeTime()}]")
         var workingString = string
 
@@ -568,7 +634,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     override fun retrieveSpellEffectById(id: Int) {
         Log.d(TAG, "retrieveSpellEffectById  [${mPreferencesManager?.getCurrentLifeTime()}]")
         val view: MainContract.View? = getView()
-        
+
         if (id > 0) {
 
             val stringedId = id.toString()

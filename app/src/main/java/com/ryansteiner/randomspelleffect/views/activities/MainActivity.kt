@@ -22,12 +22,16 @@ import android.util.DisplayMetrics
 import kotlinx.android.synthetic.main.include_side_menu.*
 import android.animation.ObjectAnimator
 import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.view.View.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import kotlinx.android.synthetic.main.fragment_main_card.*
 import android.view.ViewAnimationUtils
 import android.os.Build
 import android.os.Handler
+import android.view.animation.DecelerateInterpolator
+import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.PagerAdapter
 import com.ryansteiner.randomspelleffect.data.models.*
 import kotlinx.coroutines.Dispatchers
@@ -292,6 +296,11 @@ class MainActivity : BaseActivity(), MainContract.View,
         })
         transAnimation.start()
 
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val drawable = ContextCompat.getDrawable(this, R.drawable.menu_to_close_icon_anim) as? AnimatedVectorDrawable
+            iMenuIcon?.setImageDrawable(drawable)
+        }*/
+
         mSettingsContainer.visibility = GONE
         mNetLibramInfo.visibility = GONE
 
@@ -354,11 +363,47 @@ class MainActivity : BaseActivity(), MainContract.View,
             when {
                 mMenuIsClosed -> {
                     toggleSideMenu(false)
+                    mMenuTabBackground.isClickable = true
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        val drawable = ContextCompat.getDrawable(this, R.drawable.menu_to_close_icon_anim) as? AnimatedVectorDrawable
+                        iMenuIcon.setImageDrawable(drawable)
+                        drawable?.start()
+                        iMenuIcon.animate()
+                            .setDuration(500)
+                            .rotation(360f)
+                            .setInterpolator(DecelerateInterpolator())
+                            .setListener(object : AnimatorListenerAdapter() {
+                                override fun onAnimationEnd(animation: Animator) {
+                                    super.onAnimationEnd(animation)
+                                    iMenuIcon.rotation = 0f
+                                }
+                            })
+                    }
                 }
                 else -> {
                     toggleSideMenu(true)
+                    mMenuTabBackground.isClickable = false
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        val drawable = ContextCompat.getDrawable(this, R.drawable.close_to_menu_icon_anim) as? AnimatedVectorDrawable
+                        iMenuIcon.setImageDrawable(drawable)
+                        drawable?.start()
+                        iMenuIcon.animate()
+                            .setDuration(500)
+                            .rotation(-360f)
+                            .setInterpolator(DecelerateInterpolator())
+                            .setListener(object : AnimatorListenerAdapter() {
+                                override fun onAnimationEnd(animation: Animator) {
+                                    super.onAnimationEnd(animation)
+                                    iMenuIcon.rotation = 0f
+                                }
+                            })
+                    }
                 }
             }
+        }
+
+        mMenuTabBackground?.setOnClickListener {
+            mMenuTab?.performClick()
         }
 
         tSideMenuSettingsButton.setOnClickListener {

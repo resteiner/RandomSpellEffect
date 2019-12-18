@@ -5,11 +5,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="20dp"
-    android:paddingRight="20dp"
-    android:paddingBottom="20dp"
-    android:paddingTop="75dp"
     android:background="@color/colorBlackInk"
+    android:paddingLeft="10dp"
+    android:paddingTop="20dp"
+    android:paddingRight="10dp"
+    android:paddingBottom="20dp"
     tools:context=".views.activities.MainActivity">
 
     <FrameLayout
@@ -36,24 +36,6 @@
             android:layout_height="match_parent"
             android:layout_margin="20dp"
             android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tMainCardText"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:fontFamily="@font/berkshire_swash"
-                android:paddingLeft="30dp"
-                android:paddingTop="30dp"
-                android:paddingRight="30dp"
-                android:paddingBottom="10dp"
-                android:text="Hello"
-                android:textColor="@color/colorTextPrimary"
-                android:textSize="@dimen/heading_1_text_size"
-                app:autoSizeMaxTextSize="@dimen/heading_2_text_size"
-                app:autoSizeMinTextSize="@dimen/normal_text_size"
-                app:autoSizeStepGranularity="1sp"
-                app:autoSizeTextType="uniform" />
 
             <FrameLayout
                 android:id="@+id/mYoutubeVideoContainer"
@@ -109,6 +91,25 @@
 
             </FrameLayout>
 
+            <TextView
+                android:id="@+id/tMainCardText"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/berkshire_swash"
+                android:gravity="bottom"
+                android:paddingLeft="30dp"
+                android:paddingTop="30dp"
+                android:paddingRight="30dp"
+                android:paddingBottom="30dp"
+                android:text="Hello"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="@dimen/heading_1_text_size"
+                app:autoSizeMaxTextSize="@dimen/heading_2_text_size"
+                app:autoSizeMinTextSize="@dimen/normal_text_size"
+                app:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -152,24 +153,22 @@
         android:id="@+id/mFloatingActionButtonInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp"
+        android:layout_marginTop="60dp"
         android:layout_marginRight="32dp"
         android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:src="@drawable/ic_feather_info_black"
+        app:backgroundTint="@color/colorSecondary"
         app:layout_constraintRight_toRightOf="parent"
-        android:src="@android:drawable/stat_sys_phone_call_forward"/>
+        app:layout_constraintTop_toTopOf="@id/mCardContainer" />
 
     <LinearLayout
         android:id="@+id/mSpellEffectAdditionalInfoContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/button_background_rounded_corners"
+        android:layout_height="match_parent"
         android:elevation="12dp"
+        android:gravity="center"
         android:orientation="vertical"
-        android:paddingLeft="@dimen/primary_margin_left_right"
-        android:paddingTop="@dimen/primary_margin_top_bottom"
-        android:paddingRight="@dimen/primary_margin_left_right"
-        android:paddingBottom="@dimen/primary_margin_top_bottom"
+        android:padding="@dimen/primary_margin_left_right"
         android:visibility="invisible"
         app:elevation="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -177,461 +176,474 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tSpellEffectInfoTitle"
+        <LinearLayout
+            android:id="@+id/mSpellEffectAdditionalInfoBackground"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Additional Info"
-            android:textColor="@color/colorTextPrimary"
-            android:textSize="@dimen/title_text_size" />
+            android:background="@drawable/info_background_black_eerie"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/primary_margin_left_right"
+            android:paddingTop="@dimen/primary_margin_top_bottom"
+            android:paddingRight="@dimen/primary_margin_left_right"
+            android:paddingBottom="@dimen/primary_margin_top_bottom">
 
-        <TextView
-            android:id="@+id/tSpellEffectInfoDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/primary_margin_top_bottom"
-            android:layout_marginBottom="@dimen/primary_margin_top_bottom"
-            android:text="Description"
-            android:textColor="@color/colorTextPrimary"
-            android:textSize="@dimen/heading_2_text_size" />
-
-        <TextView
-            android:id="@+id/tSpellEffectInfoPageInfo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Page Info"
-            android:textColor="@color/colorTextPrimary"
-            android:textSize="@dimen/normal_text_size" />
-
-        <TextView
-            android:id="@+id/tSpellEffectInfoDiceRoll"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/primary_margin_top_bottom"
-            android:fontFamily="@font/philosopher"
-            android:text="Dice Roll"
-            android:textAlignment="center"
-            android:textColor="@color/colorTextPrimary"
-            android:textSize="@dimen/heading_1_text_size" />
-
-        <View
-            android:id="@+id/mSpellEffectInfoDiceRollSeparator"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="@dimen/thin_margin_top_bottom"
-            android:layout_marginBottom="@dimen/thin_margin_top_bottom"
-            android:background="@color/colorSecondary" />
-
-        <FrameLayout
-            android:id="@+id/mSpellEffectInfoDiceRollsContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center">
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/tSpellEffectInfoTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:orientation="horizontal">
+                android:text="Additional Info"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="@dimen/title_text_size" />
+
+            <TextView
+                android:id="@+id/tSpellEffectInfoDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/primary_margin_top_bottom"
+                android:layout_marginBottom="@dimen/primary_margin_top_bottom"
+                android:text="Description"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="@dimen/heading_2_text_size" />
+
+            <TextView
+                android:id="@+id/tSpellEffectInfoPageInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Page Info"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="@dimen/normal_text_size" />
+
+            <TextView
+                android:id="@+id/tSpellEffectInfoDiceRoll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/primary_margin_top_bottom"
+                android:fontFamily="@font/philosopher"
+                android:text="Dice Roll"
+                android:textAlignment="center"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="@dimen/heading_1_text_size" />
+
+            <View
+                android:id="@+id/mSpellEffectInfoDiceRollSeparator"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/thin_margin_top_bottom"
+                android:layout_marginBottom="@dimen/thin_margin_top_bottom"
+                android:background="@color/colorSecondary" />
+
+            <FrameLayout
+                android:id="@+id/mSpellEffectInfoDiceRollsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:orientation="horizontal">
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                        <TextView
-                            android:id="@+id/tDiceRollImage1"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
                             android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
+                            android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/tDiceRollImage2"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
+                            <TextView
+                                android:id="@+id/tDiceRollImage1"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
 
-                        <TextView
-                            android:id="@+id/tDiceRollImage3"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
+                            <TextView
+                                android:id="@+id/tDiceRollImage2"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
 
-                        <TextView
-                            android:id="@+id/tDiceRollImage4"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
+                            <TextView
+                                android:id="@+id/tDiceRollImage3"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
 
-                        <TextView
-                            android:id="@+id/tDiceRollImage5"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
+                            <TextView
+                                android:id="@+id/tDiceRollImage4"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage5"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
                             android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage6"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage7"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage8"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage9"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage10"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage12"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage11"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage13"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage14"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage15"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage16"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage17"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage18"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage19"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                            <TextView
+                                android:id="@+id/tDiceRollImage20"
+                                android:layout_width="@dimen/dice_roll_image_size"
+                                android:layout_height="@dimen/dice_roll_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="3dp"
+                                android:layout_weight="0"
+                                android:background="@drawable/dice_silhouette_d6"
+                                android:fontFamily="@font/philosopher"
+                                android:gravity="center"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="@dimen/dice_roll_text_size" />
+
+                        </LinearLayout>
 
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/tSpellEffectInfoRollMultiplierX"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_margin="@dimen/thin_margin_top_bottom"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/philosopher"
                         android:gravity="center"
-                        android:orientation="horizontal">
+                        android:text="x"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textSize="@dimen/dice_roll_multiplier_text_size" />
 
-                        <TextView
-                            android:id="@+id/tDiceRollImage6"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
-
-                        <TextView
-                            android:id="@+id/tDiceRollImage7"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
-
-                        <TextView
-                            android:id="@+id/tDiceRollImage8"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
-
-                        <TextView
-                            android:id="@+id/tDiceRollImage9"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
-
-                        <TextView
-                            android:id="@+id/tDiceRollImage10"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/tSpellEffectInfoRollMultiplierNumber"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/philosopher"
                         android:gravity="center"
-                        android:orientation="horizontal">
+                        android:text="1/2"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textSize="@dimen/dice_roll_multiplier_text_size" />
 
-                        <TextView
-                            android:id="@+id/tDiceRollImage12"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
-
-                        <TextView
-                            android:id="@+id/tDiceRollImage11"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
-
-                        <TextView
-                            android:id="@+id/tDiceRollImage13"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
-
-                        <TextView
-                            android:id="@+id/tDiceRollImage14"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
-
-                        <TextView
-                            android:id="@+id/tDiceRollImage15"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/tSpellEffectInfoRollMultiplierEquals"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/philosopher"
                         android:gravity="center"
-                        android:orientation="horizontal">
+                        android:text="="
+                        android:textColor="@color/colorTextPrimary"
+                        android:textSize="@dimen/dice_roll_multiplier_text_size" />
 
-                        <TextView
-                            android:id="@+id/tDiceRollImage16"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
-
-                        <TextView
-                            android:id="@+id/tDiceRollImage17"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
-
-                        <TextView
-                            android:id="@+id/tDiceRollImage18"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
-
-                        <TextView
-                            android:id="@+id/tDiceRollImage19"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
-
-                        <TextView
-                            android:id="@+id/tDiceRollImage20"
-                            android:layout_width="@dimen/dice_roll_image_size"
-                            android:layout_height="@dimen/dice_roll_image_size"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:layout_weight="0"
-                            android:background="@drawable/dice_silhouette_d6"
-                            android:fontFamily="@font/philosopher"
-                            android:gravity="center"
-                            android:text="0"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorTextPrimary"
-                            android:textSize="@dimen/dice_roll_text_size" />
-
-                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/tSpellInfoRollMultiplierResult"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/philosopher"
+                        android:gravity="center"
+                        android:text="0"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textSize="@dimen/dice_roll_multiplier_text_size" />
 
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tSpellEffectInfoRollMultiplierX"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="@dimen/thin_margin_top_bottom"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/philosopher"
-                    android:gravity="center"
-                    android:text="x"
-                    android:textColor="@color/colorTextPrimary"
-                    android:textSize="@dimen/dice_roll_multiplier_text_size" />
 
-                <TextView
-                    android:id="@+id/tSpellEffectInfoRollMultiplierNumber"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="3dp"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/philosopher"
-                    android:gravity="center"
-                    android:text="1/2"
-                    android:textColor="@color/colorTextPrimary"
-                    android:textSize="@dimen/dice_roll_multiplier_text_size" />
-
-                <TextView
-                    android:id="@+id/tSpellEffectInfoRollMultiplierEquals"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="3dp"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/philosopher"
-                    android:gravity="center"
-                    android:text="="
-                    android:textColor="@color/colorTextPrimary"
-                    android:textSize="@dimen/dice_roll_multiplier_text_size" />
-
-                <TextView
-                    android:id="@+id/tSpellInfoRollMultiplierResult"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="3dp"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/philosopher"
-                    android:gravity="center"
-                    android:text="0"
-                    android:textColor="@color/colorTextPrimary"
-                    android:textSize="@dimen/dice_roll_multiplier_text_size" />
-
-            </LinearLayout>
-
-        </FrameLayout>
+            </FrameLayout>
+        </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

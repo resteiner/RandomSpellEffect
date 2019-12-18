@@ -48,7 +48,7 @@ class PreferencesManager(context: Context) {
                 val list = mutList.toList()
                 list
             }
-            else -> null
+            else -> listOf(DAMAGE_INT_LOW, DAMAGE_INT_MED, DAMAGE_INT_HIGH)
         }
     }
 

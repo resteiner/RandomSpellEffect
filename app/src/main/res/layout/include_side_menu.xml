@@ -61,23 +61,34 @@
         android:background="@color/colorBlackInk" />
 
     <FrameLayout
-        android:id="@+id/mMenuTab"
-        android:layout_marginTop="10dp"
+        android:id="@+id/mMenuTabBackground"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:clickable="false">
 
-        <ImageView
-            android:id="@+id/imageView"
+        <FrameLayout
+            android:id="@+id/mMenuTab"
+            android:layout_marginTop="40dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="-30dp"
-            android:src="@drawable/menu_bookmark_tab"/>
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@android:drawable/ic_menu_more"/>
+            android:layout_height="wrap_content">
+
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="-30dp"
+                android:src="@drawable/menu_bookmark_tab" />
+
+            <ImageView
+                android:id="@+id/iMenuIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/ic_feather_menu" />
+        </FrameLayout>
+
     </FrameLayout>
 
 </LinearLayout>

@@ -69,15 +69,34 @@ class MainCardFragment(private val c: Context)// Required empty public construct
         Log.d(TAG, "init  [${mPreferencesManager?.getCurrentLifeTime()}]")
         mView = v
         val mCardContainer: FrameLayout = v.findViewById(R.id.mCardContainer)
-        val tMainCardText: TextView = v.findViewById(R.id.tMainCardText)
-        val mFloatingActionButton: FloatingActionButton =
-            v.findViewById((R.id.mFloatingActionButtonInfo))
-        val tSpellEffectInfoTitle: TextView = v.findViewById((R.id.tSpellEffectInfoTitle))
-        val tSpellEffectInfoDescription: TextView =
-            v.findViewById((R.id.tSpellEffectInfoDescription))
-        val tSpellEffectInfoPageInfo: TextView = v.findViewById((R.id.tSpellEffectInfoPageInfo))
+        val mFloatingActionButton: FloatingActionButton = v.findViewById((R.id.mFloatingActionButtonInfo))
         val mNetLibramLabel: LinearLayout = v.findViewById((R.id.mNetLibramLabel))
         val mYouTubeVideoReloadButton: LinearLayout = v.findViewById((R.id.mYouTubeVideoReloadButton))
+        val mSpellEffectAdditionalInfoBackground: LinearLayout = v.findViewById((R.id.mSpellEffectAdditionalInfoBackground))
+        val mSpellEffectInfoDiceRollSeparator: View = v.findViewById((R.id.mSpellEffectInfoDiceRollSeparator))
+
+        val tMainCardText: TextView = v.findViewById(R.id.tMainCardText)
+        val tSpellEffectInfoTitle: TextView = v.findViewById((R.id.tSpellEffectInfoTitle))
+        val tSpellEffectInfoDescription: TextView = v.findViewById((R.id.tSpellEffectInfoDescription))
+        val tSpellEffectInfoPageInfo: TextView = v.findViewById((R.id.tSpellEffectInfoPageInfo))
+
+        val tSpellEffectInfoDiceRoll: TextView = v.findViewById(R.id.tSpellEffectInfoDiceRoll)
+        val tSpellEffectInfoRollMultiplierX: TextView = v.findViewById(R.id.tSpellEffectInfoRollMultiplierX)
+        val tSpellEffectInfoRollMultiplierNumber: TextView = v.findViewById(R.id.tSpellEffectInfoRollMultiplierNumber)
+        val tSpellEffectInfoRollMultiplierEquals: TextView = v.findViewById(R.id.tSpellEffectInfoRollMultiplierEquals)
+        val tSpellInfoRollMultiplierResult: TextView = v.findViewById(R.id.tSpellInfoRollMultiplierResult)
+
+        val textViewList = listOf(
+            tSpellEffectInfoTitle,
+            tSpellEffectInfoDescription,
+            tSpellEffectInfoPageInfo,
+            tSpellEffectInfoDiceRoll,
+            tSpellEffectInfoRollMultiplierX,
+            tSpellEffectInfoRollMultiplierNumber,
+            tSpellEffectInfoRollMultiplierEquals,
+            tSpellInfoRollMultiplierResult
+        )
+
         if (mFullText == null) {
             mCardContainer.visibility = INVISIBLE
         } else {
@@ -178,6 +197,7 @@ class MainCardFragment(private val c: Context)// Required empty public construct
                     updateDiceRoll(v, selectedSpellDice)
                 }
             } else if (gameplayModifier != null) {
+                //TODO convert to getDamageOptions from prefs
                 val damageOptions = mutableListOf<String>()
                 if (mDamagePreferences != null && mDamagePreferences!!.count() > 0) {
                     if (mDamagePreferences!!.contains(DAMAGE_INT_LOW)) {
@@ -200,6 +220,7 @@ class MainCardFragment(private val c: Context)// Required empty public construct
                 var selectedModifierPageInfo = ""
                 var selectedModifierName = ""
 
+                //TODO convert these to gets from GameplayModifier class
                 when (mSystem) {
                     RPG_SYSTEM_D20 -> {
                         val safeSelected = gameplayModifier!!.mDND5EDescriptions!![selectedDamageLevel]
@@ -234,8 +255,8 @@ class MainCardFragment(private val c: Context)// Required empty public construct
                         selectedModifierName = gameplayModifier!!.mGenericName ?: "ERROR with Generic/Name"
                     }
                 }
-                tSpellEffectInfoTitle.text = selectedModifierName
-                tSpellEffectInfoDescription.text = selectedModifierWithSeverity
+                tSpellEffectInfoTitle.text = selectedModifierName.split(' ').joinToString(" ") { it.capitalize() }
+                tSpellEffectInfoDescription.text = selectedModifierWithSeverity.capitalize()
                 tSpellEffectInfoPageInfo.text = selectedModifierPageInfo
                 updateDiceRoll(v, null)
             } else {
@@ -320,6 +341,20 @@ class MainCardFragment(private val c: Context)// Required empty public construct
                 else -> ContextCompat.getColor(mContext, randomColor)
             }
 
+            Log.d(TAG, "init - tint = $tint")
+            Log.d(TAG, "init - R.color.colorBlackEerie = ${R.color.colorBlackEerie}")
+            val fabIcon = when (tint) {
+                ContextCompat.getColor(mContext, R.color.colorGreenEmerald) -> R.drawable.ic_feather_info_white
+                ContextCompat.getColor(mContext, R.color.colorBlueCadet) -> R.drawable.ic_feather_info_white
+                ContextCompat.getColor(mContext, R.color.colorGreenCadmium) -> R.drawable.ic_feather_info_white
+                ContextCompat.getColor(mContext, R.color.colorOrangeTerraCotta) -> R.drawable.ic_feather_info_black
+                ContextCompat.getColor(mContext, R.color.colorBlueOxford) -> R.drawable.ic_feather_info_white
+                ContextCompat.getColor(mContext, R.color.colorPurpleDeepKoamaru) -> R.drawable.ic_feather_info_white
+                ContextCompat.getColor(mContext, R.color.colorBlackEerie) -> R.drawable.ic_feather_info_white
+                ContextCompat.getColor(mContext, R.color.colorRedCardinal) -> R.drawable.ic_feather_info_white
+                else -> R.drawable.ic_feather_info_black
+            }
+
             ImageViewCompat.setImageTintList(iCardImage, ColorStateList.valueOf(tint))
 
             iCardImage?.alpha = when (spellEffect?.mHowBadIsIt) {
@@ -335,6 +370,37 @@ class MainCardFragment(private val c: Context)// Required empty public construct
                 else -> randomAlpha
             }
 
+            mFloatingActionButton.backgroundTintList = ColorStateList.valueOf(tint)
+            mFloatingActionButton.setImageResource(fabIcon)
+
+            mSpellEffectAdditionalInfoBackground.background = when (tint) {
+                ContextCompat.getColor(mContext, R.color.colorGreenEmerald) -> ContextCompat.getDrawable(mContext, R.drawable.info_background_green_emerald)
+                ContextCompat.getColor(mContext, R.color.colorBlueCadet) -> ContextCompat.getDrawable(mContext, R.drawable.info_background_blue_cadet)
+                ContextCompat.getColor(mContext, R.color.colorGreenCadmium) -> ContextCompat.getDrawable(mContext, R.drawable.info_background_green_cadmium)
+                ContextCompat.getColor(mContext, R.color.colorOrangeTerraCotta) -> ContextCompat.getDrawable(mContext, R.drawable.info_background_orange_terra_cotta)
+                ContextCompat.getColor(mContext, R.color.colorBlueOxford) -> ContextCompat.getDrawable(mContext, R.drawable.info_background_blue_oxford)
+                ContextCompat.getColor(mContext, R.color.colorPurpleDeepKoamaru) -> ContextCompat.getDrawable(mContext, R.drawable.info_background_purple_deep_koamaru)
+                ContextCompat.getColor(mContext, R.color.colorBlackEerie) -> ContextCompat.getDrawable(mContext, R.drawable.info_background_black_eerie)
+                ContextCompat.getColor(mContext, R.color.colorRedCardinal) -> ContextCompat.getDrawable(mContext, R.drawable.info_background_red_cardinal)
+                else -> ContextCompat.getDrawable(mContext, R.drawable.info_background_black_eerie)
+            }
+
+            var fontColor = when (tint) {
+                ContextCompat.getColor(mContext, R.color.colorBlackEerie) -> ContextCompat.getColor(mContext, R.color.colorWhitePaper)
+                ContextCompat.getColor(mContext, R.color.colorPurpleDeepKoamaru) -> ContextCompat.getColor(mContext, R.color.colorWhitePaper)
+                ContextCompat.getColor(mContext, R.color.colorBlueOxford) -> ContextCompat.getColor(mContext, R.color.colorWhitePaper)
+                ContextCompat.getColor(mContext, R.color.colorRedCardinal) -> ContextCompat.getColor(mContext, R.color.colorWhitePaper)
+                ContextCompat.getColor(mContext, R.color.colorBlueCadet) -> ContextCompat.getColor(mContext, R.color.colorWhitePaper)
+                ContextCompat.getColor(mContext, R.color.colorGreenEmerald) -> ContextCompat.getColor(mContext, R.color.colorWhitePaper)
+                ContextCompat.getColor(mContext, R.color.colorGreenCadmium) -> ContextCompat.getColor(mContext, R.color.colorWhitePaper)
+                else -> ContextCompat.getColor(mContext, R.color.colorBlackInk)
+            }
+
+            textViewList.forEach {
+                it.setTextColor(fontColor)
+            }
+
+            mSpellEffectInfoDiceRollSeparator?.setBackgroundColor(fontColor)
 
             Log.d(TAG, "init")
             initYouTubeView(v)

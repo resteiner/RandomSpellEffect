@@ -398,10 +398,9 @@
         android:id="@+id/mDebugInfoContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/primary_margin_left_right"
         android:background="@color/colorGreenMoss"
         android:padding="@dimen/primary_margin_top_bottom"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent">
 
         <TextView
