@@ -142,7 +142,7 @@ class MainActivity : BaseActivity(), MainContract.View,
         }
 
 
-        mPreferencesManager?.addToPreviousCardsList(cardIds)
+        //mPreferencesManager?.addToPreviousCardsList(cardIds)
 
         setupViewPager(fullCards.toList())
     }
@@ -295,6 +295,7 @@ class MainActivity : BaseActivity(), MainContract.View,
             }
         })
         transAnimation.start()
+        mMenuTabBackground.isClickable = false
 
         /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val drawable = ContextCompat.getDrawable(this, R.drawable.menu_to_close_icon_anim) as? AnimatedVectorDrawable

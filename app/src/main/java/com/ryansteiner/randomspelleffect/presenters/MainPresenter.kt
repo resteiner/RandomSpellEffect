@@ -72,7 +72,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
 
         val view: MainContract.View? = getView()
         val count = DatabaseUtils.queryNumEntries(mDatabase, DB_SPELLEFFECT_TABLE_NAME).toInt()
-        val previousCards = mPreferencesManager?.getPreviousCardsList() ?: listOf()
+        var previousCards = mPreferencesManager?.getPreviousCardsList() ?: listOf()
         val mutList: MutableList<String> = mutableListOf()
         /*mutList.add("5") //0
         mutList.add("16") //1
@@ -83,19 +83,17 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         mutList.add("21") //6
         mutList.add("4") //7
         mutList.add("6") //8*/
-        mutList.add("50")
-        mutList.add("51")
-        mutList.add("10")
+        //mutList.add("53")
+        //mutList.add("52")
 
         while (mutList.count() < NUMBER_OF_CARDS_TO_LOAD) {
-            Log.d(TAG, "getSpellEffects - while loop")
-            val random = (1..count).random().toString()
-            if (!mutList.contains(random) && !previousCards.contains(random)) {
-                mutList.add(random)
+            val random = (1..count).random()
+            val randomString = random.toString()
+            if (!mutList.contains(randomString) && !previousCards.contains(randomString)) {
+                mutList.add(randomString)
             }
         }
-        Log.d(TAG, "getSpellEffects - previousCards = $previousCards")
-        Log.d(TAG, "getSpellEffects - mutList = $mutList")
+        mPreferencesManager?.addToPreviousCardsList(mutList)
 
         val listOfSpellEffects = MyDatabaseUtils(mContext).getSpellEffectsByIds(mutList)
         view?.onGetSpellEffects(listOfSpellEffects)
@@ -168,6 +166,8 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         when (workingString) {
             null -> return null
             else -> {
+                var workingResult: ParseSpellEffectStringResult? = null
+
                 workingString = parseTargetVariable(workingString)
 
                 workingString = parseColorVariable(workingString)
@@ -189,12 +189,66 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
                 workingString = parseMaterialVariable(workingString)
 
 
-                val toughnessResult = parseToughnessVariable(workingString)
-                workingString = toughnessResult?.mFullString
-                if (toughnessResult.mGameplayModifier != null) {
-                    result.mGameplayModifier = toughnessResult.mGameplayModifier
+                workingResult = parseToughnessVariable(workingString)
+                workingString = workingResult?.mFullString
+                if (workingResult.mGameplayModifier != null) {
+                    result.mGameplayModifier = workingResult.mGameplayModifier
                 }
 
+                workingResult = parseParryVariable(workingString)
+                workingString = workingResult?.mFullString
+                if (workingResult.mGameplayModifier != null) {
+                    result.mGameplayModifier = workingResult.mGameplayModifier
+                }
+
+                workingResult = parseVariableByGameplayEffectName(workingString, GAME_EFFECT_RESOURCE_REFILL)
+                workingString = workingResult?.mFullString
+                if (workingResult.mGameplayModifier != null) {
+                    result.mGameplayModifier = workingResult.mGameplayModifier
+                }
+
+                //workingResult = parseVariableForDuration(workingString, GAME_EFFECT_DURATION)
+                workingString = parseVariableForDuration(workingString)
+                /*if (workingResult.mGameplayModifier != null) {
+                    result.mGameplayModifier = workingResult.mGameplayModifier
+                }*/
+
+                val listOfGameEffectNames = listOf(
+                    GAME_EFFECT_RESOURCE_DRAIN,
+                    GAME_EFFECT_DISADVANTAGE,
+                    GAME_EFFECT_ADVANTAGE,
+                    GAME_EFFECT_RESISTANCE,
+                    GAME_EFFECT_VULNERABILITY,
+                    GAME_EFFECT_BADLYHURT,
+                    GAME_EFFECT_DEAD,
+                    GAME_EFFECT_FREEACTION,
+                    GAME_EFFECT_HEAL,
+                    GAME_EFFECT_QUICKENED,
+                    GAME_EFFECT_LEVITATE
+                )
+
+                listOfGameEffectNames.forEach {
+                    workingResult = parseVariableByGameplayEffectName(workingString, it)
+                    workingString = workingResult?.mFullString
+                    if (workingResult?.mGameplayModifier != null) {
+                        result.mGameplayModifier = workingResult?.mGameplayModifier
+                    }
+                }
+
+                val listOfAttributs = listOf(
+                    GAME_ATTRIBUTE_STRENGTH,
+                    GAME_ATTRIBUTE_DEX,
+                    GAME_ATTRIBUTE_CON,
+                    GAME_ATTRIBUTE_INTELLIGENCE,
+                    GAME_ATTRIBUTE_WISDOM,
+                    GAME_ATTRIBUTE_CHARISMA,
+                    GAME_ATTRIBUTE_NOTICE,
+                    GAME_ATTRIBUTE_STEALTH
+                )
+
+                listOfAttributs.forEach {
+                    workingString = parseVariableByGameplayAttributeName(workingString, it)
+                }
 
                 val songPair = parseSongVariable(workingString)
                 workingString = songPair.first
@@ -245,7 +299,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
                     Log.d(TAG, "parseTargetVariable - currentKey - availableTargets[currentKey] = $currentKey - ${availableTargets[currentKey]}")
                 }
             }
-            val targetRandomSelect = (1..100).random()
+            val targetRandomSelect = (1..99).random()
             Log.d(TAG, "parseTargetVariable - targetRandomSelect = ${targetRandomSelect}")
             val filteredTargets = availableTargets.filter { it.value > targetRandomSelect }
             val selectedTargetKey = filteredTargets.keys.toTypedArray().firstOrNull()
@@ -423,6 +477,109 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         result.mGameplayModifier = gameplayModifier
 
         return result
+    }
+
+    private fun parseParryVariable(string: String?): ParseSpellEffectStringResult {
+        Log.d(TAG, "parseParryVariable  [${mPreferencesManager?.getCurrentLifeTime()}]")
+        val result = ParseSpellEffectStringResult()
+        var gameplayModifier: GameplayModifier? = null
+        var workingString = string
+        val gameEffectNameReduce = GAME_EFFECT_REDUCE_PARRY
+        val gameEffectNameIncrease = GAME_EFFECT_INCREASE_PARRY
+
+        //val damageOptions = mPreferencesManager?.getDamagePreferences() ?: listOf(DAMAGE_INT_LOW, DAMAGE_INT_MED, DAMAGE_INT_HIGH)
+
+        //val selectedDamageLevel = damageOptions.random()
+
+        if (workingString != null && workingString.contains(gameEffectNameReduce)) {
+            gameplayModifier = MyDatabaseUtils(mContext).getGameplayModifierByName(gameEffectNameReduce)
+
+            val replacementName = gameplayModifier?.getNameBySystem(mSystem) ?: "ERROR"
+
+            workingString = workingString.replace(gameEffectNameReduce, replacementName)
+
+        } else if (workingString != null && workingString.contains(gameEffectNameIncrease)) {
+            gameplayModifier = MyDatabaseUtils(mContext).getGameplayModifierByName(gameEffectNameIncrease)
+
+            val replacementName = gameplayModifier?.getNameBySystem(mSystem) ?: "ERROR"
+
+            workingString = workingString.replace(gameEffectNameIncrease, replacementName)
+        }
+
+        result.mFullString = workingString
+        result.mGameplayModifier = gameplayModifier
+
+        return result
+    }
+
+    private fun parseVariableByGameplayEffectName(string: String?, name: String?): ParseSpellEffectStringResult {
+        Log.d(TAG, "parseVariableByGameplayEffectName  [${mPreferencesManager?.getCurrentLifeTime()}]")
+        val result = ParseSpellEffectStringResult()
+        var gameplayModifier: GameplayModifier? = null
+        var workingString = string ?: "((Attempt at parsing variables failed spectacularly))"
+        val safeName = name ?: "NO NAME WAS PROVIDED"
+
+        if (workingString != null && workingString.contains(safeName)) {
+            gameplayModifier = MyDatabaseUtils(mContext).getGameplayModifierByName(safeName)
+
+            val replacementName = gameplayModifier?.getNameBySystem(mSystem) ?: "ERROR RETRIEVING GAME EFFECT"
+
+            workingString = workingString.replace(safeName, replacementName)
+        }
+
+        result.mFullString = workingString
+        result.mGameplayModifier = gameplayModifier
+
+        return result
+    }
+
+    private fun parseVariableForDuration(string: String?): String {
+        Log.d(TAG, "parseVariableForDuration  [${mPreferencesManager?.getCurrentLifeTime()}]")
+        var result = string ?: ""
+        var gameplayModifier: GameplayModifier? = null
+        var workingString = string ?: "((Attempt at parsing variables failed spectacularly))"
+        val safeName = GAME_EFFECT_DURATION
+        Log.d(TAG, "parseVariableForDuration - workingString = ${workingString}")
+
+        if (workingString != null && workingString.contains(GAME_EFFECT_DURATION_LONG)) {
+            gameplayModifier = MyDatabaseUtils(mContext).getGameplayModifierByName(safeName)
+            val replacementName = gameplayModifier?.getDuration(GAME_EFFECT_DURATION_LONG) ?: "ERROR RETRIEVING GAME EFFECT"
+
+            workingString = workingString.replace(safeName, replacementName)
+        } else if (workingString != null && workingString.contains(GAME_EFFECT_DURATION_MEDIUM)) {
+            gameplayModifier = MyDatabaseUtils(mContext).getGameplayModifierByName(safeName)
+            val replacementName = gameplayModifier?.getDuration(GAME_EFFECT_DURATION_MEDIUM) ?: "ERROR RETRIEVING GAME EFFECT"
+
+            workingString = workingString.replace(safeName, replacementName)
+        } else if (workingString != null && workingString.contains(GAME_EFFECT_DURATION_SHORT)) {
+            gameplayModifier = MyDatabaseUtils(mContext).getGameplayModifierByName(safeName)
+            val replacementName = gameplayModifier?.getDuration(GAME_EFFECT_DURATION_SHORT) ?: "ERROR RETRIEVING GAME EFFECT"
+
+            workingString = workingString.replace(safeName, replacementName)
+        } else {
+            gameplayModifier = MyDatabaseUtils(mContext).getGameplayModifierByName(safeName)
+            val replacementName = gameplayModifier?.getDuration(GAME_EFFECT_DURATION) ?: "ERROR RETRIEVING GAME EFFECT"
+
+            workingString = workingString.replace(safeName, replacementName)
+
+        }
+
+        result = workingString
+
+        return result
+    }
+
+    private fun parseVariableByGameplayAttributeName(string: String?, name: String?): String? {
+        Log.d(TAG, "parseVariableByGameplayAttributeName  [${mPreferencesManager?.getCurrentLifeTime()}]")
+        var workingString = string ?: "((Attempt at parsing variables failed spectacularly))"
+        val safeName = name ?: "NO NAME WAS PROVIDED"
+
+        if (workingString != null && workingString.contains(safeName)) {
+            val replacementName = MyDatabaseUtils(mContext).getGameplayAttributeByNameAndSystem(safeName, mSystem) ?: "ERROR RETRIEVING GAME ATTRIBUTE"
+            workingString = workingString.replace(safeName, replacementName)
+        }
+
+        return workingString
     }
 
     private fun parseHiccupsVariable(string: String?): String? {

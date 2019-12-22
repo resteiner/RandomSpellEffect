@@ -3,7 +3,10 @@ package com.ryansteiner.randomspelleffect.utils
 import android.content.Context
 import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
+import android.graphics.drawable.Drawable
 import android.util.Log
+import androidx.core.content.ContextCompat
+import com.ryansteiner.randomspelleffect.R
 import com.ryansteiner.randomspelleffect.data.*
 import com.ryansteiner.randomspelleffect.data.models.SpellEffect
 import com.ryansteiner.randomspelleffect.data.models.GameplayModifier
@@ -15,6 +18,8 @@ class MyDatabaseUtils(context: Context) {
     private val TAG = "MyDatabaseUtils"
     private var mDatabase: SQLiteDatabase? = null
     private val mContext = context
+    private var mPreferencesManager = PreferencesManager(context)
+
 
     fun loadDatabase(): SQLiteDatabase {
         val database = DatabaseHelper(mContext).readableDatabase
@@ -96,7 +101,9 @@ class MyDatabaseUtils(context: Context) {
                 val spellEffect = getSpellEffectById(it)
                 Log.d(TAG, "getSpellEffectsByIds - spellEffect = $spellEffect")
                 if (spellEffect != null) {
+                    spellEffect.mBackgroundImageId = getIntForCardBackground()
                     list.add(spellEffect)
+
                 }
             }
         }
@@ -233,5 +240,58 @@ class MyDatabaseUtils(context: Context) {
         }
         db?.close()
         return modifier
+    }
+
+    fun getGameplayAttributeByNameAndSystem(name: String?, system: Int?): String? {
+
+        var workingString = name
+
+        //TODO need to find out why mDatabase is null here...
+        val db = when {
+            (mDatabase == null) -> {
+                DatabaseHelper(mContext).readableDatabase
+            }
+            else -> mDatabase
+        }
+        if (db != null) {
+            val selectQuery = "SELECT * FROM $DB_GAMEPLAY_ATTRIBUTES_TABLE_NAME WHERE $TABLE_COL_NAME = ?"
+
+            db?.rawQuery(selectQuery, arrayOf(name)).use {
+                // .use requires API 16
+                if (it!!.moveToFirst()) {
+                    workingString = when (system) {
+                        RPG_SYSTEM_D20 -> it.getString(it.getColumnIndex(TABLE_COL_DND5E_NAME))
+                        RPG_SYSTEM_SAVAGEWORLDS -> it.getString(it.getColumnIndex(TABLE_COL_SWADE_NAME))
+                        else -> it.getString(it.getColumnIndex(TABLE_COL_GENERIC_NAME))
+                    }
+                }
+            }
+        }
+        db?.close()
+        return workingString
+    }
+
+    private fun getIntForCardBackground(): Int? {
+        val previousImages = mPreferencesManager?.getPreviousCardImages()
+        Log.d(TAG, "init - previousImages = $previousImages")
+        val backgroundsCount = mPreferencesManager?.getListOfCardBackgroundImagesCount()
+        var selectedInt: Int? = null
+        var loopLimit = 0
+        val randomNumber = (0 until backgroundsCount).random()
+        while (selectedInt == null && loopLimit < 50) {
+            loopLimit++
+            if (previousImages != null && previousImages!!.count() > 0) {
+                if (!previousImages.contains(randomNumber)) {
+                    selectedInt = randomNumber
+                }
+            } else {
+                selectedInt = randomNumber
+            }
+        }
+        if (selectedInt != null) {
+            mPreferencesManager?.addToPreviousCardImages(selectedInt)
+        }
+        Log.d(TAG, "init - selectedInt = $selectedInt")
+        return selectedInt
     }
 }

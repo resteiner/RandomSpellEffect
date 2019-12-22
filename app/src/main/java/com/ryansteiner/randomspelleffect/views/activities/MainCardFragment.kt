@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.ColorFilter
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -52,6 +53,7 @@ class MainCardFragment(private val c: Context)// Required empty public construct
     private var mYouTubePlayerView: YouTubePlayerView? = null
     private var mYouTubePlayer: YouTubePlayer? = null
     private var mPreferencesManager: PreferencesManager? = null
+
 
     private var mListener: OnFragmentInteractionListener? = null
 
@@ -230,7 +232,7 @@ class MainCardFragment(private val c: Context)// Required empty public construct
                             !safeMed.isNullOrBlank() -> safeMed
                             else -> "ERROR with DND5E/Severity"
                         }
-                        selectedModifierPageInfo = gameplayModifier!!.mDND5EPageInfo ?: "ERROR with DND5E/Page Number Info"
+                        selectedModifierPageInfo = gameplayModifier!!.mDND5EPageInfo ?: ""
                         selectedModifierName = gameplayModifier!!.mDND5EName ?: "ERROR with DND5E/Name"
                     }
                     RPG_SYSTEM_SAVAGEWORLDS -> {
@@ -241,7 +243,7 @@ class MainCardFragment(private val c: Context)// Required empty public construct
                             !safeMed.isNullOrBlank() -> safeMed
                             else -> "ERROR with SWADE/Severity"
                         }
-                        selectedModifierPageInfo = gameplayModifier!!.mSWADEPageInfo ?: "ERROR with SWADE/Page Number Info"
+                        selectedModifierPageInfo = gameplayModifier!!.mSWADEPageInfo ?: ""
                         selectedModifierName = gameplayModifier!!.mSWADEName ?: "ERROR with SWADE/Name"
                     }
                     else -> {
@@ -257,7 +259,12 @@ class MainCardFragment(private val c: Context)// Required empty public construct
                 }
                 tSpellEffectInfoTitle.text = selectedModifierName.split(' ').joinToString(" ") { it.capitalize() }
                 tSpellEffectInfoDescription.text = selectedModifierWithSeverity.capitalize()
-                tSpellEffectInfoPageInfo.text = selectedModifierPageInfo
+                if (selectedModifierPageInfo.isNullOrBlank()) {
+                    tSpellEffectInfoPageInfo.visibility = GONE
+                } else {
+                    tSpellEffectInfoPageInfo.text = selectedModifierPageInfo
+                    tSpellEffectInfoPageInfo.visibility = VISIBLE
+                }
                 updateDiceRoll(v, null)
             } else {
                 mFloatingActionButton?.hide()
@@ -318,13 +325,72 @@ class MainCardFragment(private val c: Context)// Required empty public construct
 
             val iCardImage: ImageView = v.findViewById(R.id.iCardImage)
 
-            val drawableList = listOf(
+            /*val drawableList = listOf(
                 ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_001),
                 ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_002),
-                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_003)
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_003),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_004),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_005),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_006),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_007),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_008),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_009),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_010),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_011),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_012),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_013),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_014),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_015),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_016),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_017),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_018),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_019),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_020),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_021),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_022),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_023),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_024),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_025),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_026),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_027),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_028),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_029),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_030),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_031),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_032),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_033),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_034),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_035),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_036),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_037),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_038),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_039),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_040),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_041),
+                ContextCompat.getDrawable(mContext, R.drawable.tarot_card_image_042)
             )
 
-            val selectedDrawable = drawableList.random()
+            val previousImages = mPreferencesManager?.getPreviousCardImages()
+            var selectedDrawable: Drawable? = null
+            while (selectedDrawable == null) {
+                val randomNumber = (0..(drawableList.count() - 1)).random()
+                if (previousImages != null && previousImages!!.count() > 0) {
+                    if (!previousImages.contains(randomNumber)) {
+                        selectedDrawable = drawableList[randomNumber]
+                    }
+                } else {
+                    selectedDrawable = drawableList[randomNumber]
+                }
+            }
+            Log.d(TAG, "init - selectedDrawable = $selectedDrawable")*/
+            var backgroundImageId = spellEffect?.mBackgroundImageId ?: -1
+            if (backgroundImageId < 0) {
+                Log.d(TAG, "init - spellEffect?.mBackgroundImageId was null = ${spellEffect?.mBackgroundImageId}")
+                val count = mPreferencesManager?.getListOfCardBackgroundImagesCount() ?: 1
+                val random = (0..count).random()
+                backgroundImageId = random
+            }
+            val selectedDrawable = mPreferencesManager?.getCardBackgroundImagesAtIndex(backgroundImageId)
 
             iCardImage.setImageDrawable(selectedDrawable)
 

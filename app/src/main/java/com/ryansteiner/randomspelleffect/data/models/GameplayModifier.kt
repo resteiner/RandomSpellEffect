@@ -50,6 +50,38 @@ data class GameplayModifier(
         }
     }
 
+    fun getDuration(length: String?): String {
+
+        var workingString = ""
+        var numberOfDice = when (length) {
+            GAME_EFFECT_DURATION_LONG -> 10
+            GAME_EFFECT_DURATION_MEDIUM -> 5
+            else -> 3
+        }
+        var randomDieType = when ((1..6).random()) {
+            1 -> 4
+            3 -> 8
+            4 -> 10
+            5 -> 12
+            6 -> 20
+            else -> 6
+        }
+
+        var totalRoll = 0
+
+        for (i in 0 until numberOfDice) {
+            val roll = (1..randomDieType).random()
+            totalRoll += roll
+        }
+
+        workingString = when (length) {
+            GAME_EFFECT_DURATION_LONG -> "${numberOfDice}d$randomDieType ($totalRoll) ${mGenericDescriptions!![DAMAGE_STRING_HIGH]}"
+            GAME_EFFECT_DURATION_MEDIUM -> "${numberOfDice}d$randomDieType ($totalRoll) ${mGenericDescriptions!![DAMAGE_STRING_MED]}"
+            else -> "${numberOfDice}d$randomDieType ($totalRoll) ${mGenericDescriptions!![DAMAGE_STRING_LOW]}"
+        }
+        return workingString
+    }
+
 }
 
 

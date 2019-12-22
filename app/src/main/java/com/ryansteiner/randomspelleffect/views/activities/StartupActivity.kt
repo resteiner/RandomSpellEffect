@@ -93,6 +93,7 @@ class StartupActivity : BaseActivity(), StartupContract.View/*, StartupListAdapt
         }
         Handler().postDelayed({
             startActivity(intent)
+            //mPresenter?.loadingViewToggle(false)
         }, 500)
 
     }

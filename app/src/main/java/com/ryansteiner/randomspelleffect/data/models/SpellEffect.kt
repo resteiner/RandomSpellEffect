@@ -1,5 +1,7 @@
 package com.ryansteiner.randomspelleffect.data.models
 
+import android.graphics.drawable.Drawable
+
 
 /**
  * Created by Ryan Steiner on 2019/11/07.
@@ -27,7 +29,8 @@ class SpellEffect(
     var mRequiresCaster: Int? = null,
     var mRequiresSpecificSpell: String? = null,
     var mUsesImage: String? = null,
-    var mIsNetLibram: Boolean? = null
+    var mIsNetLibram: Boolean? = null,
+    var mBackgroundImageId: Int? = null
 
 
 )
