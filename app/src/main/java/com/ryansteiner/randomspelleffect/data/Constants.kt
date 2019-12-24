@@ -30,6 +30,7 @@ const val TABLE_COL_TAGS = "tags"
 const val TABLE_COL_HOWBADISIT = "howBadIsIt"
 const val TABLE_COL_USESIMAGE = "usesImage"
 const val TABLE_COL_ISNETLIBRAM = "isNetLibram"
+const val TABLE_COL_REQUIRES_SPELL_TYPE = "requiresSpellType"
 const val TABLE_COL_DND5E_DESC_LOW = "dnd5e_desc_low"
 const val TABLE_COL_DND5E_DESC_MEDIUM = "dnd5e_desc_medium"
 const val TABLE_COL_DND5E_DESC_HIGH = "dnd5e_desc_high"
@@ -97,7 +98,7 @@ const val COLOR_ALPHA_PURPLE_DEEP_KOAMARU = 0.15f
 const val COLOR_ALPHA_BLACK_EERIE = 0.1f
 
 const val NUMBER_OF_CARDS_TO_LOAD = 15
-const val MAX_NUMBER_OF_CARDS_TO_REMEMBER = 25
+const val MAX_NUMBER_OF_CARDS_TO_REMEMBER = 30
 
 const val GAME_EFFECT_DIFFICULT_TERRAIN = "DIFFICULTTERRAIN"
 const val GAME_EFFECT_COLOR = "COLOR"

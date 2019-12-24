@@ -37,7 +37,7 @@ interface MainContract {
         fun generateSingleSpellEffect()
         fun loadDatabase(context: Context)
         fun getPreferences()
-        fun parseSpellStringForVariables(string: String?, system: Int): ParseSpellEffectStringResult?
+        fun parseSpellStringForVariables(string: String?, system: Int, requiredSpellType: String?): ParseSpellEffectStringResult?
         fun updateDamagePreferences(damagePrefs: List<Int>?)
         fun updateSpellList(spellsList: SpellsList)
         fun clickSettings(showSettings: Boolean)

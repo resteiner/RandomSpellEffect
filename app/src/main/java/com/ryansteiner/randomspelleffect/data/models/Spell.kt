@@ -6,6 +6,7 @@ data class Spell(
 
     var mId: Int = -1,
     var mTitle: String? = null,
+    var mType: String? = null,
     var mNameWithAAn: String? = null,
     var mDescription: String? = null,
     var mDND5EDescriptions: Map<String, String>? = null,

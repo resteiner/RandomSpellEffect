@@ -30,7 +30,8 @@ class SpellEffect(
     var mRequiresSpecificSpell: String? = null,
     var mUsesImage: String? = null,
     var mIsNetLibram: Boolean? = null,
-    var mBackgroundImageId: Int? = null
+    var mBackgroundImageId: Int? = null,
+    var mRequiresSpellType: String? = null
 
 
 )

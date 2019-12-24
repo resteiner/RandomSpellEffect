@@ -71,6 +71,7 @@ class MyDatabaseUtils(context: Context) {
                         (isNetLibramInt >= 1) -> true
                         else -> false
                     }
+                    result.mRequiresSpellType = it.getString(it.getColumnIndex(TABLE_COL_REQUIRES_SPELL_TYPE))
                     db.close()
                     return result
                 }
@@ -144,6 +145,7 @@ class MyDatabaseUtils(context: Context) {
                 if (it!!.moveToFirst()) {
                     spell.mId = it.getInt(it.getColumnIndex(TABLE_COL_ID))
                     spell.mTitle = it.getString(it.getColumnIndex(TABLE_COL_NAME))
+                    spell.mType = it.getString(it.getColumnIndex(TABLE_COL_TYPE))
                     spell.mNameWithAAn = it.getString(it.getColumnIndex(TABLE_COL_NAME_WITH_A_AN))
                     spell.mDescription = it.getString(it.getColumnIndex(TABLE_COL_GENERIC_DESCRIPTION))
                     val dnd5eDescLow = it.getString(it.getColumnIndex(TABLE_COL_DND5E_DESC_LOW))
@@ -185,10 +187,97 @@ class MyDatabaseUtils(context: Context) {
         }
         db?.close()
         return when {
-            spell.mTitle != null -> {spell}
-            else -> {null}
+            spell.mTitle != null -> {
+                spell
+            }
+            else -> {
+                null
+            }
         }
     }
+
+    fun getSpellWithRequiredType(type: String): Spell? {
+        Log.d(TAG, "getSpellWithRequiredType - type = $type")
+        var spell: Spell? = null
+
+        val spellsThatMatchType = mutableListOf<Spell>()
+
+        //TODO need to find out why mDatabase is null here...
+        val db = when {
+            (mDatabase == null) -> {
+                DatabaseHelper(mContext).readableDatabase
+            }
+            else -> mDatabase
+        }
+        if (db != null) {
+            val cursor = db.rawQuery("SELECT * FROM $DB_SPELLS_TABLE_NAME", null)
+            Log.d(TAG, "getSpellWithRequiredType - cursor.count = ${cursor.count}")
+
+            if (cursor.moveToFirst()) {
+                while (!cursor.isAfterLast) {
+                    val currentSpell = Spell()
+                    currentSpell.mType = cursor.getString(cursor.getColumnIndex(TABLE_COL_TYPE))
+                    Log.d(TAG, "getSpellWithRequiredType - currentSpell.mType = ${currentSpell.mType}")
+                    if (currentSpell.mType != null && currentSpell.mType!!.contains(type, ignoreCase = false)) {
+                        currentSpell.mId = cursor.getInt(cursor.getColumnIndex(TABLE_COL_ID))
+                        currentSpell.mTitle = cursor.getString(cursor.getColumnIndex(TABLE_COL_NAME))
+                        currentSpell.mNameWithAAn = cursor.getString(cursor.getColumnIndex(TABLE_COL_NAME_WITH_A_AN))
+                        currentSpell.mDescription = cursor.getString(cursor.getColumnIndex(TABLE_COL_GENERIC_DESCRIPTION))
+                        val dnd5eDescLow = cursor.getString(cursor.getColumnIndex(TABLE_COL_DND5E_DESC_LOW))
+                        val dnd5eDescMed = cursor.getString(cursor.getColumnIndex(TABLE_COL_DND5E_DESC_MEDIUM))
+                        val dnd5eDescHigh = cursor.getString(cursor.getColumnIndex(TABLE_COL_DND5E_DESC_HIGH))
+                        val mut5eDescsList: MutableMap<String, String> = mutableMapOf()
+                        mut5eDescsList[DAMAGE_STRING_LOW] = dnd5eDescLow
+                        mut5eDescsList[DAMAGE_STRING_MED] = dnd5eDescMed
+                        mut5eDescsList[DAMAGE_STRING_HIGH] = dnd5eDescHigh
+                        currentSpell.mDND5EDescriptions = mut5eDescsList
+                        val swadeDescLow = cursor.getString(cursor.getColumnIndex(TABLE_COL_SWADE_DESC_LOW))
+                        val swadeDescMed = cursor.getString(cursor.getColumnIndex(TABLE_COL_SWADE_DESC_MEDIUM))
+                        val swadeDescHigh = cursor.getString(cursor.getColumnIndex(TABLE_COL_SWADE_DESC_HIGH))
+                        val mutSwadeDescsList: MutableMap<String, String> = mutableMapOf()
+                        mutSwadeDescsList[DAMAGE_STRING_LOW] = swadeDescLow
+                        mutSwadeDescsList[DAMAGE_STRING_MED] = swadeDescMed
+                        mutSwadeDescsList[DAMAGE_STRING_HIGH] = swadeDescHigh
+                        currentSpell.mSWADEDescriptions = mutSwadeDescsList
+                        val mut5eDiceList: MutableMap<String, String> = mutableMapOf()
+                        val dnd5eDiceLow = cursor.getString(cursor.getColumnIndex(TABLE_COL_DND5E_DICE_LOW))
+                        val dnd5eDiceMed = cursor.getString(cursor.getColumnIndex(TABLE_COL_DND5E_DICE_MEDIUM))
+                        val dnd5eDiceHigh = cursor.getString(cursor.getColumnIndex(TABLE_COL_DND5E_DICE_HIGH))
+                        mut5eDiceList[DAMAGE_STRING_LOW] = dnd5eDiceLow
+                        mut5eDiceList[DAMAGE_STRING_MED] = dnd5eDiceMed
+                        mut5eDiceList[DAMAGE_STRING_HIGH] = dnd5eDiceHigh
+                        currentSpell.mDND5EDice = mut5eDiceList
+                        val mutSwadeDiceList: MutableMap<String, String> = mutableMapOf()
+                        val swadeDiceLow = cursor.getString(cursor.getColumnIndex(TABLE_COL_SWADE_DICE_LOW))
+                        val swadeDiceMed = cursor.getString(cursor.getColumnIndex(TABLE_COL_SWADE_DICE_MEDIUM))
+                        val swadeDiceHigh = cursor.getString(cursor.getColumnIndex(TABLE_COL_SWADE_DICE_HIGH))
+                        mutSwadeDiceList[DAMAGE_STRING_LOW] = swadeDiceLow
+                        mutSwadeDiceList[DAMAGE_STRING_MED] = swadeDiceMed
+                        mutSwadeDiceList[DAMAGE_STRING_HIGH] = swadeDiceHigh
+                        currentSpell.mSWADEDice = mut5eDiceList
+                        currentSpell.mDND5EPageNumber = cursor.getString(cursor.getColumnIndex(TABLE_COL_DND5E_PAGE))
+                        currentSpell.mSWADEPageNumber = cursor.getString(cursor.getColumnIndex(TABLE_COL_SWADE_PAGE))
+                        spellsThatMatchType.add(currentSpell)
+                        Log.d(TAG, "getSpellWithRequiredType - currentSpell?.mTitle = ${currentSpell?.mTitle}")
+                        Log.d(TAG, "getSpellWithRequiredType - currentSpell?.mNameWithAAn = ${currentSpell?.mNameWithAAn}")
+                    }
+                    cursor.moveToNext()
+                }
+            }
+        }
+        db?.close()
+        spell = spellsThatMatchType.random()
+        spellsThatMatchType.clear()
+        return when {
+            spell.mTitle != null -> {
+                spell
+            }
+            else -> {
+                null
+            }
+        }
+    }
+
 
     fun getGameplayModifierByName(name: String): GameplayModifier? {
         var modifier: GameplayModifier? = null

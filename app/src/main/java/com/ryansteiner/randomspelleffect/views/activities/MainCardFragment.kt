@@ -585,27 +585,33 @@ class MainCardFragment(private val c: Context)// Required empty public construct
                         if (i < diceRollImages.count()) {
                             val img = diceRollImages[i]
                             img.text = random.toString()
+                            val textColor = when (typeOfDie) {
+                                8 -> ContextCompat.getColor(mContext, R.color.colorWhitePaper)
+                                else -> ContextCompat.getColor(mContext, R.color.colorBlackInk)
+                            }
+                            img.setTextColor(textColor)
+
                             img.background = when (typeOfDie) {
                                 4 -> {
-                                    resources.getDrawable(R.drawable.dice_silhouette_d4)
+                                    ContextCompat.getDrawable(mContext, R.drawable.dice_silhouette_d4)
                                 }
                                 6 -> {
-                                    resources.getDrawable(R.drawable.dice_silhouette_d6)
+                                    ContextCompat.getDrawable(mContext, R.drawable.dice_silhouette_d6)
                                 }
                                 8 -> {
-                                    resources.getDrawable(R.drawable.dice_silhouette_d8)
+                                    ContextCompat.getDrawable(mContext, R.drawable.dice_silhouette_d8)
                                 }
                                 10 -> {
-                                    resources.getDrawable(R.drawable.dice_silhouette_d10)
+                                    ContextCompat.getDrawable(mContext, R.drawable.dice_silhouette_d10)
                                 }
                                 12 -> {
-                                    resources.getDrawable(R.drawable.dice_silhouette_d12)
+                                    ContextCompat.getDrawable(mContext, R.drawable.dice_silhouette_d12)
                                 }
                                 20 -> {
-                                    resources.getDrawable(R.drawable.dice_silhouette_d20)
+                                    ContextCompat.getDrawable(mContext, R.drawable.dice_silhouette_d20)
                                 }
                                 else -> {
-                                    resources.getDrawable(R.drawable.dice_silhouette_d6)
+                                    ContextCompat.getDrawable(mContext, R.drawable.dice_silhouette_d6)
                                 }
                             }
                         }

@@ -84,7 +84,6 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         mutList.add("4") //7
         mutList.add("6") //8*/
         //mutList.add("53")
-        //mutList.add("52")
 
         while (mutList.count() < NUMBER_OF_CARDS_TO_LOAD) {
             val random = (1..count).random()
@@ -155,7 +154,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
 
     }
 
-    override fun parseSpellStringForVariables(string: String?, system: Int): ParseSpellEffectStringResult? {
+    override fun parseSpellStringForVariables(string: String?, system: Int, requiredSpellType: String?): ParseSpellEffectStringResult? {
         Log.d(TAG, "parseSpellStringForVariables  [${mPreferencesManager?.getCurrentLifeTime()}]")
         mSystem = system
         var finalString: String?
@@ -254,7 +253,9 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
                 workingString = songPair.first
                 result.mSong = songPair.second
 
-                val spellPair = parseSpellVariable(workingString)
+
+
+                val spellPair = parseSpellVariable(workingString, requiredSpellType)
                 workingString = spellPair.first
                 result.mSpell = spellPair.second
 
@@ -646,7 +647,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         return workingString
     }
 
-    private fun parseSpellVariable(string: String?): Pair<String?, Spell?> {
+    private fun parseSpellVariable(string: String?, type: String?): Pair<String?, Spell?> {
         Log.d(TAG, "parseSpellVariable  [${mPreferencesManager?.getCurrentLifeTime()}]")
         val view: MainContract.View? = getView()
         var workingString = string
@@ -662,8 +663,8 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         //Deal with any SPELL in the text
         Log.d(TAG, "parseSpellVariable - mSystem = $mSystem")
         val damageOptions = mutableListOf<String>()
-        if (workingString != null && workingString.contains("SPELL")) {
-            Log.d(TAG, "parseSpellVariable - workingString 2 = $workingString")
+        if (workingString != null && workingString.contains("AANSPELL")) {
+            Log.d(TAG, "parseSpellVariable - workingString AANSPELL = $workingString")
 
             if (mDamagePreferences != null && mDamagePreferences!!.count() > 0) {
                 if (mDamagePreferences!!.contains(DAMAGE_INT_LOW)) {
@@ -685,10 +686,80 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
             /*if (mSpellsList == null) {
                 mSpellsList = SpellsList(mContext)
             }*/
-            selectedSpell = MyDatabaseUtils(mContext).getRandomSpell()
+            selectedSpell = if (type != null) {
+                MyDatabaseUtils(mContext).getSpellWithRequiredType(type)
+            } else {
+                MyDatabaseUtils(mContext).getRandomSpell()
+            }
             Log.d(TAG, "parseSpellVariable - mSpellsList = $mSpellsList")
             Log.d(TAG, "parseSpellVariable - selectedSpell = $selectedSpell")
-            spellText = selectedSpell?.mNameWithAAn ?: "ERROR"
+            spellText = selectedSpell?.mNameWithAAn ?: "ERROR with mNameWithAAn"
+            if (selectedSpell != null) {
+                when (mSystem) {
+                    RPG_SYSTEM_D20 -> {
+                        selectedSpellDescriptionWithDamageLevel =
+                            selectedSpell!!.mDND5EDescriptions!![selectedDamageLevel] ?: ""
+                        selectedSpellDice = selectedSpell!!.mDND5EDice!![selectedDamageLevel] ?: ""
+                        selectedSpellPageNumber = selectedSpell!!.mDND5EPageNumber ?: ""
+                    }
+                    RPG_SYSTEM_SAVAGEWORLDS -> {
+                        selectedSpellDescriptionWithDamageLevel =
+                            selectedSpell!!.mSWADEDescriptions!![selectedDamageLevel] ?: ""
+                        selectedSpellDice = selectedSpell!!.mSWADEDice!![selectedDamageLevel] ?: ""
+                        selectedSpellPageNumber = selectedSpell!!.mSWADEPageNumber ?: ""
+                    }
+                    else -> {
+                        selectedSpellDescriptionWithDamageLevel =
+                            selectedSpell!!.mSWADEDescriptions!![selectedDamageLevel] ?: "NO SYSTEM"
+                        selectedSpellDice =
+                            selectedSpell!!.mSWADEDice!![selectedDamageLevel] ?: "NO SYSTEM"
+                        selectedSpellPageNumber = selectedSpell!!.mSWADEPageNumber ?: "NO SYSTEM"
+                    }
+                }
+            }
+
+
+
+            visibility = true
+            view?.updateDiceRoll(selectedSpellDice)
+
+            Log.d(TAG, "parseSpellVariable - workingString 3 = $workingString")
+            workingString = workingString.replace("AANSPELL", spellText)
+
+
+            //tSpellDiceRoll.text = selectedSpellDice
+
+        } else if (workingString != null && workingString.contains("SPELL")) {
+            Log.d(TAG, "parseSpellVariable - workingString SPELL = $workingString")
+
+            if (mDamagePreferences != null && mDamagePreferences!!.count() > 0) {
+                if (mDamagePreferences!!.contains(DAMAGE_INT_LOW)) {
+                    damageOptions.add(DAMAGE_STRING_LOW)
+                }
+                if (mDamagePreferences!!.contains(DAMAGE_INT_MED)) {
+                    damageOptions.add(DAMAGE_STRING_MED)
+                }
+                if (mDamagePreferences!!.contains(DAMAGE_INT_HIGH)) {
+                    damageOptions.add(DAMAGE_STRING_HIGH)
+                }
+            } else {
+                damageOptions.add(DAMAGE_STRING_LOW)
+                damageOptions.add(DAMAGE_STRING_MED)
+                damageOptions.add(DAMAGE_STRING_HIGH)
+            }
+
+            val selectedDamageLevel = damageOptions.random()
+            /*if (mSpellsList == null) {
+                mSpellsList = SpellsList(mContext)
+            }*/
+            selectedSpell = if (type != null) {
+                MyDatabaseUtils(mContext).getSpellWithRequiredType(type)
+            } else {
+                MyDatabaseUtils(mContext).getRandomSpell()
+            }
+            Log.d(TAG, "parseSpellVariable - mSpellsList = $mSpellsList")
+            Log.d(TAG, "parseSpellVariable - selectedSpell = $selectedSpell")
+            spellText = selectedSpell?.mTitle ?: "ERROR with mTitle"
             if (selectedSpell != null) {
                 when (mSystem) {
                     RPG_SYSTEM_D20 -> {
@@ -723,7 +794,6 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
 
 
             //tSpellDiceRoll.text = selectedSpellDice
-
         }
 
         view?.updateSpellInfoContainer(visibility, spellText, selectedSpellDescriptionWithDamageLevel, selectedSpellPageNumber)

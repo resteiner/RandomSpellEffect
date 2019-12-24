@@ -128,7 +128,8 @@ class MainActivity : BaseActivity(), MainContract.View,
                 val fullCard = FullCard()
                 val spellEffect = spellEffects[i]
                 val desc = spellEffect?.mDescription
-                val parsedResult: ParseSpellEffectStringResult? = mPresenter?.parseSpellStringForVariables(desc, system)
+                val requiredSpellType = spellEffect?.mRequiresSpellType
+                val parsedResult: ParseSpellEffectStringResult? = mPresenter?.parseSpellStringForVariables(desc, system, requiredSpellType)
                 val cardText =  parsedResult?.mFullString ?: "ERROR Parsing Spell Pair in onGetSpellEffects"
                 val cardId = spellEffect?.mId.toString()
                 cardIds.add(cardId)
