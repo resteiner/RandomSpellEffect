@@ -33,7 +33,9 @@ import android.os.Handler
 import android.view.animation.DecelerateInterpolator
 import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.PagerAdapter
+import com.bumptech.glide.Glide
 import com.ryansteiner.randomspelleffect.data.models.*
+import kotlinx.android.synthetic.main.include_tutorial.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -52,6 +54,7 @@ class MainActivity : BaseActivity(), MainContract.View,
     private lateinit var mViewPager: ViewPager
     private var mPresenter: MainPresenter? = null
     private var mDatabase: SQLiteDatabase? = null
+    private var mIsTutorial = false
     private var mPreferencesManager: PreferencesManager? = null
     private val mSpellsList = SpellsList(this)
     private var mCurrentSpellEffect: SpellEffect? = null
@@ -76,7 +79,7 @@ class MainActivity : BaseActivity(), MainContract.View,
         Pair(SEVERITY_BAD_LOW, R.color.colorYellowKhaki),
         Pair(SEVERITY_BAD_MID, R.color.colorOrangeOutrageous),
         Pair(SEVERITY_BAD_YIKES, R.color.colorRedCardinal)
-        )
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,19 +98,20 @@ class MainActivity : BaseActivity(), MainContract.View,
 
         mViewPager = findViewById(R.id.mMainCardPager)
 
-            //mPreferencesManager = PreferencesManager(this)
+        //mPreferencesManager = PreferencesManager(this)
         //val spellsList = SpellsList(this)
         //mPresenter?.updateSpellList(spellsList)
 
         //mPresenter?.updateSpellList(mSpellsList)
 
+        mPresenter?.loadingViewToggle(true)
+
         initializePreferencesAndDatabase()
 
     }
 
-    private fun initializePreferencesAndDatabase(){
+    private fun initializePreferencesAndDatabase() {
         mPresenter?.getPreferences()
-        mPresenter?.loadDatabase(this)
         mPresenter?.initializeView()
 
     }
@@ -130,7 +134,7 @@ class MainActivity : BaseActivity(), MainContract.View,
                 val desc = spellEffect?.mDescription
                 val requiredSpellType = spellEffect?.mRequiresSpellType
                 val parsedResult: ParseSpellEffectStringResult? = mPresenter?.parseSpellStringForVariables(desc, system, requiredSpellType)
-                val cardText =  parsedResult?.mFullString ?: "ERROR Parsing Spell Pair in onGetSpellEffects"
+                val cardText = parsedResult?.mFullString ?: "ERROR Parsing Spell Pair in onGetSpellEffects"
                 val cardId = spellEffect?.mId.toString()
                 cardIds.add(cardId)
                 fullCard.setSpellEffect(spellEffect)
@@ -149,12 +153,12 @@ class MainActivity : BaseActivity(), MainContract.View,
     }
 
 
-
     private fun setupViewPager(fullCards: List<FullCard?>?) {
         Log.d(TAG, "setupViewPager  [${mPreferencesManager?.getCurrentLifeTime()}]")
         Log.d(TAG, "setupViewPager  [${fullCards}]")
         val system = mPreferencesManager?.getSystem() ?: -1
         val damagePrefs = mPreferencesManager?.getDamagePreferences()
+        val hasBeenOnboarded = mPreferencesManager?.getHasBeenOnboarded() ?: -1
         if (mPagerAdapter == null) {
             if (fullCards != null && fullCards.count() > 0) {
 
@@ -194,19 +198,19 @@ class MainActivity : BaseActivity(), MainContract.View,
                 override fun onPageScrollStateChanged(state: Int) {
                     Log.d(TAG, "onPageScrollStateChanged - state = $state")
                     mViewPagerState = state
-                   /* if (state == ViewPager.SCROLL_STATE_SETTLING && mViewPagerSelection == lastPosition) {
-                        mViewPagerScrollStateWatch = true
+                    /* if (state == ViewPager.SCROLL_STATE_SETTLING && mViewPagerSelection == lastPosition) {
+                         mViewPagerScrollStateWatch = true
 
-                    }
+                     }
 
-                    if (state == ViewPager.SCROLL_STATE_IDLE && mViewPagerScrollStateWatch) {
-                        mViewPagerScrollStateWatch = false
-                        onLoadingViewToggle(true)
-                        Handler().postDelayed({
-                            mViewPager?.setCurrentItem(0, false)
-                            mPresenter?.getSpellEffects()
-                        }, 200)
-                    }*/
+                     if (state == ViewPager.SCROLL_STATE_IDLE && mViewPagerScrollStateWatch) {
+                         mViewPagerScrollStateWatch = false
+                         onLoadingViewToggle(true)
+                         Handler().postDelayed({
+                             mViewPager?.setCurrentItem(0, false)
+                             mPresenter?.getSpellEffects()
+                         }, 200)
+                     }*/
                 }
 
                 override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
@@ -222,7 +226,7 @@ class MainActivity : BaseActivity(), MainContract.View,
                         val lastPosition = count - 1
                         Log.d(TAG, "onPageSelected - lastPosition = $lastPosition")
                         if (position == lastPosition) {
-                            onLoadingViewToggle(true)
+                            mPresenter?.loadingViewToggle(true)
                             Handler().postDelayed({
                                 mViewPager?.setCurrentItem(0, false)
                                 mPresenter?.getSpellEffects()
@@ -261,6 +265,11 @@ class MainActivity : BaseActivity(), MainContract.View,
                 mPresenter?.loadingViewToggle(false)
             }, 10)
         }
+        when {
+            hasBeenOnboarded > -1110 -> {
+                runTutorial()
+            }
+        }
     }
 
     override fun onInitializedView() {
@@ -285,12 +294,15 @@ class MainActivity : BaseActivity(), MainContract.View,
                 mMenuIsAnimating = false
                 mMenuIsClosed = true
             }
+
             override fun onAnimationStart(p0: Animator?) {
                 //do nothing
             }
+
             override fun onAnimationRepeat(p0: Animator?) {
                 //do nothing
             }
+
             override fun onAnimationCancel(p0: Animator?) {
                 //do nothing
             }
@@ -433,12 +445,15 @@ class MainActivity : BaseActivity(), MainContract.View,
                             mMenuIsAnimating = false
                             mMenuIsClosed = false
                         }
+
                         override fun onAnimationStart(p0: Animator?) {
                             //do nothing
                         }
+
                         override fun onAnimationRepeat(p0: Animator?) {
                             //do nothing
                         }
+
                         override fun onAnimationCancel(p0: Animator?) {
                             //do nothing
                         }
@@ -454,12 +469,15 @@ class MainActivity : BaseActivity(), MainContract.View,
                             mMenuIsAnimating = false
                             mMenuIsClosed = true
                         }
+
                         override fun onAnimationStart(p0: Animator?) {
                             //do nothing
                         }
+
                         override fun onAnimationRepeat(p0: Animator?) {
                             //do nothing
                         }
+
                         override fun onAnimationCancel(p0: Animator?) {
                             //do nothing
                         }
@@ -510,7 +528,7 @@ class MainActivity : BaseActivity(), MainContract.View,
         //TODO Remove - Not used
     }
 
-    override fun updateDebugText(systemText: String?){
+    override fun updateDebugText(systemText: String?) {
         Log.d(TAG, "updateDebugText  [${mPreferencesManager?.getCurrentLifeTime()}]")
         tDebugSystemText.text = systemText
     }
@@ -518,26 +536,54 @@ class MainActivity : BaseActivity(), MainContract.View,
     override fun updatePreferences(prefs: PreferencesManager?) {
         Log.d(TAG, "updatePreferences  [${mPreferencesManager?.getCurrentLifeTime()}]")
         mPreferencesManager = prefs
-        val system = prefs?.getSystem()
-        when (system) {
-            RPG_SYSTEM_D20 -> {radioSystemDND5E.isChecked = true}
-            RPG_SYSTEM_SAVAGEWORLDS -> {radioSystemSWADE.isChecked = true}
-        }
-        val gameEffects = prefs?.getGameEffects()
-        val gameplayBool = gameEffects!![SPELL_EFFECTS_GAMEPLAY] ?: true
-        val roleplayBool = gameEffects!![SPELL_EFFECTS_ROLEPLAY] ?: true
-        checkBoxGamePlayEffects.isChecked = gameplayBool
-        checkBoxRolePlayEffects.isChecked = roleplayBool
 
-        val targets = prefs?.getTargets()
-        val targetCasterBool = targets!![TARGET_CASTER] ?: true
-        val targetNearestAllyBool = targets!![TARGET_NEAREST_ALLY] ?: true
-        val targetNearestEnemyBool = targets!![TARGET_NEAREST_ENEMY] ?: true
-        val targetNearestCreatureBool = targets!![TARGET_NEAREST_CREATURE] ?: true
-        checkBoxTargetCaster.isChecked = targetCasterBool
-        checkBoxTargetNearestAlly.isChecked = targetNearestAllyBool
-        checkBoxTargetNearestEnemy.isChecked = targetNearestEnemyBool
-        checkBoxTargetNearestCreature.isChecked = targetNearestCreatureBool
+        val hasBeenOnboarded = prefs?.getHasBeenOnboarded() ?: -1
+
+        when {
+            hasBeenOnboarded > 0 ->{
+                val system = prefs?.getSystem() ?: -1
+                when (system) {
+                    RPG_SYSTEM_GENERIC -> {
+                        radioSystemGeneric.isChecked = true
+                    }
+                    RPG_SYSTEM_D20 -> {
+                        radioSystemDND5E.isChecked = true
+                    }
+                    RPG_SYSTEM_SAVAGEWORLDS -> {
+                        radioSystemSWADE.isChecked = true
+                    }
+                }
+                val gameEffects = prefs?.getGameEffects()
+                val gameplayBool = gameEffects!![SPELL_EFFECTS_GAMEPLAY] ?: true
+                val roleplayBool = gameEffects!![SPELL_EFFECTS_ROLEPLAY] ?: true
+                checkBoxGamePlayEffects.isChecked = gameplayBool
+                checkBoxRolePlayEffects.isChecked = roleplayBool
+
+                val targets = prefs?.getTargets()
+                val targetCasterBool = targets!![TARGET_CASTER] ?: true
+                val targetNearestAllyBool = targets!![TARGET_NEAREST_ALLY] ?: true
+                val targetNearestEnemyBool = targets!![TARGET_NEAREST_ENEMY] ?: true
+                val targetNearestCreatureBool = targets!![TARGET_NEAREST_CREATURE] ?: true
+                checkBoxTargetCaster.isChecked = targetCasterBool
+                checkBoxTargetNearestAlly.isChecked = targetNearestAllyBool
+                checkBoxTargetNearestEnemy.isChecked = targetNearestEnemyBool
+                checkBoxTargetNearestCreature.isChecked = targetNearestCreatureBool
+
+                mTutorialHighlighter.visibility = GONE
+            }
+            else -> {
+                //set defaults
+                mPreferencesManager?.setTargets(caster = true, nearestAlly = true, nearestEnemy = true, nearestCreature = true)
+                mPreferencesManager?.setDamagePreferences(null)
+                mPreferencesManager?.setGameEffects(gamePlay = true, rolePlay = true)
+                mPreferencesManager?.selectSystem(RPG_SYSTEM_GENERIC)
+                mIsTutorial = true
+
+                //mTutorialHighlighter.visibility = VISIBLE
+            }
+        }
+
+        mPresenter?.loadDatabase(this)
     }
 
     fun onRadioButtonClicked(view: View) {
@@ -550,7 +596,8 @@ class MainActivity : BaseActivity(), MainContract.View,
                 R.id.radioSystemDND5E ->
                     if (checked) {
                         when (system) {
-                            RPG_SYSTEM_D20 -> { } //Do nothing
+                            RPG_SYSTEM_D20 -> {
+                            } //Do nothing
                             else -> {
                                 mPreferencesManager?.selectSystem(RPG_SYSTEM_D20)
                                 val id = mCurrentSpellEffect?.mId ?: -1
@@ -561,7 +608,8 @@ class MainActivity : BaseActivity(), MainContract.View,
                 R.id.radioSystemSWADE ->
                     if (checked) {
                         when (system) {
-                            RPG_SYSTEM_SAVAGEWORLDS -> { } //Do nothing
+                            RPG_SYSTEM_SAVAGEWORLDS -> {
+                            } //Do nothing
                             else -> {
                                 mPreferencesManager?.selectSystem(RPG_SYSTEM_SAVAGEWORLDS)
                                 val id = mCurrentSpellEffect?.mId ?: -1
@@ -621,6 +669,7 @@ class MainActivity : BaseActivity(), MainContract.View,
                                     frag?.mSpellEffectAdditionalInfoContainer?.isEnabled = false
 
                                 }
+
                                 override fun onAnimationStart(p0: Animator?) {
                                     //do nothing
                                 }
@@ -637,6 +686,7 @@ class MainActivity : BaseActivity(), MainContract.View,
                         }
                     }
                 }
+
                 override fun onAnimationStart(p0: Animator?) {
                     //do nothing
                 }
@@ -754,8 +804,12 @@ class MainActivity : BaseActivity(), MainContract.View,
     override fun onClickSettings(showSettings: Boolean) {
         //These will need animations at some point
         when (showSettings) {
-            true -> {mSettingsContainer.visibility = VISIBLE}
-            else -> {mSettingsContainer.visibility = GONE}
+            true -> {
+                mSettingsContainer.visibility = VISIBLE
+            }
+            else -> {
+                mSettingsContainer.visibility = GONE
+            }
         }
     }
 
@@ -786,6 +840,45 @@ class MainActivity : BaseActivity(), MainContract.View,
             else -> VISIBLE
         }
     }
+
+    private fun runTutorial(){
+        runTutorialPart1()
+
+
+        Glide
+            .with(this)
+            .load(ContextCompat.getDrawable(this, R.drawable.swipe_anim))
+            .into(iTutorialSwipe01)
+
+
+        mTutorialSkipButton.setOnClickListener {
+            //TODO Skip Tutorial
+            onShowToastMessage("Skip")
+        }
+    }
+
+    private fun runTutorialPart1(){
+        mIncludeTutorialContainer.visibility = VISIBLE
+        val swipeListener = OnSwipeTouchListener(this)
+
+
+
+        mIncludeTutorialContainer.setOnTouchListener(object : OnSwipeTouchListener(this) {
+            override fun onSwipeLeft() {
+                onShowToastMessage("This one")
+            }
+
+            override fun onSwipeRight() {
+                onShowToastMessage("Right")
+            }
+        })
+
+    }
+
+    private fun runTutorialPart2(){
+
+    }
+
 
 }
 

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mTutorialContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/mTutorialHighlighter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <View
+                android:id="@+id/mTutorialTopLeft"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:alpha="0.5"
+                android:background="@color/colorBlackInk"
+                app:layout_constraintBottom_toTopOf="@+id/mTutorialMidLeft"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/mTutorialTopMiddle"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/mTutorialTopMiddle"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:alpha="0.5"
+                android:background="@color/colorBlackInk"
+                app:layout_constraintBottom_toTopOf="@id/mTutorialMidMiddle"
+                app:layout_constraintLeft_toRightOf="@+id/mTutorialTopLeft"
+                app:layout_constraintRight_toLeftOf="@id/mTutorialTopRight"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/mTutorialTopRight"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:alpha="0.5"
+                android:background="@color/colorBlackInk"
+                app:layout_constraintBottom_toTopOf="@id/mTutorialMidRight"
+                app:layout_constraintLeft_toRightOf="@+id/mTutorialTopMiddle"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/mTutorialMidLeft"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:alpha="0.5"
+                android:background="@color/colorBlackInk"
+                app:layout_constraintBottom_toBottomOf="@id/mTutorialMidMiddle"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/mTutorialMidMiddle"
+                app:layout_constraintTop_toTopOf="@id/mTutorialMidMiddle" />
+
+            <View
+                android:id="@+id/mTutorialMidMiddle"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@drawable/background_highlight_circle"
+                app:layout_constraintBottom_toTopOf="@id/mTutorialBottomMiddle"
+                app:layout_constraintLeft_toRightOf="@+id/mTutorialMidLeft"
+                app:layout_constraintRight_toLeftOf="@id/mTutorialMidRight"
+                app:layout_constraintTop_toBottomOf="@id/mTutorialTopMiddle" />
+
+            <View
+                android:id="@+id/mTutorialMidRight"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:alpha="0.5"
+                android:background="@color/colorBlackInk"
+                app:layout_constraintBottom_toBottomOf="@id/mTutorialMidMiddle"
+                app:layout_constraintLeft_toRightOf="@id/mTutorialMidMiddle"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/mTutorialMidMiddle" />
+
+            <View
+                android:id="@+id/mTutorialBottomLeft"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:alpha="0.5"
+                android:background="@color/colorBlackInk"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/mTutorialBottomMiddle"
+                app:layout_constraintTop_toBottomOf="@id/mTutorialMidLeft" />
+
+            <View
+                android:id="@+id/mTutorialBottomMiddle"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:alpha="0.5"
+                android:background="@color/colorBlackInk"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/mTutorialBottomLeft"
+                app:layout_constraintRight_toLeftOf="@id/mTutorialBottomRight"
+                app:layout_constraintTop_toBottomOf="@id/mTutorialMidMiddle" />
+
+            <View
+                android:id="@+id/mTutorialBottomRight"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:alpha="0.5"
+                android:background="@color/colorBlackInk"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/mTutorialBottomMiddle"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/mTutorialMidRight" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <FrameLayout
+            android:id="@+id/mTutorialWelcomeScreen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@color/colorBlackEerie">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/tTutorialWelcome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/thin_margin_top_bottom"
+                    android:text="@string/tutorial_welcome_to"
+                    android:textColor="@color/colorWhitePearlescent"
+                    android:textSize="@dimen/heading_1_text_size"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+
+                <TextView
+                    android:id="@+id/tTutorialAppName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:paddingLeft="24dp"
+                    android:paddingTop="12dp"
+                    android:paddingRight="24dp"
+                    android:paddingBottom="12dp"
+                    android:text="@string/app_name"
+                    android:textColor="@color/colorYellowButter"
+                    android:textSize="42sp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tTutorialWelcome" />
+
+                <TextView
+                    android:id="@+id/tTutorialText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp"
+                    android:singleLine="false"
+                    android:text="@string/tutorial_this_tutorial_will_guide_you"
+                    android:textColor="@color/colorWhitePearlescent"
+                    android:textSize="@dimen/normal_text_size"
+                    app:layout_constraintTop_toBottomOf="@id/tTutorialAppName"
+                    app:layout_constraintBottom_toTopOf="@id/tTutorialSwipe01"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+
+                <TextView
+                    android:id="@+id/tTutorialSwipe01"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tutorial_swipe_to_continue"
+                    android:textColor="@color/colorWhitePearlescent"
+                    android:textSize="@dimen/heading_2_text_size"
+                    app:layout_constraintBottom_toTopOf="@id/iTutorialSwipe01"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+
+                <ImageView
+                    android:id="@+id/iTutorialSwipe01"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp"
+                    android:src="@drawable/swipe_anim"
+                    android:layout_marginBottom="60dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/mTutorialSkipButton"
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="4dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:background="@color/colorBlueCobalt"
+            android:layout_gravity="bottom|right"
+            >
+
+            <TextView
+                android:id="@+id/tTutorialSkip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tutorial_skip"
+                android:textColor="@color/colorWhitePearlescent"
+                android:textSize="@dimen/normal_text_size"/>
+
+            <ImageView
+                android:id="@+id/iTutorialSkipArrow"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_chevron_right"/>
+
+
+        </LinearLayout>
+    </FrameLayout>
+</FrameLayout>

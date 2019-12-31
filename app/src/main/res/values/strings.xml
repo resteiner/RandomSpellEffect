@@ -1,10 +1,11 @@
 <resources>
-    <string name="app_name">RandomSpellEffect</string>
+    <string name="app_name">Pondo\'s Magnificent Deck of Many Magical Effects</string>
 
     <string name="loading">Loading</string>
     <string name="generic_error_message">An error has occurred. Please try again.</string>
     <string name="spell_info_dice_roll">%1$i!d%1$i!</string>
     <string name="rpg_system">RPG System</string>
+    <string name="generic">Generic</string>
     <string name="dungeons_n_dragons_5th_edition">Dungeons &amp; Dragons - 5th Edition</string>
     <string name="savage_worlds_adventure_edition">Savage Worlds Adventure Edition (SWADE)</string>
     <string name="menu_title_game_effect">Game Play and Role Play Effects</string>
@@ -30,4 +31,9 @@
     <string name="net_libram_for_information">For more information, please visit</string>
     <string name="net_libram_url">https://www.facebook.com/The-Net-Libram-of-Random-Magical-Effects-106043207533296</string>
     <string name="reload_video">Reload video</string>
+    <string name="period">.</string>
+    <string name="tutorial_welcome_to">Welcome to</string>
+    <string name="tutorial_swipe_to_continue">Swipe from right to left to continue</string>
+    <string name="tutorial_this_tutorial_will_guide_you">\tThis tutorial will guide you through the basic functionality of this app. You can revisit this tutorial from the Main Menu at any time if you\'d rather skip ahead and start using the app immediately.</string>
+    <string name="tutorial_skip">Skip Tutorial</string>
 </resources>

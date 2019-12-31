@@ -70,10 +70,22 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     override fun getSpellEffects() {
         Log.d(TAG, "getSpellEffects  [${mPreferencesManager?.getCurrentLifeTime()}]")
 
+        val hasBeenOnboardedInt = mPreferencesManager?.getHasBeenOnboarded() ?: -1
+        val hasBeenOnboarded = when {
+            hasBeenOnboardedInt > 0 -> true
+            else -> false
+        }
+
         val view: MainContract.View? = getView()
         val count = DatabaseUtils.queryNumEntries(mDatabase, DB_SPELLEFFECT_TABLE_NAME).toInt()
         var previousCards = mPreferencesManager?.getPreviousCardsList() ?: listOf()
         val mutList: MutableList<String> = mutableListOf()
+        var cardsToLoad = NUMBER_OF_CARDS_TO_LOAD
+        if (!hasBeenOnboarded) {
+            mutList.add("5")
+            mutList.add("14")
+            cardsToLoad = 3
+        }
         /*mutList.add("5") //0
         mutList.add("16") //1
         mutList.add("21") //2
@@ -85,15 +97,16 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         mutList.add("6") //8*/
         //mutList.add("53")
 
-        while (mutList.count() < NUMBER_OF_CARDS_TO_LOAD) {
+        while (mutList.count() < cardsToLoad) {
             val random = (1..count).random()
             val randomString = random.toString()
             if (!mutList.contains(randomString) && !previousCards.contains(randomString)) {
                 mutList.add(randomString)
             }
         }
-        mPreferencesManager?.addToPreviousCardsList(mutList)
-
+        if (hasBeenOnboarded) {
+            mPreferencesManager?.addToPreviousCardsList(mutList)
+        }
         val listOfSpellEffects = MyDatabaseUtils(mContext).getSpellEffectsByIds(mutList)
         view?.onGetSpellEffects(listOfSpellEffects)
 

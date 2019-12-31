@@ -66,6 +66,12 @@ class StartupPresenter(context: Context) : BasePresenter<StartupContract.View>(c
         }
         Log.d(TAG, "load - mPreferencesManager?.getTargets() AFTER = ${mPreferencesManager?.getTargets()}")
 
+        val hasBeenOnboardedInt = mPreferencesManager?.getHasBeenOnboarded() ?: -1
+        val hasBeenOnboarded = when  {
+            (hasBeenOnboardedInt > 0) -> true
+            else -> false
+        }
+
         view?.onLoaded()
     }
 }

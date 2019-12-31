@@ -3,6 +3,8 @@ package com.ryansteiner.randomspelleffect.views.activities
 import android.content.Context
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -20,6 +22,7 @@ import kotlinx.android.synthetic.main.include_full_loading_screen.*
 abstract class BaseActivity : AppCompatActivity(), BaseContract.View {
 
     private val TAG = "BaseActivity"
+    private var mAnimationList = null
 
     override fun onShowToastMessage(message: String?) {
         val safeMessage = when {
@@ -48,6 +51,36 @@ abstract class BaseActivity : AppCompatActivity(), BaseContract.View {
             true -> VISIBLE
             else -> GONE
         }
+        /*when (visible) {
+            true -> {
+                val animDuration = 500L
+                val alphaAnimA = AlphaAnimation(0.25f, 1.0f)
+                alphaAnimA.duration = animDuration
+                alphaAnimA.repeatCount = Animation.INFINITE
+                alphaAnimA.repeatMode = Animation.REVERSE
+                tLoadingTextEllipsesA.startAnimation(alphaAnimA)
+
+                val alphaAnimB = AlphaAnimation(1.0f, 0.25f)
+                alphaAnimB.duration = animDuration
+                alphaAnimB.startOffset = 250
+                alphaAnimB.repeatCount = Animation.INFINITE
+                alphaAnimB.repeatMode = Animation.REVERSE
+                tLoadingTextEllipsesB.startAnimation(alphaAnimB)
+
+                val alphaAnimC = AlphaAnimation(1.0f, 0.25f)
+                alphaAnimC.duration = animDuration
+                alphaAnimC.startOffset = 0
+                alphaAnimC.repeatCount = Animation.INFINITE
+                alphaAnimC.repeatMode = Animation.REVERSE
+                tLoadingTextEllipsesC.startAnimation(alphaAnimC)
+
+            }
+            else -> {
+                tLoadingTextEllipsesA.clearAnimation()
+                tLoadingTextEllipsesB.clearAnimation()
+                tLoadingTextEllipsesC.clearAnimation()
+            }
+        }*/
     }
 
     override fun onDestroy() {
@@ -60,6 +93,11 @@ abstract class BaseActivity : AppCompatActivity(), BaseContract.View {
             .with(context)
             .load(ContextCompat.getDrawable(context, R.drawable.loading_anim))
             .into(iLoadingIcon)
+
+        Glide
+            .with(context)
+            .load(ContextCompat.getDrawable(context, R.drawable.ellipses_anim))
+            .into(iLoadingEllipses)
 
     }
 }

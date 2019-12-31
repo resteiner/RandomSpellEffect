@@ -454,4 +454,23 @@ class PreferencesManager(context: Context) {
         val imageId = mDrawableList[index]
         return ContextCompat.getDrawable(mContext, imageId)
     }
+
+
+    fun getHasBeenOnboarded(): Int? {
+        return when {
+            mPreferences != null -> {
+                val hasBeenOnboarded = mPreferences!!.getInt(HAS_BEEN_ONBOARDED, -1)
+                hasBeenOnboarded
+            }
+            else -> null
+        }
+    }
+
+    fun setHasBeenOnboarded(hasBeenOnboarded: Int) {
+        mPreferences?.edit()?.putInt(HAS_BEEN_ONBOARDED, hasBeenOnboarded)?.apply()
+        //mPreferences?.edit()?.apply()
+
+    }
+
+
 }

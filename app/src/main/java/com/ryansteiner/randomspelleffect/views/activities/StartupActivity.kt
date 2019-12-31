@@ -42,7 +42,7 @@ class StartupActivity : BaseActivity(), StartupContract.View/*, StartupListAdapt
 
     }
 
-    private fun initializeView(){
+    private fun initializeView() {
 
         Log.d(TAG, "initializeView - mPresenter = $mPresenter")
         mStartupText?.text = "Loading"
@@ -68,7 +68,7 @@ class StartupActivity : BaseActivity(), StartupContract.View/*, StartupListAdapt
         }*/
     }
 
-    private fun setupOnClickListeners(){
+    private fun setupOnClickListeners() {
 
         /*ivRendererListButton?.setOnClickListener {
             when (View.GONE) {
@@ -79,26 +79,23 @@ class StartupActivity : BaseActivity(), StartupContract.View/*, StartupListAdapt
         }*/
 
 
-
     }
 
     override fun onLoaded() {
 
-
-        val intent = Intent(this, MainActivity::class.java)
         mStartupText?.text = "Loaded"
-        //Handler().postDelayed({}, 100)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.exitTransition = null
         }
+
+        //post delay is placeholder until there's a proper splash screen
         Handler().postDelayed({
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
-            //mPresenter?.loadingViewToggle(false)
-        }, 500)
+        }, 250)
 
-    }
 
-   /* override fun onSelectItem(id: Int) {
+        /* override fun onSelectItem(id: Int) {
 
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra(INTENT_EXTRA_WALLPAPER_ID_INT, id)
@@ -108,4 +105,5 @@ class StartupActivity : BaseActivity(), StartupContract.View/*, StartupListAdapt
     override fun onCustomListItemClick(item: LiveWallpaperInfo) {
         mPresenter?.selectItem(item)
     }*/
+    }
 }
