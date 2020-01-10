@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBlackEerie"
-    tools:context=".views.activities.MainActivity">
+    style="@style/StartupTheme"
+    tools:context=".views.activities.StartupActivity">
 
     <TextView
         android:id="@+id/mStartupText"

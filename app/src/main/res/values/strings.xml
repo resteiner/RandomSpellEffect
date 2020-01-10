@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Pondo\'s Magnificent Deck of Many Magical Effects</string>
+    <string name="app_name">The Magnificently Mystical Deck of Multitudinous Magical Effects</string>
 
     <string name="loading">Loading</string>
     <string name="generic_error_message">An error has occurred. Please try again.</string>
@@ -33,7 +33,10 @@
     <string name="reload_video">Reload video</string>
     <string name="period">.</string>
     <string name="tutorial_welcome_to">Welcome to</string>
-    <string name="tutorial_swipe_to_continue">Swipe from right to left to continue</string>
+    <string name="tutorial_swipe_to_continue">Swipe from right to left to draw a new card with a new Spell Effect</string>
     <string name="tutorial_this_tutorial_will_guide_you">\tThis tutorial will guide you through the basic functionality of this app. You can revisit this tutorial from the Main Menu at any time if you\'d rather skip ahead and start using the app immediately.</string>
     <string name="tutorial_skip">Skip Tutorial</string>
+    <string name="tutorial_card_explanation">Each Spell Effect will be displayed on a card like the one here</string>
+    <string name="tutorial_tap_to_continue">(Tap anywhere to continue)</string>
+    <string name="tutorial_tap_the_menu">Tap on the Menu Tab to open the Main Menu.</string>
 </resources>

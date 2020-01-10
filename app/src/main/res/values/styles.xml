@@ -9,4 +9,11 @@
         <item name="android:fontFamily">@font/philosopher</item>
     </style>
 
+    <style name="StartupTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/berkshire_swash</item>
+    </style>
+
 </resources>

@@ -7,21 +7,50 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
+
+    def STRING = "String"
+    def API_BASE_URL = "API_BASE_URL"
+    def BUG_SNAG_RELEASE_STAGE = "BUG_SNAG_RELEASE_STAGE"
+
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.ryansteiner.randomspelleffect"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+
+
+        def versionMajor = 0
+        def versionMinor = 9
+        def versionPatch = 0
+
+        versionCode versionMajor * 1000000 + versionMinor * 10000 + versionPatch
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+        flavorDimensions "version"
+        free {
+            dimension "version"
+            applicationId "com.ryansteiner.randomspelleffect.free"
+            buildConfigField STRING, BUG_SNAG_RELEASE_STAGE, "\"free\""
+            buildConfigField STRING, API_BASE_URL, "\"unused\""
+        }
+
+        premium {
+            dimension "version"
+            applicationId "com.ryansteiner.randomspelleffect.premium"
+            buildConfigField STRING, BUG_SNAG_RELEASE_STAGE, "\"premium\""
+            buildConfigField STRING, API_BASE_URL, "\"unused\""
+        }
+    }
+
+
 }
 
 dependencies {
@@ -35,11 +64,14 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
+    //Bugsnag
+    implementation 'com.bugsnag:bugsnag-android:4.+'
+
     // Room
     def room_version = "1.1.1"
     implementation "android.arch.persistence.room:runtime:$room_version"
     annotationProcessor "android.arch.persistence.room:compiler:$room_version"
-    implementation "androidx.room:room-ktx:2.2.2"
+    implementation "androidx.room:room-ktx:2.2.3"
 
     //Glide
     implementation 'com.github.bumptech.glide:glide:4.9.0'

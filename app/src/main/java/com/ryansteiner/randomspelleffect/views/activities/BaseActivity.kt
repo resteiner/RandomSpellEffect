@@ -1,6 +1,8 @@
 package com.ryansteiner.randomspelleffect.views.activities
 
 import android.content.Context
+import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.animation.AlphaAnimation
@@ -9,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import com.bugsnag.android.Bugsnag
 import com.bumptech.glide.Glide
 import com.ryansteiner.randomspelleffect.R
 import com.ryansteiner.randomspelleffect.contracts.BaseContract

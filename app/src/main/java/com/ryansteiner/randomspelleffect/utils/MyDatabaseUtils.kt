@@ -3,10 +3,7 @@ package com.ryansteiner.randomspelleffect.utils
 import android.content.Context
 import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
-import android.graphics.drawable.Drawable
 import android.util.Log
-import androidx.core.content.ContextCompat
-import com.ryansteiner.randomspelleffect.R
 import com.ryansteiner.randomspelleffect.data.*
 import com.ryansteiner.randomspelleffect.data.models.SpellEffect
 import com.ryansteiner.randomspelleffect.data.models.GameplayModifier
@@ -57,21 +54,24 @@ class MyDatabaseUtils(context: Context) {
                 // .use requires API 16
                 if (it!!.moveToFirst()) {
                     val result = SpellEffect()
-                    result.mId = it.getInt(it.getColumnIndex(TABLE_COL_ID))
-                    result.mDescription = it.getString(it.getColumnIndex(TABLE_COL_DESCRIPTION))
-                    result.mType = it.getInt(it.getColumnIndex(TABLE_COL_TYPE))
-                    result.mTarget = it.getInt(it.getColumnIndex(TABLE_COL_TARGET))
-                    result.mHasGameplayImpact =
-                        it.getInt(it.getColumnIndex(TABLE_COL_HASGAMEPLAYIMPACT))
-                    result.mTags = it.getString(it.getColumnIndex(TABLE_COL_TAGS))
-                    result.mHowBadIsIt = it.getInt(it.getColumnIndex(TABLE_COL_HOWBADISIT))
-                    result.mUsesImage = it.getString(it.getColumnIndex(TABLE_COL_USESIMAGE))
-                    val isNetLibramInt = it.getInt(it.getColumnIndex(TABLE_COL_ISNETLIBRAM))
-                    result.mIsNetLibram = when {
+                    val id = it.getInt(it.getColumnIndex(TABLE_COL_ID))
+                    val description = it.getString(it.getColumnIndex(TABLE_COL_DESCRIPTION))
+                    val type = it.getInt(it.getColumnIndex(TABLE_COL_TYPE))
+                    val target = it.getInt(it.getColumnIndex(TABLE_COL_TARGET))
+                    val hasGameplayImpact = it.getInt(it.getColumnIndex(TABLE_COL_HAS_GAMEPLAY_IMPACT))
+                    val tags = it.getString(it.getColumnIndex(TABLE_COL_TAGS))
+                    val howBadIsIt = it.getInt(it.getColumnIndex(TABLE_COL_HOW_BAD_IS_IT))
+                    val requiresCaster = it.getInt(it.getColumnIndex(TABLE_COL_REQUIRES_CASTER))
+                    val requiresSpell = it.getString(it.getColumnIndex(TABLE_COL_REQUIRES_SPELL))
+                    val usesImage = it.getString(it.getColumnIndex(TABLE_COL_USES_IMAGE))
+                    val isNetLibramInt = it.getInt(it.getColumnIndex(TABLE_COL_IS_NET_LIBRAM))
+                    val isNetLibramBool = when {
                         (isNetLibramInt >= 1) -> true
                         else -> false
                     }
-                    result.mRequiresSpellType = it.getString(it.getColumnIndex(TABLE_COL_REQUIRES_SPELL_TYPE))
+                    val backgroundImage = null //This is only used in the app and doesn't get stored in the database //it.getInt(it.getColumnIndex(TABLE_COL_BACKGROUND_IMAGE))
+                    val requiresSpellType = it.getString(it.getColumnIndex(TABLE_COL_REQUIRES_SPELL_TYPE))
+                    result.setAllVariables(id, description, type, target, hasGameplayImpact, tags, howBadIsIt, requiresCaster, requiresSpell, usesImage, isNetLibramBool, backgroundImage, requiresSpellType)
                     db.close()
                     return result
                 }
@@ -102,7 +102,7 @@ class MyDatabaseUtils(context: Context) {
                 val spellEffect = getSpellEffectById(it)
                 Log.d(TAG, "getSpellEffectsByIds - spellEffect = $spellEffect")
                 if (spellEffect != null) {
-                    spellEffect.mBackgroundImageId = getIntForCardBackground()
+                    spellEffect.setBackgroundImageId(getIntForCardBackground())
                     list.add(spellEffect)
 
                 }

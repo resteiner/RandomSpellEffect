@@ -1,10 +1,11 @@
 package com.ryansteiner.randomspelleffect.utils
 
+import android.content.res.Resources
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
 
-class MyMathUtils{
+class MyMathUtils {
     fun convertDecimalToFraction(x: Double): String? {
         /**
          * Code adapted from Matthew556 on StackOverflow (https://stackoverflow.com/questions/31585931/how-to-convert-decimal-to-fractions)
@@ -32,3 +33,9 @@ class MyMathUtils{
         return "${h1.roundToInt()}/${k1.roundToInt()}"
     }
 }
+
+val Int.px: Int
+    get() = this * Resources.getSystem().displayMetrics.density.toInt()
+
+val Int.dp: Int
+    get() = (this / Resources.getSystem().displayMetrics.density).toInt()

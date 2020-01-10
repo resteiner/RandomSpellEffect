@@ -270,7 +270,7 @@ class MainCardFragment(private val c: Context)// Required empty public construct
                 mFloatingActionButton?.hide()
             }
             mNetLibramLabel.visibility = when {
-                spellEffect?.mIsNetLibram == true -> VISIBLE
+                spellEffect?.getIsNetLibram() == true -> VISIBLE
                 else -> GONE
             }
 
@@ -310,7 +310,7 @@ class MainCardFragment(private val c: Context)// Required empty public construct
             val randomAlpha = alphaList[randomSelection]
 
             val mCardContainer: FrameLayout = v.findViewById(R.id.mCardContainer)
-            mCardContainer?.background = when (spellEffect?.mHowBadIsIt) {
+            mCardContainer?.background = when (spellEffect?.getHowBadIsIt()) {
                 SEVERITY_NEUTRAL -> getDrawable(mContext, randomCardBack)
                 SEVERITY_GOOD_LOW -> getDrawable(mContext, randomCardBack)
                 SEVERITY_GOOD_MID -> getDrawable(mContext, R.drawable.tarot_card_back_2)
@@ -383,9 +383,8 @@ class MainCardFragment(private val c: Context)// Required empty public construct
                 }
             }
             Log.d(TAG, "init - selectedDrawable = $selectedDrawable")*/
-            var backgroundImageId = spellEffect?.mBackgroundImageId ?: -1
+            var backgroundImageId = spellEffect?.getBackgroundImageId() ?: -1
             if (backgroundImageId < 0) {
-                Log.d(TAG, "init - spellEffect?.mBackgroundImageId was null = ${spellEffect?.mBackgroundImageId}")
                 val count = mPreferencesManager?.getListOfCardBackgroundImagesCount() ?: 1
                 val random = (0..count).random()
                 backgroundImageId = random
@@ -394,7 +393,7 @@ class MainCardFragment(private val c: Context)// Required empty public construct
 
             iCardImage.setImageDrawable(selectedDrawable)
 
-            val tint = when (spellEffect?.mHowBadIsIt) {
+            val tint = when (spellEffect?.getHowBadIsIt()) {
                 SEVERITY_NEUTRAL -> ContextCompat.getColor(mContext, randomColor)
                 SEVERITY_GOOD_LOW -> ContextCompat.getColor(mContext, randomColor)
                 SEVERITY_GOOD_MID -> ContextCompat.getColor(mContext, R.color.colorBlueOxford)
@@ -423,7 +422,7 @@ class MainCardFragment(private val c: Context)// Required empty public construct
 
             ImageViewCompat.setImageTintList(iCardImage, ColorStateList.valueOf(tint))
 
-            iCardImage?.alpha = when (spellEffect?.mHowBadIsIt) {
+            iCardImage?.alpha = when (spellEffect?.getHowBadIsIt()) {
                 SEVERITY_NEUTRAL -> randomAlpha
                 SEVERITY_GOOD_LOW -> randomAlpha
                 SEVERITY_GOOD_MID -> COLOR_ALPHA_BLUE_OXFORD

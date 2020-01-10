@@ -10,8 +10,6 @@ import com.ryansteiner.randomspelleffect.data.*
 import com.ryansteiner.randomspelleffect.presenters.MainPresenter
 import com.ryansteiner.randomspelleffect.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
-import android.widget.CheckBox
-import android.widget.RadioButton
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import kotlinx.android.synthetic.main.include_net_libram_info_page.*
@@ -23,6 +21,7 @@ import kotlinx.android.synthetic.main.include_side_menu.*
 import android.animation.ObjectAnimator
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.app.ActionBar
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.view.View.*
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -30,11 +29,23 @@ import kotlinx.android.synthetic.main.fragment_main_card.*
 import android.view.ViewAnimationUtils
 import android.os.Build
 import android.os.Handler
+import android.util.AttributeSet
+import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
+import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
+import androidx.core.view.MarginLayoutParamsCompat
+import androidx.core.view.children
+import androidx.core.view.marginLeft
+import androidx.core.view.marginTop
+import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.PagerAdapter
+import com.bugsnag.android.Bugsnag
 import com.bumptech.glide.Glide
 import com.ryansteiner.randomspelleffect.data.models.*
+import com.ryansteiner.randomspelleffect.views.ViewPagerCustomDuration
 import kotlinx.android.synthetic.main.include_tutorial.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -131,11 +142,11 @@ class MainActivity : BaseActivity(), MainContract.View,
             for (i in 0 until spellEffects.count()) {
                 val fullCard = FullCard()
                 val spellEffect = spellEffects[i]
-                val desc = spellEffect?.mDescription
-                val requiredSpellType = spellEffect?.mRequiresSpellType
+                val desc = spellEffect?.getDescription()
+                val requiredSpellType = spellEffect?.getRequiresSpellType()
                 val parsedResult: ParseSpellEffectStringResult? = mPresenter?.parseSpellStringForVariables(desc, system, requiredSpellType)
                 val cardText = parsedResult?.mFullString ?: "ERROR Parsing Spell Pair in onGetSpellEffects"
-                val cardId = spellEffect?.mId.toString()
+                val cardId = spellEffect?.getIdAsString() ?: "ERROR retrieving the cardId as a String..."
                 cardIds.add(cardId)
                 fullCard.setSpellEffect(spellEffect)
                 fullCard.setMainText(cardText)
@@ -158,6 +169,10 @@ class MainActivity : BaseActivity(), MainContract.View,
         Log.d(TAG, "setupViewPager  [${fullCards}]")
         val system = mPreferencesManager?.getSystem() ?: -1
         val damagePrefs = mPreferencesManager?.getDamagePreferences()
+        //DEBUG//////////////////////////////////////////////////////////
+        //Force tutorial
+        ////////////////////////////////////////////////////////////////
+        mPreferencesManager?.setHasBeenOnboarded(0)
         val hasBeenOnboarded = mPreferencesManager?.getHasBeenOnboarded() ?: -1
         if (mPagerAdapter == null) {
             if (fullCards != null && fullCards.count() > 0) {
@@ -170,8 +185,8 @@ class MainActivity : BaseActivity(), MainContract.View,
                 fullCards.forEach {
                     if (it != null) {
                         val spellEffect = it.getSpellEffect()
-                        val title = spellEffect?.mId.toString()
-                        val id = spellEffect?.mId ?: -1
+                        val title = spellEffect?.getIdAsString() ?: "ERROR - Could not get Id as string because spellEffect was null"
+                        val id = spellEffect?.getId()
                         Log.d(TAG, "setupViewPager - it(full card) = ${it}")
                         val fragment = MainCardFragment.newInstance(this, it)
                         fragment.setCallback(this)
@@ -245,8 +260,8 @@ class MainActivity : BaseActivity(), MainContract.View,
             fullCards?.forEach {
                 if (it != null) {
                     val spellEffect = it.getSpellEffect()
-                    val title = spellEffect?.mId.toString()
-                    val id = spellEffect?.mId ?: -1
+                    val title = spellEffect?.getIdAsString() ?: "ERROR - Could not get Id as string because spellEffect was null"
+                    val id = spellEffect?.getId()
                     Log.d(TAG, "setupViewPager - it(full card) = ${it}")
                     val fragment = MainCardFragment.newInstance(this, it)
                     fragment.setCallback(this)
@@ -266,7 +281,7 @@ class MainActivity : BaseActivity(), MainContract.View,
             }, 10)
         }
         when {
-            hasBeenOnboarded > -1110 -> {
+            hasBeenOnboarded <= 0 -> {
                 runTutorial()
             }
         }
@@ -540,7 +555,7 @@ class MainActivity : BaseActivity(), MainContract.View,
         val hasBeenOnboarded = prefs?.getHasBeenOnboarded() ?: -1
 
         when {
-            hasBeenOnboarded > 0 ->{
+            hasBeenOnboarded > 0 -> {
                 val system = prefs?.getSystem() ?: -1
                 when (system) {
                     RPG_SYSTEM_GENERIC -> {
@@ -600,7 +615,7 @@ class MainActivity : BaseActivity(), MainContract.View,
                             } //Do nothing
                             else -> {
                                 mPreferencesManager?.selectSystem(RPG_SYSTEM_D20)
-                                val id = mCurrentSpellEffect?.mId ?: -1
+                                val id = mCurrentSpellEffect?.getId() ?: -1
                                 mPresenter?.retrieveSpellEffectById(id)
                             }
                         }
@@ -612,7 +627,7 @@ class MainActivity : BaseActivity(), MainContract.View,
                             } //Do nothing
                             else -> {
                                 mPreferencesManager?.selectSystem(RPG_SYSTEM_SAVAGEWORLDS)
-                                val id = mCurrentSpellEffect?.mId ?: -1
+                                val id = mCurrentSpellEffect?.getId() ?: -1
                                 mPresenter?.retrieveSpellEffectById(id)
                             }
                         }
@@ -844,22 +859,24 @@ class MainActivity : BaseActivity(), MainContract.View,
     private fun runTutorial(){
         runTutorialPart1()
 
-
         Glide
             .with(this)
             .load(ContextCompat.getDrawable(this, R.drawable.swipe_anim))
-            .into(iTutorialSwipe01)
-
+            .into(iTutorialCardSwipe01)
 
         mTutorialSkipButton.setOnClickListener {
-            //TODO Skip Tutorial
-            onShowToastMessage("Skip")
+            endTutorial()
         }
     }
 
     private fun runTutorialPart1(){
         mIncludeTutorialContainer.visibility = VISIBLE
-        val swipeListener = OnSwipeTouchListener(this)
+        mTutorialWelcomeScreen?.visibility = VISIBLE
+        mTutorialCardIntro?.visibility = GONE
+        mTutorialCardSwipe?.visibility = GONE
+        mTutorialHighlighter?.visibility = GONE
+        mTutorialMenuButton?.visibility = GONE
+        /*val swipeListener = OnSwipeTouchListener(this)
 
 
 
@@ -871,13 +888,222 @@ class MainActivity : BaseActivity(), MainContract.View,
             override fun onSwipeRight() {
                 onShowToastMessage("Right")
             }
-        })
+        })*/
+        mTutorialWelcomeScreen?.setOnClickListener {
+            runTutorialPart2()
+        }
 
     }
 
     private fun runTutorialPart2(){
+        mTutorialWelcomeScreen?.visibility = GONE
+        mTutorialCardIntro?.visibility = VISIBLE
+        mTutorialCardSwipe?.visibility = GONE
+        mTutorialHighlighter?.visibility = GONE
+        mTutorialMenuButton?.visibility = GONE
+
+        mTutorialCardIntro?.setOnClickListener {
+            runTutorialPart3()
+        }
 
     }
+
+    private fun runTutorialPart3(){
+        mTutorialWelcomeScreen?.visibility = GONE
+        mTutorialCardIntro?.visibility = GONE
+        mTutorialCardSwipe?.visibility = VISIBLE
+        mTutorialHighlighter?.visibility = GONE
+        mTutorialMenuButton?.visibility = GONE
+
+            mIncludeTutorialContainer?.isClickable = false
+        mIncludeTutorialContainer?.isFocusable = false
+
+        mViewPager?.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+                Log.d(TAG, "onPageScrolled - position = $position")
+                Log.d(TAG, "onPageScrolled - positionOffset = $positionOffset")
+                Log.d(TAG, "onPageScrolled - positionOffsetPixels = $positionOffsetPixels")
+                if (position == 1) {
+                    mViewPager?.removeOnPageChangeListener(this)
+                    runTutorialPart4()
+                }
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+                Log.d(TAG, "onPageScrollStateChanged - state = $state")
+            }
+
+            override fun onPageSelected(position: Int) {
+                Log.d(TAG, "onPageScrollStateChanged - position = $position")
+            }
+        })
+
+        /*mTutorialCardSwipe.setOnTouchListener(object : OnSwipeTouchListener(this) {
+            override fun onSwipeLeft() {
+                onShowToastMessage("This one")
+                //mViewPager?.beginFakeDrag()
+                runTutorialPart4()
+            }
+
+            override fun onSwipeRight() {
+                //onShowToastMessage("Right")
+                //do nothing
+            }
+        })
+*/
+
+    }
+
+    //TODO need to add tutorial bit for the extra info button
+
+    private fun runTutorialPart4(){
+        mTutorialWelcomeScreen?.visibility = GONE
+        mTutorialCardIntro?.visibility = GONE
+        mTutorialCardSwipe?.visibility = GONE
+        mTutorialHighlighter?.visibility = VISIBLE
+        mTutorialMenuButton?.visibility = VISIBLE
+
+        mIncludeTutorialContainer?.isClickable = true
+        mIncludeTutorialContainer?.isFocusable = true
+
+        val currentItem = mViewPager?.currentItem
+        val fragments = mPagerAdapter?.fragments
+        var currentFragment: Fragment? = null
+            if (fragments != null && fragments.count() >= currentItem) {
+            currentFragment = fragments[currentItem]
+        }
+
+
+        val w = currentFragment?.mFloatingActionButtonInfo?.measuredWidth ?: 0
+        val h = currentFragment?.mFloatingActionButtonInfo?.measuredHeight ?: 0
+        val xMargin = currentFragment?.mFloatingActionButtonInfo?.marginLeft ?: 0
+        val x = (currentFragment?.mFloatingActionButtonInfo?.x?.roundToInt()) ?: 0
+        val y = (currentFragment?.mFloatingActionButtonInfo?.y?.roundToInt()) ?: 0
+
+        val layoutParams = mTutorialMidMiddle?.layoutParams
+        layoutParams?.width = (w * 2.0).roundToInt()
+        layoutParams?.height = (h * 1.75).roundToInt()
+        mTutorialMidMiddle.requestLayout()
+
+        val xOffset = (x + (w * 0.5) + xMargin).roundToInt()
+        //val xOffset = xOffsetDp.px
+        val yOffset = (y + (h * 0.5)).roundToInt()
+        //val yOffset = yOffsetDp.px
+
+        Log.d(TAG, "runTutorialPart4 - xMargin = $xMargin")
+        Log.d(TAG, "runTutorialPart4 - h = $h")
+        Log.d(TAG, "runTutorialPart4 - w = $w")
+        Log.d(TAG, "runTutorialPart4 - x = $x")
+        Log.d(TAG, "runTutorialPart4 - y = $y")
+        Log.d(TAG, "runTutorialPart4 - xOffset = $xOffset")
+        Log.d(TAG, "runTutorialPart4 - yOffset = $yOffset")
+        val helperView = mTutorialRevealHelper
+
+        val constraintSet = ConstraintSet()
+        val middle = mTutorialMidMiddle.id
+        val helperId = helperView.id
+        val constraintLayout: ConstraintLayout = mTutorialHighlighter
+
+        val highlighterContainer = mTutorialHighlighter.id
+
+        constraintSet.clone(constraintLayout)
+
+        constraintSet.connect(helperId, ConstraintSet.TOP, highlighterContainer, ConstraintSet.TOP, yOffset)
+        constraintSet.connect(helperId, ConstraintSet.LEFT, highlighterContainer, ConstraintSet.LEFT, xOffset)
+
+        constraintSet.connect(middle, ConstraintSet.TOP, helperId, ConstraintSet.TOP, 0)
+        constraintSet.connect(middle, ConstraintSet.BOTTOM, helperId, ConstraintSet.BOTTOM, 0)
+        constraintSet.connect(middle, ConstraintSet.LEFT, helperId, ConstraintSet.LEFT, 0)
+        constraintSet.connect(middle, ConstraintSet.RIGHT, helperId, ConstraintSet.RIGHT, 0)
+
+        constraintSet.applyTo(constraintLayout)
+
+        val textParams = mTutorialMenuButtonLayout.layoutParams as? FrameLayout.LayoutParams
+        textParams?.setMargins(xOffset, yOffset * 2, 0, 0)
+        Log.d(TAG, "runTutorialPart4 - textParams = $textParams")
+        mTutorialMenuButtonLayout.requestLayout()
+
+        mTutorialMidMiddle?.setOnClickListener {
+            runTutorialPart5()
+        }
+
+    }
+
+    private fun runTutorialPart5(){
+        mTutorialWelcomeScreen?.visibility = GONE
+        mTutorialCardIntro?.visibility = GONE
+        mTutorialCardSwipe?.visibility = GONE
+        mTutorialHighlighter?.visibility = VISIBLE
+        mTutorialMenuButton?.visibility = VISIBLE
+
+        mIncludeTutorialContainer?.isClickable = true
+        mIncludeTutorialContainer?.isFocusable = true
+
+        val w = mMenuTab.measuredWidth
+        val h = mMenuTab.measuredHeight
+        val xMargin = mMenuTabImage.marginLeft
+        val x = (mMenuTab?.x?.roundToInt()) ?: 0
+        val y = (mMenuTab?.y?.roundToInt()) ?: 0
+
+        val layoutParams = mTutorialMidMiddle?.layoutParams
+        layoutParams?.width = (w * 2.0).roundToInt()
+        layoutParams?.height = (h * 1.75).roundToInt()
+        mTutorialMidMiddle.requestLayout()
+
+        val xOffset = (x + (w * 0.5) + xMargin).roundToInt()
+        //val xOffset = xOffsetDp.px
+        val yOffset = (y + (h * 0.5)).roundToInt()
+        //val yOffset = yOffsetDp.px
+
+        Log.d(TAG, "runTutorialPart5 - xMargin = $xMargin")
+        Log.d(TAG, "runTutorialPart5 - h = $h")
+        Log.d(TAG, "runTutorialPart5 - w = $w")
+        Log.d(TAG, "runTutorialPart5 - x = $x")
+        Log.d(TAG, "runTutorialPart5 - y = $y")
+        Log.d(TAG, "runTutorialPart5 - xOffset = $xOffset")
+        Log.d(TAG, "runTutorialPart5 - yOffset = $yOffset")
+        val helperView = mTutorialRevealHelper
+
+        val constraintSet = ConstraintSet()
+        val middle = mTutorialMidMiddle.id
+        val helperId = helperView.id
+        val constraintLayout: ConstraintLayout = mTutorialHighlighter
+
+        val highlighterContainer = mTutorialHighlighter.id
+
+        constraintSet.clone(constraintLayout)
+
+        constraintSet.connect(helperId, ConstraintSet.TOP, highlighterContainer, ConstraintSet.TOP, yOffset)
+        constraintSet.connect(helperId, ConstraintSet.LEFT, highlighterContainer, ConstraintSet.LEFT, xOffset)
+
+        constraintSet.connect(middle, ConstraintSet.TOP, helperId, ConstraintSet.TOP, 0)
+        constraintSet.connect(middle, ConstraintSet.BOTTOM, helperId, ConstraintSet.BOTTOM, 0)
+        constraintSet.connect(middle, ConstraintSet.LEFT, helperId, ConstraintSet.LEFT, 0)
+        constraintSet.connect(middle, ConstraintSet.RIGHT, helperId, ConstraintSet.RIGHT, 0)
+
+        constraintSet.applyTo(constraintLayout)
+
+        val textParams = mTutorialMenuButtonLayout.layoutParams as? FrameLayout.LayoutParams
+        textParams?.setMargins(xOffset, yOffset * 2, 0, 0)
+        Log.d(TAG, "runTutorialPart5 - textParams = $textParams")
+        mTutorialMenuButtonLayout.requestLayout()
+
+        mTutorialMidMiddle?.setOnClickListener {
+            mMenuTab?.performClick()
+            endTutorial()
+        }
+
+    }
+
+    private fun endTutorial(){
+        mTutorialWelcomeScreen?.visibility = GONE
+        mTutorialCardIntro?.visibility = GONE
+        mTutorialCardSwipe?.visibility = GONE
+        mTutorialHighlighter?.visibility = GONE
+        mIncludeTutorialContainer.visibility = GONE
+        mPreferencesManager?.setHasBeenOnboarded(1)
+    }
+
 
 
 }

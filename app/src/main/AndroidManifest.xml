@@ -3,6 +3,7 @@
     package="com.ryansteiner.randomspelleffect">
 
     <application
+        android:name=".MyApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -21,6 +22,13 @@
             android:name=".views.activities.MainActivity"
             android:screenOrientation="portrait"
             />
+
+        <meta-data
+            android:name="com.bugsnag.android.API_KEY"
+            android:value="04012894bd2308fa9309c5319fbf6703"/>
+
+        <meta-data android:name="com.bugsnag.android.DETECT_ANRS"
+            android:value="true"/>
 
         <meta-data
             android:name="preloaded_fonts"

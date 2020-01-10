@@ -66,6 +66,7 @@ class StartupPresenter(context: Context) : BasePresenter<StartupContract.View>(c
         }
         Log.d(TAG, "load - mPreferencesManager?.getTargets() AFTER = ${mPreferencesManager?.getTargets()}")
 
+        //TODO I don't think we actually need the onboard check here
         val hasBeenOnboardedInt = mPreferencesManager?.getHasBeenOnboarded() ?: -1
         val hasBeenOnboarded = when  {
             (hasBeenOnboardedInt > 0) -> true
