@@ -8,20 +8,82 @@
     style="@style/StartupTheme"
     tools:context=".views.activities.StartupActivity">
 
-    <TextView
-        android:id="@+id/mStartupText"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/mStartupChooseSystemContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/loading"
+        android:orientation="vertical"
+        android:layout_marginLeft="@dimen/primary_margin_left_right"
+        android:layout_marginRight="@dimen/primary_margin_left_right"
+        android:paddingLeft="@dimen/primary_margin_left_right"
+        android:paddingRight="@dimen/primary_margin_left_right"
+        android:paddingTop="@dimen/primary_margin_top_bottom"
+        android:paddingBottom="@dimen/primary_margin_top_bottom"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:background="@drawable/button_background_rounded_corners_white_ivory">
+
+        <TextView
+            android:id="@+id/tStartupTitleSystem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/please_select_your_rpg_system"
+            android:textColor="@color/colorPrimary"
+            android:layout_gravity="center"
+            android:textSize="@dimen/heading_1_text_size" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="@dimen/primary_margin_left_right"
+            android:layout_marginBottom="@dimen/primary_margin_left_right"
+            android:background="@color/colorPrimary" />
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RadioButton
+                android:id="@+id/mStartupRadioSystemGeneric"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/primary_margin_top_bottom"
+                android:layout_marginBottom="@dimen/primary_margin_top_bottom"
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/generic"
+                android:textColor="@color/colorTextBlack"
+                android:textSize="@dimen/heading_2_text_size" />
+
+            <RadioButton
+                android:id="@+id/mStartupRadioSystemDND5E"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/dungeons_n_dragons_5th_edition"
+                android:textColor="@color/colorTextBlack"
+                android:textSize="@dimen/heading_2_text_size" />
+
+            <RadioButton
+                android:id="@+id/mStartupRadioSystemSWADE"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/primary_margin_top_bottom"
+                android:layout_marginBottom="@dimen/primary_margin_top_bottom"
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/savage_worlds_adventure_edition"
+                android:textColor="@color/colorTextBlack"
+                android:textSize="@dimen/heading_2_text_size" />
+        </RadioGroup>
+
+    </LinearLayout>
 
     <include
         layout="@layout/include_full_loading_screen"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

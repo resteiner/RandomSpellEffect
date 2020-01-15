@@ -9,6 +9,13 @@
         <item name="android:fontFamily">@font/philosopher</item>
     </style>
 
+    <style name="DarkTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:colorBackground">@color/colorBlackEerie</item>
+        <item name="android:textAppearance">@color/colorWhitePearlescent</item>
+        <item name="android:fontFamily">@font/philosopher</item>
+    </style>
+
     <style name="StartupTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>

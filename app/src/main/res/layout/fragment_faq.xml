@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackgroundMain"
+    tools:context=".views.activities.AboutActivity">
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingLeft="@dimen/primary_margin_left_right"
+        android:paddingRight="@dimen/primary_margin_left_right"
+        android:paddingTop="@dimen/primary_margin_top_bottom"
+        android:paddingBottom="@dimen/primary_margin_top_bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/menu_faq"
+                android:textColor="@color/colorTextTitle"
+                android:textSize="@dimen/title_text_size" />
+
+            <LinearLayout
+                android:id="@+id/mFaqContainer01"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tFaqTitle01"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_what_is_this_app_q"
+                    android:textColor="@color/colorTextTitle"
+                    android:textSize="@dimen/heading_2_text_size" />
+
+                <View
+                    android:id="@+id/mFaqDivider01"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/thin_margin_top_bottom"
+                    android:layout_marginBottom="@dimen/thin_margin_top_bottom"
+                    android:background="@color/colorTextTitle" />
+
+                <TextView
+                    android:id="@+id/tFaqDescription01"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/primary_margin_left_right"
+                    android:layout_marginRight="@dimen/primary_margin_left_right"
+                    android:text="@string/faq_what_is_this_app_a"
+                    android:textColor="@color/colorTextMain"
+                    android:textSize="@dimen/normal_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/mFaqContainer02"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tFaqTitle02"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_how_do_i_use_q"
+                    android:textColor="@color/colorTextTitle"
+                    android:textSize="@dimen/heading_2_text_size" />
+
+                <View
+                    android:id="@+id/mFaqDivider02"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/thin_margin_top_bottom"
+                    android:layout_marginBottom="@dimen/thin_margin_top_bottom"
+                    android:background="@color/colorTextTitle" />
+
+                <TextView
+                    android:id="@+id/tFaqDescription02"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/primary_margin_left_right"
+                    android:layout_marginRight="@dimen/primary_margin_left_right"
+                    android:text="@string/faq_how_do_i_use_a"
+                    android:textColor="@color/colorTextMain"
+                    android:textSize="@dimen/normal_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/mFaqContainer03"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tFaqTitle03"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_what_happens_q"
+                    android:textColor="@color/colorTextTitle"
+                    android:textSize="@dimen/heading_2_text_size" />
+
+                <View
+                    android:id="@+id/mFaqDivider03"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/thin_margin_top_bottom"
+                    android:layout_marginBottom="@dimen/thin_margin_top_bottom"
+                    android:background="@color/colorTextTitle" />
+
+                <TextView
+                    android:id="@+id/tFaqDescription03"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/primary_margin_left_right"
+                    android:layout_marginRight="@dimen/primary_margin_left_right"
+                    android:text="@string/faq_what_happens_a"
+                    android:textColor="@color/colorTextMain"
+                    android:textSize="@dimen/normal_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/mFaqContainer04"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tFaqTitle04"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_when_does_a_magical_effect_go_away_q"
+                    android:textColor="@color/colorTextTitle"
+                    android:textSize="@dimen/heading_2_text_size" />
+
+                <View
+                    android:id="@+id/mFaqDivider04"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/thin_margin_top_bottom"
+                    android:layout_marginBottom="@dimen/thin_margin_top_bottom"
+                    android:background="@color/colorTextTitle" />
+
+                <TextView
+                    android:id="@+id/tFaqDescription04"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/primary_margin_left_right"
+                    android:layout_marginRight="@dimen/primary_margin_left_right"
+                    android:text="@string/faq_when_does_a_magical_effect_go_away_a"
+                    android:textColor="@color/colorTextMain"
+                    android:textSize="@dimen/normal_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/mFaqContainer05"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tFaqTitle05"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_some_of_these_effects_are_stupid_q"
+                    android:textColor="@color/colorTextTitle"
+                    android:textSize="@dimen/heading_2_text_size" />
+
+                <View
+                    android:id="@+id/mFaqDivider05"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/thin_margin_top_bottom"
+                    android:layout_marginBottom="@dimen/thin_margin_top_bottom"
+                    android:background="@color/colorTextTitle" />
+
+                <TextView
+                    android:id="@+id/tFaqDescription05"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/primary_margin_left_right"
+                    android:layout_marginRight="@dimen/primary_margin_left_right"
+                    android:text="@string/faq_some_of_these_effects_are_stupid_a"
+                    android:textColor="@color/colorTextMain"
+                    android:textSize="@dimen/normal_text_size" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/mFaqContainer06"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tFaqTitle06"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_did_you_steal_q"
+                    android:textColor="@color/colorTextTitle"
+                    android:textSize="@dimen/heading_2_text_size" />
+
+                <View
+                    android:id="@+id/mFaqDivider06"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/thin_margin_top_bottom"
+                    android:layout_marginBottom="@dimen/thin_margin_top_bottom"
+                    android:background="@color/colorTextTitle" />
+
+                <TextView
+                    android:id="@+id/tFaqDescription06"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/primary_margin_left_right"
+                    android:layout_marginRight="@dimen/primary_margin_left_right"
+                    android:text="@string/faq_did_you_steal_a"
+                    android:textColor="@color/colorTextMain"
+                    android:textSize="@dimen/normal_text_size" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/mFaqContainer07"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tFaqTitle07"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/faq_my_gm_hates_it_q"
+                    android:textColor="@color/colorTextTitle"
+                    android:textSize="@dimen/heading_2_text_size" />
+
+                <View
+                    android:id="@+id/mFaqDivider07"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/thin_margin_top_bottom"
+                    android:layout_marginBottom="@dimen/thin_margin_top_bottom"
+                    android:background="@color/colorTextTitle" />
+
+                <TextView
+                    android:id="@+id/tFaqDescription07"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/primary_margin_left_right"
+                    android:layout_marginRight="@dimen/primary_margin_left_right"
+                    android:text="@string/faq_my_gm_hates_it_a"
+                    android:textColor="@color/colorTextMain"
+                    android:textSize="@dimen/normal_text_size" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

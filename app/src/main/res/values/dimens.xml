@@ -5,8 +5,11 @@
     <dimen name="primary_button_width">120dp</dimen>
     <dimen name="primary_margin_left_right">10dp</dimen>
     <dimen name="primary_margin_top_bottom">20dp</dimen>
+    <dimen name="large_margin_top_bottom">80dp</dimen>
     <dimen name="thin_margin_top_bottom">3dp</dimen>
     <dimen name="thin_margin_left_right">5dp</dimen>
+    <dimen name="button_margin_top_bottom">10dp</dimen>
+    <dimen name="button_margin_left_right">10dp</dimen>
     <dimen name="primary_icon_size">36dp</dimen>
     <dimen name="dice_roll_image_size">24dp</dimen>
     <dimen name="dice_roll_text_size">16sp</dimen>

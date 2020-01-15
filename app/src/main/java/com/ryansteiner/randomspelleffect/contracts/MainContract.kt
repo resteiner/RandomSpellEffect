@@ -1,6 +1,8 @@
 package com.ryansteiner.randomspelleffect.contracts
 
 import android.content.Context
+import android.content.Intent
+import android.view.Window
 import com.ryansteiner.randomspelleffect.data.models.ParseSpellEffectStringResult
 import com.ryansteiner.randomspelleffect.data.models.Song
 import com.ryansteiner.randomspelleffect.data.models.SpellEffect
@@ -30,6 +32,7 @@ interface MainContract {
         fun songVideoInit(showVideo: Boolean, song: Song?)
         fun onGetSpellEffects(spellEffects: List<SpellEffect>?)
         fun toggleNetLibramInfoOverlay()
+        fun onGoToAbout(intent: Intent)
     }
 
     interface Presenter : BaseContract.Presenter {
@@ -43,5 +46,6 @@ interface MainContract {
         fun clickSettings(showSettings: Boolean)
         fun retrieveSpellEffectById(id: Int)
         fun getSpellEffects()
+        fun goToAbout(w: Window, isFaq: Boolean)
     }
 }

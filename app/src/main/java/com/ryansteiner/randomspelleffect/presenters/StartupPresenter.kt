@@ -1,12 +1,19 @@
 package com.ryansteiner.randomspelleffect.presenters
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build
 import android.util.Log
+import android.view.Window
 import com.ryansteiner.randomspelleffect.contracts.BaseContract
+import com.ryansteiner.randomspelleffect.contracts.MainContract
 import com.ryansteiner.randomspelleffect.contracts.StartupContract
 import com.ryansteiner.randomspelleffect.data.RPG_SYSTEM_D20
+import com.ryansteiner.randomspelleffect.data.RPG_SYSTEM_GENERIC
+import com.ryansteiner.randomspelleffect.data.RPG_SYSTEM_SAVAGEWORLDS
 import com.ryansteiner.randomspelleffect.utils.PreferencesManager
+import com.ryansteiner.randomspelleffect.views.activities.MainActivity
 import java.lang.ref.WeakReference
 
 /**
@@ -27,15 +34,7 @@ class StartupPresenter(context: Context) : BasePresenter<StartupContract.View>(c
         mPreferencesManager?.setAppLifeTimeStart(System.currentTimeMillis())
         Log.d(TAG, "load  [${mPreferencesManager?.getCurrentLifeTime()}]")
         var currentRPGSystem = mPreferencesManager?.getSystem()
-        when {
 
-            (currentRPGSystem == null || currentRPGSystem <= 0) -> {
-                Log.d(TAG, "load - currentRPGSystem <= 0 = $currentRPGSystem")
-                mPreferencesManager?.selectSystem(RPG_SYSTEM_D20)
-                currentRPGSystem = mPreferencesManager?.getSystem()
-            }
-            else -> {}
-        }
         val currentDamagePrefs = mPreferencesManager?.getDamagePreferences()
 
         when {
@@ -64,15 +63,48 @@ class StartupPresenter(context: Context) : BasePresenter<StartupContract.View>(c
         if (setDefaultTargets) {
             mPreferencesManager?.setTargets(true, true, true, true)
         }
-        Log.d(TAG, "load - mPreferencesManager?.getTargets() AFTER = ${mPreferencesManager?.getTargets()}")
 
-        //TODO I don't think we actually need the onboard check here
         val hasBeenOnboardedInt = mPreferencesManager?.getHasBeenOnboarded() ?: -1
         val hasBeenOnboarded = when  {
             (hasBeenOnboardedInt > 0) -> true
             else -> false
         }
 
-        view?.onLoaded()
+        Log.d(TAG, "updateSystem - mPreferencesManager?.getSystem() = ${mPreferencesManager?.getSystem()}")
+        //DEBUG//////////////////////////////////////////////////////////
+        //Force tutorial
+        ////////////////////////////////////////////////////////////////
+        //mPreferencesManager?.setHasBeenOnboarded(0)
+        view?.onLoaded(hasBeenOnboarded)
     }
+
+    override fun updateSystem(system: Int?) {
+        val view: StartupContract.View? = getView()
+        val safeSystem = if (system == null || system < 0) {
+            RPG_SYSTEM_GENERIC
+        } else {
+            system
+        }
+        Log.d(TAG, "[SystemIssue] updateSystem - system = $system")
+        Log.d(TAG, "[SystemIssue] updateSystem - safeSystem = $safeSystem")
+        Log.d(TAG, "[SystemIssue] updateSystem - RPG_SYSTEM_GENERIC = $RPG_SYSTEM_GENERIC")
+        Log.d(TAG, "[SystemIssue] updateSystem - RPG_SYSTEM_D20 = $RPG_SYSTEM_D20")
+        Log.d(TAG, "[SystemIssue] updateSystem - RPG_SYSTEM_SAVAGEWORLDS = $RPG_SYSTEM_SAVAGEWORLDS")
+        mPreferencesManager?.selectSystem(safeSystem)
+        view?.onUpdatedSystem()
+    }
+
+    override fun goToMainActivity(w: Window) {
+        val view: StartupContract.View? = getView()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            w.exitTransition = null
+        }
+
+        val intent = Intent(mContext, MainActivity::class.java)
+        view?.onGoToMainActivity(intent)
+    }
+
+
+
+
 }

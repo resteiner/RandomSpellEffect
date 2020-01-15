@@ -89,6 +89,7 @@ fun getCreatureById(database: SQLiteDatabase?, id: Int): Creature? {
             result.mSWADEPage = it.getString(it.getColumnIndex(TABLE_COL_SWADE_PAGE))
         }
     }
+    //db?.close()
     return result
 }
 
@@ -108,5 +109,6 @@ fun getSongById(database: SQLiteDatabase?, id: Int): Song? {
             result.mStartAt = it.getInt(it.getColumnIndex(TABLE_COL_START_AT))
         }
     }
+    //db?.close()
     return result
 }

@@ -1,21 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorSecondary">@color/colorGreenMoss</color>
-    <color name="colorSecondaryDark">@color/colorGreenEmerald</color>
-    <color name="colorAccent">#D81B60</color>
-    <color name="colorTextPrimary">@color/colorBlackRich</color>
+    <!--Android Default Style Colors-->
+    <color name="colorPrimary">@color/colorPurpleButterflyBush</color><!--App bar-->
+    <color name="colorPrimaryDark">@color/colorPurpleDeepKoamaru</color><!--Status bar and contextual app bars-->
+    <color name="colorAccent">@color/colorPurpleMaximum</color><!--Color of UI Controls - checkboxes, radio buttons, edit text, links-->
+    <color name="windowBackground">@color/colorBlackEerie</color><!--Default screen background-->
+    <color name="textColorPrimary">@color/colorWhiteIvory</color><!--UI Text in the app bar-->
+
+
+    <!--Custom App-wide Style Colors-->
+    <color name="colorSecondary">@color/colorYellowChalky</color>
+    <color name="colorBackgroundMain">@color/colorBlackEerie</color>
+    <color name="colorTextMain">@color/colorWhiteIvory</color>
     <color name="colorTextSecondary">@color/colorGrayStone</color>
-    <color name="colorTextLink">@color/colorBlueCobalt</color>
+    <color name="colorTextBlack">@color/colorBlackMidnight</color>
+    <color name="colorTextTitle">@color/colorSecondary</color>
+    <color name="colorButtonBackgroundHighlight">@color/colorPrimary</color>
+    <color name="colorButtonTextHighlight">@color/colorWhiteIvory</color>
+    <color name="colorButtonBackground">@color/colorBlackEerie</color>
+    <color name="colorButtonText">@color/colorGrayStone</color>
 
-
-
+    <!--Color definitions-->
     <color name="colorSpellInfoBG">@color/colorYellowBoogerBuster</color>
     <color name="colorWhitePaper">#FFFFFF</color>
     <color name="colorWhiteSnow">#FFFAFA</color>
     <color name="colorWhitePearlescent">#EDEAE0</color>
-    <color name="colorWhiteIvory">#FFFFF0</color>
+    <color name="colorWhiteIvory">#FDFDFA</color>
     <color name="colorWhiteSmoke">#F5F5F5</color>
     <color name="colorBlackInk">#000000</color>
     <color name="colorBlackMidnight">#00001E</color>
@@ -42,12 +52,14 @@
     <color name="colorOrangeSunset">#fd5e53</color>
     <color name="colorYellowSaffron">#EAC435</color>
     <color name="colorYellowKhaki">#F0E68C</color>
+    <color name="colorYellowChalky">#DEC480</color>
     <color name="colorYellowBoogerBuster">#D8D860</color>
     <color name="colorYellowCanary">#ffef00</color>
     <color name="colorYellowMustard">#ffdb58</color>
     <color name="colorYellowButter">#ffff73</color>
     <color name="colorYellowBanana">#ffe135</color>
     <color name="colorGreenCadmium">#006444</color>
+    <color name="colorGreenAtoll">#2E8281</color>
     <color name="colorGreenApple">#5eb547</color>
     <color name="colorGreenEmerald">#046307</color>
     <color name="colorGreenMoss">#8a9a5b</color>
@@ -63,6 +75,7 @@
     <color name="colorBluePeriwinkle">#CCCCFF</color>
     <color name="colorBlueDeepIndigo">#07183d</color>
     <color name="colorPurpleDeepKoamaru">#392061</color>
+    <color name="colorPurpleButterflyBush">#735D97</color>
     <color name="colorPurpleMaximum">#822E81</color>
     <color name="colorPurpleLavender">#967bb6</color>
     <color name="colorPurpleEggplant">#430541</color>

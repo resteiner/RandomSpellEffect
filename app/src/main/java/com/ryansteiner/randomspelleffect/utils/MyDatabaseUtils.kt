@@ -76,10 +76,10 @@ class MyDatabaseUtils(context: Context) {
                     return result
                 }
             }
-            db.close()
+            //db.close()
             return null
         } else {
-            db?.close()
+            //db?.close()
             return null
         }
     }
@@ -108,7 +108,7 @@ class MyDatabaseUtils(context: Context) {
                 }
             }
         }
-        db?.close()
+        //db?.close()
         return list
     }
 
@@ -123,7 +123,7 @@ class MyDatabaseUtils(context: Context) {
         val totalCount = DatabaseUtils.queryNumEntries(db, DB_SPELLS_TABLE_NAME)
         val randomSelection = (1..totalCount).random()
         val randomizedId = randomSelection.toString()
-        db?.close()
+        //db?.close()
         return getSpellById(randomizedId)
     }
 
@@ -185,7 +185,7 @@ class MyDatabaseUtils(context: Context) {
                 }
             }
         }
-        db?.close()
+        //db?.close()
         return when {
             spell.mTitle != null -> {
                 spell
@@ -265,7 +265,7 @@ class MyDatabaseUtils(context: Context) {
                 }
             }
         }
-        db?.close()
+        //db?.close()
         spell = spellsThatMatchType.random()
         spellsThatMatchType.clear()
         return when {
@@ -327,7 +327,7 @@ class MyDatabaseUtils(context: Context) {
                 }
             }
         }
-        db?.close()
+        //db?.close()
         return modifier
     }
 
@@ -356,7 +356,7 @@ class MyDatabaseUtils(context: Context) {
                 }
             }
         }
-        db?.close()
+        //db?.close()
         return workingString
     }
 

@@ -3,7 +3,6 @@ package com.ryansteiner.randomspelleffect.views.activities
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import com.ryansteiner.randomspelleffect.R
 import com.ryansteiner.randomspelleffect.contracts.MainContract
 import com.ryansteiner.randomspelleffect.data.*
@@ -22,15 +21,17 @@ import android.animation.ObjectAnimator
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.app.ActionBar
+import android.content.Context
+import android.content.res.Resources
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.view.View.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import kotlinx.android.synthetic.main.fragment_main_card.*
-import android.view.ViewAnimationUtils
 import android.os.Build
 import android.os.Handler
+import android.os.PowerManager
 import android.util.AttributeSet
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.DecelerateInterpolator
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -115,10 +116,26 @@ class MainActivity : BaseActivity(), MainContract.View,
 
         //mPresenter?.updateSpellList(mSpellsList)
 
+        ///DEBUG/////////////////////////////////////////////
+        //Keep screen on while working///////////////////////
+        /////////////////////////////////////////////////////
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        /////////////////////////////////////////////////////
+
+
         mPresenter?.loadingViewToggle(true)
 
         initializePreferencesAndDatabase()
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ///DEBUG/////////////////////////////////////////////
+        //Keep screen on while working///////////////////////
+        /////////////////////////////////////////////////////
+        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        /////////////////////////////////////////////////////
     }
 
     private fun initializePreferencesAndDatabase() {
@@ -169,11 +186,8 @@ class MainActivity : BaseActivity(), MainContract.View,
         Log.d(TAG, "setupViewPager  [${fullCards}]")
         val system = mPreferencesManager?.getSystem() ?: -1
         val damagePrefs = mPreferencesManager?.getDamagePreferences()
-        //DEBUG//////////////////////////////////////////////////////////
-        //Force tutorial
-        ////////////////////////////////////////////////////////////////
-        mPreferencesManager?.setHasBeenOnboarded(0)
         val hasBeenOnboarded = mPreferencesManager?.getHasBeenOnboarded() ?: -1
+        Log.d(TAG, "setupViewPager - hasBeenOnboarded = $hasBeenOnboarded")
         if (mPagerAdapter == null) {
             if (fullCards != null && fullCards.count() > 0) {
 
@@ -356,9 +370,7 @@ class MainActivity : BaseActivity(), MainContract.View,
         }
 
         tNetLibramLink.setOnClickListener {
-            val uri = Uri.parse("https://www.facebook.com/The-Net-Libram-of-Random-Magical-Effects-106043207533296")
-            val intent = Intent(Intent.ACTION_VIEW, uri)
-            startActivity(intent)
+            openNetLibramLink()
         }
 
         iPreviousPageButton.setOnClickListener {
@@ -440,7 +452,11 @@ class MainActivity : BaseActivity(), MainContract.View,
             mPresenter?.clickSettings(true)
         }
         tSideMenuAboutButton.setOnClickListener {
-            onShowToastMessage("About")
+            mPresenter?.goToAbout(window, false)
+            toggleSideMenu(false)
+        }
+        tSideMenuFaqButton.setOnClickListener {
+            mPresenter?.goToAbout(window, true)
             toggleSideMenu(false)
         }
 
@@ -545,7 +561,7 @@ class MainActivity : BaseActivity(), MainContract.View,
 
     override fun updateDebugText(systemText: String?) {
         Log.d(TAG, "updateDebugText  [${mPreferencesManager?.getCurrentLifeTime()}]")
-        tDebugSystemText.text = systemText
+        //tDebugSystemText.text = systemText
     }
 
     override fun updatePreferences(prefs: PreferencesManager?) {
@@ -553,6 +569,7 @@ class MainActivity : BaseActivity(), MainContract.View,
         mPreferencesManager = prefs
 
         val hasBeenOnboarded = prefs?.getHasBeenOnboarded() ?: -1
+        Log.d(TAG, "[SystemIssue] updatePreferences - hasBeenOnboarded = $hasBeenOnboarded")
 
         when {
             hasBeenOnboarded > 0 -> {
@@ -591,7 +608,8 @@ class MainActivity : BaseActivity(), MainContract.View,
                 mPreferencesManager?.setTargets(caster = true, nearestAlly = true, nearestEnemy = true, nearestCreature = true)
                 mPreferencesManager?.setDamagePreferences(null)
                 mPreferencesManager?.setGameEffects(gamePlay = true, rolePlay = true)
-                mPreferencesManager?.selectSystem(RPG_SYSTEM_GENERIC)
+                Log.d(TAG, "[SystemIssue] updatePreferences - selectSystem - GENERIC")
+                //mPreferencesManager?.selectSystem(RPG_SYSTEM_GENERIC)
                 mIsTutorial = true
 
                 //mTutorialHighlighter.visibility = VISIBLE
@@ -614,6 +632,7 @@ class MainActivity : BaseActivity(), MainContract.View,
                             RPG_SYSTEM_D20 -> {
                             } //Do nothing
                             else -> {
+                                Log.d(TAG, "[SystemIssue] onRadioButtonClicked - selectSystem DND5E")
                                 mPreferencesManager?.selectSystem(RPG_SYSTEM_D20)
                                 val id = mCurrentSpellEffect?.getId() ?: -1
                                 mPresenter?.retrieveSpellEffectById(id)
@@ -626,6 +645,7 @@ class MainActivity : BaseActivity(), MainContract.View,
                             RPG_SYSTEM_SAVAGEWORLDS -> {
                             } //Do nothing
                             else -> {
+                                Log.d(TAG, "[SystemIssue] onRadioButtonClicked - selectSystem SWADE")
                                 mPreferencesManager?.selectSystem(RPG_SYSTEM_SAVAGEWORLDS)
                                 val id = mCurrentSpellEffect?.getId() ?: -1
                                 mPresenter?.retrieveSpellEffectById(id)
@@ -856,7 +876,11 @@ class MainActivity : BaseActivity(), MainContract.View,
         }
     }
 
-    private fun runTutorial(){
+    override fun onGoToAbout(intent: Intent) {
+        startActivity(intent)
+    }
+
+    private fun runTutorial() {
         runTutorialPart1()
 
         Glide
@@ -869,13 +893,17 @@ class MainActivity : BaseActivity(), MainContract.View,
         }
     }
 
-    private fun runTutorialPart1(){
+    private fun runTutorialPart1() {
         mIncludeTutorialContainer.visibility = VISIBLE
         mTutorialWelcomeScreen?.visibility = VISIBLE
         mTutorialCardIntro?.visibility = GONE
         mTutorialCardSwipe?.visibility = GONE
         mTutorialHighlighter?.visibility = GONE
         mTutorialMenuButton?.visibility = GONE
+        mTutorialExtraInfoButtonContainer?.visibility = GONE
+        mTutorialExtraInfoPopupContainer?.visibility = GONE
+        mTutorialMenuPart2.visibility = GONE
+        mTutorialNetLibram.visibility = GONE
         /*val swipeListener = OnSwipeTouchListener(this)
 
 
@@ -895,12 +923,13 @@ class MainActivity : BaseActivity(), MainContract.View,
 
     }
 
-    private fun runTutorialPart2(){
+    private fun runTutorialPart2() {
         mTutorialWelcomeScreen?.visibility = GONE
         mTutorialCardIntro?.visibility = VISIBLE
         mTutorialCardSwipe?.visibility = GONE
         mTutorialHighlighter?.visibility = GONE
         mTutorialMenuButton?.visibility = GONE
+        mTutorialNetLibram.visibility = GONE
 
         mTutorialCardIntro?.setOnClickListener {
             runTutorialPart3()
@@ -908,24 +937,41 @@ class MainActivity : BaseActivity(), MainContract.View,
 
     }
 
-    private fun runTutorialPart3(){
+    private fun runTutorialPart3() {
         mTutorialWelcomeScreen?.visibility = GONE
         mTutorialCardIntro?.visibility = GONE
         mTutorialCardSwipe?.visibility = VISIBLE
         mTutorialHighlighter?.visibility = GONE
         mTutorialMenuButton?.visibility = GONE
+        mTutorialNetLibram.visibility = GONE
 
-            mIncludeTutorialContainer?.isClickable = false
+        mIncludeTutorialContainer?.isClickable = false
         mIncludeTutorialContainer?.isFocusable = false
 
-        mViewPager?.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
+        mViewPager?.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
                 Log.d(TAG, "onPageScrolled - position = $position")
                 Log.d(TAG, "onPageScrolled - positionOffset = $positionOffset")
                 Log.d(TAG, "onPageScrolled - positionOffsetPixels = $positionOffsetPixels")
                 if (position == 1) {
                     mViewPager?.removeOnPageChangeListener(this)
-                    runTutorialPart4()
+
+                    mTutorialWelcomeScreen?.visibility = GONE
+                    mTutorialCardIntro?.visibility = GONE
+                    mTutorialCardSwipe?.visibility = GONE
+                    mTutorialHighlighter?.visibility = VISIBLE
+                    mTutorialMenuButton?.visibility = GONE
+                    mTutorialExtraInfoButtonContainer?.visibility = INVISIBLE
+                    mTutorialNetLibram.visibility = GONE
+
+                    mTutorialRevealHelper.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                        override fun onGlobalLayout() {
+                            mTutorialRevealHelper.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                            runTutorialPart4()
+                        }
+                    })
+
+
                 }
             }
 
@@ -954,14 +1000,11 @@ class MainActivity : BaseActivity(), MainContract.View,
 
     }
 
-    //TODO need to add tutorial bit for the extra info button
+    //TODO need to add tutorial bit for net libram
 
-    private fun runTutorialPart4(){
-        mTutorialWelcomeScreen?.visibility = GONE
-        mTutorialCardIntro?.visibility = GONE
-        mTutorialCardSwipe?.visibility = GONE
-        mTutorialHighlighter?.visibility = VISIBLE
-        mTutorialMenuButton?.visibility = VISIBLE
+    private fun runTutorialPart4() {
+
+        val helperView = mTutorialRevealHelper
 
         mIncludeTutorialContainer?.isClickable = true
         mIncludeTutorialContainer?.isFocusable = true
@@ -969,35 +1012,50 @@ class MainActivity : BaseActivity(), MainContract.View,
         val currentItem = mViewPager?.currentItem
         val fragments = mPagerAdapter?.fragments
         var currentFragment: Fragment? = null
-            if (fragments != null && fragments.count() >= currentItem) {
+        if (fragments != null && fragments.count() >= currentItem) {
             currentFragment = fragments[currentItem]
         }
 
 
-        val w = currentFragment?.mFloatingActionButtonInfo?.measuredWidth ?: 0
-        val h = currentFragment?.mFloatingActionButtonInfo?.measuredHeight ?: 0
+        val w = currentFragment?.mFloatingActionButtonInfo?.width ?: 0
+        val h = currentFragment?.mFloatingActionButtonInfo?.height ?: 0
         val xMargin = currentFragment?.mFloatingActionButtonInfo?.marginLeft ?: 0
         val x = (currentFragment?.mFloatingActionButtonInfo?.x?.roundToInt()) ?: 0
         val y = (currentFragment?.mFloatingActionButtonInfo?.y?.roundToInt()) ?: 0
 
+        val tutorialWidth = (w * 1.75)
+        val tutorialHeight = (h * 1.75)
+
+        //TODO Find out why this is /4 instead of /2...
+        val helperHalfWidth = helperView.measuredWidth / 4
+        val helperHalfHeight = helperView.measuredHeight / 4
+
+
         val layoutParams = mTutorialMidMiddle?.layoutParams
-        layoutParams?.width = (w * 2.0).roundToInt()
-        layoutParams?.height = (h * 1.75).roundToInt()
+        layoutParams?.width = tutorialWidth.roundToInt()
+        layoutParams?.height = tutorialHeight.roundToInt()
         mTutorialMidMiddle.requestLayout()
 
-        val xOffset = (x + (w * 0.5) + xMargin).roundToInt()
+        val xOffset = ((x - (w * 0.5) + xMargin) + (tutorialWidth * 0.5) + helperHalfWidth).roundToInt()
         //val xOffset = xOffsetDp.px
-        val yOffset = (y + (h * 0.5)).roundToInt()
+        val yOffset = ((y - (h * 0.5)) + (tutorialHeight * 0.5) + helperHalfHeight).roundToInt()
         //val yOffset = yOffsetDp.px
 
+        Log.d(TAG, "runTutorialPart4 - helperView = $helperView")
+        Log.d(TAG, "runTutorialPart4 - helperView.measuredWidth = ${helperView.measuredWidth}")
+
         Log.d(TAG, "runTutorialPart4 - xMargin = $xMargin")
-        Log.d(TAG, "runTutorialPart4 - h = $h")
-        Log.d(TAG, "runTutorialPart4 - w = $w")
+        Log.d(TAG, "runTutorialPart4 - helperHalfWidth = $helperHalfWidth")
         Log.d(TAG, "runTutorialPart4 - x = $x")
-        Log.d(TAG, "runTutorialPart4 - y = $y")
+        Log.d(TAG, "runTutorialPart4 - w = $w")
+        Log.d(TAG, "runTutorialPart4 - (w * 0.5) = ${(w * 0.5)}")
         Log.d(TAG, "runTutorialPart4 - xOffset = $xOffset")
+        Log.d(TAG, "runTutorialPart4 --------------------------------------------")
+        Log.d(TAG, "runTutorialPart4 - helperHalfHeight = $helperHalfHeight")
+        Log.d(TAG, "runTutorialPart4 - y = $y")
+        Log.d(TAG, "runTutorialPart4 - h = $h")
+        Log.d(TAG, "runTutorialPart4 - (h * 0.5) = ${(h * 0.5)}")
         Log.d(TAG, "runTutorialPart4 - yOffset = $yOffset")
-        val helperView = mTutorialRevealHelper
 
         val constraintSet = ConstraintSet()
         val middle = mTutorialMidMiddle.id
@@ -1018,23 +1076,93 @@ class MainActivity : BaseActivity(), MainContract.View,
 
         constraintSet.applyTo(constraintLayout)
 
-        val textParams = mTutorialMenuButtonLayout.layoutParams as? FrameLayout.LayoutParams
-        textParams?.setMargins(xOffset, yOffset * 2, 0, 0)
+        val textParams = mTutorialExtraInfoButtonLayout.layoutParams as? FrameLayout.LayoutParams
+        val displayWidth = Resources.getSystem().displayMetrics.widthPixels
+        val horizOffset = displayWidth - xOffset
+        val vertOffset = yOffset + h
+        textParams?.setMargins(0, vertOffset, horizOffset, 0)
         Log.d(TAG, "runTutorialPart4 - textParams = $textParams")
-        mTutorialMenuButtonLayout.requestLayout()
+
+        mTutorialExtraInfoButtonLayout.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
+            override fun onLayoutChange(
+                view: View, left: Int, top: Int, right: Int, bottom: Int,
+                oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int
+            ) {
+
+                view.removeOnLayoutChangeListener(this)
+
+                mTutorialExtraInfoButtonContainer?.visibility = VISIBLE
+
+            }
+        })
+
+        mTutorialExtraInfoButtonLayout.requestLayout()
 
         mTutorialMidMiddle?.setOnClickListener {
-            runTutorialPart5()
+
+            mTutorialWelcomeScreen?.visibility = GONE
+            mTutorialCardIntro?.visibility = GONE
+            mTutorialCardSwipe?.visibility = GONE
+            mTutorialHighlighter?.visibility = VISIBLE
+            mTutorialMenuButton?.visibility = VISIBLE
+            mTutorialExtraInfoButtonContainer?.visibility = GONE
+            mTutorialNetLibram.visibility = GONE
+
+            mTutorialRevealHelper.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    mTutorialRevealHelper.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    currentFragment?.mFloatingActionButtonInfo?.performClick()
+                    runTutorialPart5()
+                }
+            })
+
+
         }
 
     }
 
-    private fun runTutorialPart5(){
+    private fun runTutorialPart5() {
+
+
         mTutorialWelcomeScreen?.visibility = GONE
         mTutorialCardIntro?.visibility = GONE
         mTutorialCardSwipe?.visibility = GONE
-        mTutorialHighlighter?.visibility = VISIBLE
-        mTutorialMenuButton?.visibility = VISIBLE
+        mTutorialHighlighter?.visibility = GONE
+        mTutorialMenuButton?.visibility = GONE
+        mTutorialExtraInfoButtonContainer?.visibility = GONE
+        mTutorialExtraInfoPopupContainer?.visibility = VISIBLE
+        mTutorialNetLibram.visibility = GONE
+
+        mTutorialExtraInfoPopupContainer.setOnClickListener {
+
+            mTutorialWelcomeScreen?.visibility = GONE
+            mTutorialCardIntro?.visibility = GONE
+            mTutorialCardSwipe?.visibility = GONE
+            mTutorialHighlighter?.visibility = VISIBLE
+            mTutorialMenuButton?.visibility = VISIBLE
+            mTutorialExtraInfoButtonContainer?.visibility = GONE
+            mTutorialExtraInfoPopupContainer?.visibility = GONE
+            mTutorialNetLibram.visibility = GONE
+
+
+            val currentItem = mViewPager?.currentItem
+            val fragments = mPagerAdapter?.fragments
+            var currentFragment: Fragment? = null
+            if (fragments != null && fragments.count() >= currentItem) {
+                currentFragment = fragments[currentItem]
+            }
+
+            currentFragment?.mSpellEffectAdditionalInfoContainer?.performClick()
+
+            runTutorialPart6()
+
+        }
+
+    }
+
+    private fun runTutorialPart6() {
+
+        val helperView = mTutorialRevealHelper
 
         mIncludeTutorialContainer?.isClickable = true
         mIncludeTutorialContainer?.isFocusable = true
@@ -1045,14 +1173,20 @@ class MainActivity : BaseActivity(), MainContract.View,
         val x = (mMenuTab?.x?.roundToInt()) ?: 0
         val y = (mMenuTab?.y?.roundToInt()) ?: 0
 
+        val tutorialWidth = (w * 2.0)
+        val tutorialHeight = (h * 1.75)
+
+        val helperHalfWidth = helperView.measuredWidth / 4
+        val helperHalfHeight = helperView.measuredHeight / 4
+
         val layoutParams = mTutorialMidMiddle?.layoutParams
-        layoutParams?.width = (w * 2.0).roundToInt()
-        layoutParams?.height = (h * 1.75).roundToInt()
+        layoutParams?.width = tutorialWidth.roundToInt()
+        layoutParams?.height = tutorialHeight.roundToInt()
         mTutorialMidMiddle.requestLayout()
 
-        val xOffset = (x + (w * 0.5) + xMargin).roundToInt()
+        val xOffset = ((x - (w * 0.5) + xMargin) + (tutorialWidth * 0.5) + helperHalfWidth).roundToInt()
         //val xOffset = xOffsetDp.px
-        val yOffset = (y + (h * 0.5)).roundToInt()
+        val yOffset = ((y - (h * 0.5)) + (tutorialHeight * 0.5) + helperHalfHeight).roundToInt()
         //val yOffset = yOffsetDp.px
 
         Log.d(TAG, "runTutorialPart5 - xMargin = $xMargin")
@@ -1062,7 +1196,8 @@ class MainActivity : BaseActivity(), MainContract.View,
         Log.d(TAG, "runTutorialPart5 - y = $y")
         Log.d(TAG, "runTutorialPart5 - xOffset = $xOffset")
         Log.d(TAG, "runTutorialPart5 - yOffset = $yOffset")
-        val helperView = mTutorialRevealHelper
+        Log.d(TAG, "runTutorialPart5 - helperHalfWidth = $helperHalfWidth")
+        Log.d(TAG, "runTutorialPart5 - helperHalfHeight = $helperHalfHeight")
 
         val constraintSet = ConstraintSet()
         val middle = mTutorialMidMiddle.id
@@ -1090,20 +1225,113 @@ class MainActivity : BaseActivity(), MainContract.View,
 
         mTutorialMidMiddle?.setOnClickListener {
             mMenuTab?.performClick()
+            mTutorialWelcomeScreen?.visibility = GONE
+            mTutorialCardIntro?.visibility = GONE
+            mTutorialCardSwipe?.visibility = GONE
+            mTutorialHighlighter?.visibility = GONE
+            mTutorialMenuButton?.visibility = GONE
+            mTutorialExtraInfoButtonContainer?.visibility = GONE
+            mTutorialExtraInfoPopupContainer?.visibility = GONE
+            mTutorialNetLibram.visibility = GONE
+            mTutorialMenuPart2.visibility = VISIBLE
+            runTutorialPart7()
+        }
+
+    }
+
+    private fun runTutorialPart7() {
+
+        val helperView = mTutorialRevealHelper
+
+        mIncludeTutorialContainer?.isClickable = true
+        mIncludeTutorialContainer?.isFocusable = true
+
+        val w = mMenuTab.measuredWidth
+        val h = mMenuTab.measuredHeight
+        val xMargin = mMenuTabImage.marginLeft
+        val x = (mMenuTab?.x?.roundToInt()) ?: 0
+        val y = (mMenuTab?.y?.roundToInt()) ?: 0
+
+        val tutorialWidth = (w * 2.0)
+        val tutorialHeight = (h * 1.75)
+
+        val helperHalfWidth = helperView.measuredWidth / 4
+        val helperHalfHeight = helperView.measuredHeight / 4
+
+        val layoutParams = mTutorialMidMiddle?.layoutParams
+        layoutParams?.width = tutorialWidth.roundToInt()
+        layoutParams?.height = tutorialHeight.roundToInt()
+        mTutorialMidMiddle.requestLayout()
+
+        val xOffset = ((x - (w * 0.5) + xMargin) + (tutorialWidth * 0.5) + helperHalfWidth).roundToInt()
+        val yOffset = ((y - (h * 0.5)) + (tutorialHeight * 0.5) + helperHalfHeight).roundToInt()
+
+
+        val constraintSet = ConstraintSet()
+        val middle = mTutorialMidMiddle.id
+        val helperId = helperView.id
+        val constraintLayout: ConstraintLayout = mTutorialHighlighter
+
+        val highlighterContainer = mTutorialHighlighter.id
+
+        constraintSet.clone(constraintLayout)
+
+        constraintSet.connect(helperId, ConstraintSet.TOP, highlighterContainer, ConstraintSet.TOP, yOffset)
+        constraintSet.connect(helperId, ConstraintSet.LEFT, highlighterContainer, ConstraintSet.LEFT, xOffset)
+
+        constraintSet.connect(middle, ConstraintSet.TOP, helperId, ConstraintSet.TOP, 0)
+        constraintSet.connect(middle, ConstraintSet.BOTTOM, helperId, ConstraintSet.BOTTOM, 0)
+        constraintSet.connect(middle, ConstraintSet.LEFT, helperId, ConstraintSet.LEFT, 0)
+        constraintSet.connect(middle, ConstraintSet.RIGHT, helperId, ConstraintSet.RIGHT, 0)
+
+        constraintSet.applyTo(constraintLayout)
+
+        val textParams = mTutorialMenuButtonLayout.layoutParams as? FrameLayout.LayoutParams
+        textParams?.setMargins(xOffset, yOffset * 2, 0, 0)
+        mTutorialMenuButtonLayout.requestLayout()
+
+        mTutorialMenuPart2?.setOnClickListener {
+            mMenuTab?.performClick()
+            runTutorialNetLibram()
+        }
+
+    }
+
+    private fun runTutorialNetLibram(){
+        Log.d(TAG, "runTutorialNetLibram")
+        mTutorialWelcomeScreen?.visibility = GONE
+        mTutorialCardIntro?.visibility = GONE
+        mTutorialCardSwipe?.visibility = GONE
+        mTutorialHighlighter?.visibility = GONE
+        mTutorialNetLibram.visibility = VISIBLE
+
+        tTutorialNetLibramTextLink.setOnClickListener {
+            openNetLibramLink()
+        }
+
+        mTutorialNetLibram?.setOnClickListener {
             endTutorial()
         }
 
     }
 
-    private fun endTutorial(){
+    private fun endTutorial() {
+        Log.d(TAG, "endTutorial")
         mTutorialWelcomeScreen?.visibility = GONE
         mTutorialCardIntro?.visibility = GONE
         mTutorialCardSwipe?.visibility = GONE
         mTutorialHighlighter?.visibility = GONE
         mIncludeTutorialContainer.visibility = GONE
+        mTutorialNetLibram.visibility = GONE
         mPreferencesManager?.setHasBeenOnboarded(1)
     }
 
+    private fun openNetLibramLink(){
+        val urlString = getString(R.string.net_libram_url)
+        val uri = Uri.parse(urlString)
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        startActivity(intent)
+    }
 
 
 }

@@ -41,6 +41,35 @@
             android:text="@string/menu_about"
             android:textColor="@color/colorTextSecondary"
             android:textSize="@dimen/heading_1_text_size" />
+
+        <TextView
+            android:id="@+id/tSideMenuFaqButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorBlackEerie"
+            android:layout_marginTop="@dimen/primary_margin_left_right"
+            android:paddingTop="@dimen/primary_margin_left_right"
+            android:paddingBottom="@dimen/primary_margin_left_right"
+            android:paddingLeft="@dimen/primary_margin_top_bottom"
+            android:paddingRight="@dimen/primary_margin_top_bottom"
+            android:text="@string/menu_faq"
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="@dimen/heading_1_text_size" />
+
+        <TextView
+            android:id="@+id/tSideMenuTutorialButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorBlackEerie"
+            android:layout_marginTop="@dimen/primary_margin_left_right"
+            android:paddingTop="@dimen/primary_margin_left_right"
+            android:paddingBottom="@dimen/primary_margin_left_right"
+            android:paddingLeft="@dimen/primary_margin_top_bottom"
+            android:paddingRight="@dimen/primary_margin_top_bottom"
+            android:text="@string/menu_tutorial"
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="@dimen/heading_1_text_size" />
+
     </LinearLayout>
 
     <View

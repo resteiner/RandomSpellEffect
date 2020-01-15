@@ -44,7 +44,7 @@ class MainCardFragment(private val c: Context)// Required empty public construct
     private val TAG = "MainCardFragment"
 
     private val mContext: Context = c
-    private var mFullCard: FullCard? = null
+    var mFullCard: FullCard? = null
     private var mFullText: String? = null
     private var mCallback: MainActivity? = null
     private var mSystem: Int? = null
@@ -88,6 +88,7 @@ class MainCardFragment(private val c: Context)// Required empty public construct
         val tSpellEffectInfoRollMultiplierEquals: TextView = v.findViewById(R.id.tSpellEffectInfoRollMultiplierEquals)
         val tSpellInfoRollMultiplierResult: TextView = v.findViewById(R.id.tSpellInfoRollMultiplierResult)
 
+
         val textViewList = listOf(
             tSpellEffectInfoTitle,
             tSpellEffectInfoDescription,
@@ -107,9 +108,9 @@ class MainCardFragment(private val c: Context)// Required empty public construct
             mFloatingActionButton?.setOnClickListener {
                 extraInfoButtonClicked()
             }
-            mNetLibramLabel?.setOnClickListener {
+            /*mNetLibramLabel?.setOnClickListener {
                 mCallback?.toggleNetLibramInfoOverlay()
-            }
+            }*/
 
             mYouTubeVideoReloadButton.setOnClickListener {
                 val song = mFullCard?.getSong()
@@ -269,10 +270,10 @@ class MainCardFragment(private val c: Context)// Required empty public construct
             } else {
                 mFloatingActionButton?.hide()
             }
-            mNetLibramLabel.visibility = when {
+            mNetLibramLabel.visibility = GONE /*when {
                 spellEffect?.getIsNetLibram() == true -> VISIBLE
                 else -> GONE
-            }
+            }*/
 
             val neutralCardBackList = listOf(
                 R.drawable.tarot_card_back_3,
@@ -471,6 +472,15 @@ class MainCardFragment(private val c: Context)// Required empty public construct
             initYouTubeView(v)
 
         }
+
+        //DEBUG/////////////////////////
+        val tMainCardDebug: TextView = v.findViewById(R.id.tMainCardDebug)
+        val mMainCardDebugContainer: FrameLayout = v.findViewById(R.id.mMainCardDebugContainer)
+        mMainCardDebugContainer.visibility = VISIBLE
+        val spellEffect = mFullCard?.getSpellEffect()
+        val spellId = spellEffect?.getIdAsString() ?: "Oops"
+        tMainCardDebug.text = spellId
+        ////////////////////////////////
     }
 
     private fun initYouTubeView(v: View) {

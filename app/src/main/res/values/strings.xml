@@ -5,6 +5,7 @@
     <string name="generic_error_message">An error has occurred. Please try again.</string>
     <string name="spell_info_dice_roll">%1$i!d%1$i!</string>
     <string name="rpg_system">RPG System</string>
+    <string name="please_select_your_rpg_system">Please Select Your RPG System</string>
     <string name="generic">Generic</string>
     <string name="dungeons_n_dragons_5th_edition">Dungeons &amp; Dragons - 5th Edition</string>
     <string name="savage_worlds_adventure_edition">Savage Worlds Adventure Edition (SWADE)</string>
@@ -18,20 +19,26 @@
     <string name="menu_title_targets">Targets</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_about">About</string>
+    <string name="menu_faq">F.A.Q.</string>
+    <string name="menu_tutorial">Tutorial</string>
+    <string name="menu_back">Back</string>
     <string name="caster">caster</string>
     <string name="nearest_enemy">nearest enemy</string>
     <string name="nearest_ally">nearest ally</string>
-    <string name="closest_living_creature">closest living creature to the caster</string>
+    <string name="closest_living_creature">closest living creature</string>
     <string name="target_string_error">There was an error parsing the TARGET string…</string>
     <string name="net_libram_this_effect_comes_from">This effect comes from</string>
     <string name="net_libram_from_the">From The Net Libram of Random Magical Effects</string>
     <string name="net_libram_title">The Net Libram of Random Magical Effects</string>
     <string name="net_libram_by_author">by Orrex</string>
     <string name="net_libram_used_with_permission">It is used with permission of the author.</string>
+    <string name="tutorial_net_libram_used_with_permission">They are used with permission of the author.</string>
     <string name="net_libram_for_information">For more information, please visit</string>
     <string name="net_libram_url">https://www.facebook.com/The-Net-Libram-of-Random-Magical-Effects-106043207533296</string>
+    <string name="net_libram_link">The Net Libram of Random Magical Effects Facebook Page</string>
     <string name="reload_video">Reload video</string>
     <string name="period">.</string>
+    <string name="level">Level</string>
     <string name="tutorial_welcome_to">Welcome to</string>
     <string name="tutorial_swipe_to_continue">Swipe from right to left to draw a new card with a new Spell Effect</string>
     <string name="tutorial_this_tutorial_will_guide_you">\tThis tutorial will guide you through the basic functionality of this app. You can revisit this tutorial from the Main Menu at any time if you\'d rather skip ahead and start using the app immediately.</string>
@@ -39,4 +46,32 @@
     <string name="tutorial_card_explanation">Each Spell Effect will be displayed on a card like the one here</string>
     <string name="tutorial_tap_to_continue">(Tap anywhere to continue)</string>
     <string name="tutorial_tap_the_menu">Tap on the Menu Tab to open the Main Menu.</string>
+    <string name="tutorial_tap_the_extra_info">Some Spell Effects will have additional information for you.\n\nAny time that the Extra Info button is displayed, tap it to learn more.</string>
+    <string name="tutorial_close_the_extra_info">Tap anywhere to close the Extra Info popup.</string>
+    <string name="tutorial_extra_info_description_a">The Extra Info popup will display info about spells, creatures, or rules that relate to the Spell Effect.</string>
+    <string name="tutorial_extra_info_description_b">All the info will be adjusted to the gaming system that you have selected (you can always change your current system in the settings).\n\n(Tap anywhere to close the popup)</string>
+    <string name="tutorial_net_libram_01">This app uses Chaos Bursts from</string>
+    <string name="tutorial_menu_info">The Main Menu contains everything you need to customize your experience. There are a bunch of options in the Settings Menu that allow you to change what kind of effects are generated and which RPG system you\'re using. You can find more information in the About section.</string>
+    <string name="tutorial_concludes">This concludes the Tutorial! Now get in there and start generating some chaos!</string>
+    <string name="faq_what_is_this_app_q">What is this app?</string>
+    <string name="faq_what_is_this_app_a">\tThis app generates random magical effects to be used in tabletop roleplaying games. Thematically, the goal is to represent chaotic and uncontrolled consequences for attempting to tap into powerful magical sources - when a sorcerer attempts to bottle lightning, it’s possible for some of that lightning to escape. Practically, the first thing that I used these magical effects with was a Wild Magic Sorcerer in Dungeons &amp; Dragons, however the effects could be applied to magic items, realms that handle magic differently than your caster is used to, magical backlashes, or any situation where you want to add a bit of chaos to your game.</string>
+    <string name="faq_how_do_i_use_q">How do I use this app with my game?</string>
+    <string name="faq_how_do_i_use_a">\tFirst and foremost, discuss with your GM (or your players) if this app is appropriate for your game. If it turns out to be something that you and your GM both want to use to enrich the adventure, then the practical application is really up to you. Personally, I use these magical effects as a consequence for certain characters using magic that isn’t fully under their control. Each time that the magic user casts a spell, I have the player roll percentile dice (2x d10) and compare it to the difficulty of the spell being cast. If the player fails the roll, I generate a new spell effect and it triggers immediately (unless otherwise stated).\n\n\tIn Dungeons &amp; Dragons, I use the spell’s level to determine how likely the spell is to trigger a magical effect (the higher the level, the more likely).\n\n\tIn Savage Worlds, I use the number of Power Points used to cast the spell to determine how likely the spell is to trigger the magical effect (the more points, the more likely). Please do keep in mind that this is a homebrewed system and susceptible to flaws, but I will provide the numbers that I use in case you want to try them out in your own games. Also, keep in mind that these numbers are intentionally quite high - I like to add a lot of chaos to my games!</string>
+    <string name="faq_what_happens_q">What happens to the spell that I was trying to cast when a magical effect triggered?</string>
+    <string name="faq_what_happens_a">\tUnless otherwise stated in the magical effect, the spell goes off as intended. This is, of course, something that you should discuss with your GM. Some people think it is more thematically appropriate to have the magical effect replace the intended spell, or to institute a percentage chance that the spell will fail.</string>
+    <string name="faq_when_does_a_magical_effect_go_away_q">When does a magical effect go away?</string>
+    <string name="faq_when_does_a_magical_effect_go_away_a">\tIf the magical effect does not have a stated duration, then it is intended to stay around indefinitely. Your GM may allow you to cleanse or dispel the effect as though it were a curse or ongoing status effect. If your GM wants to limit the amount of weird things going on, they can always impose their own durations to any of the effects here.</string>
+    <string name="faq_some_of_these_effects_are_stupid_q">Some of these effects are stupid and don’t fit the theme of my game, what gives?</string>
+    <string name="faq_some_of_these_effects_are_stupid_a">\tTrue! In the spirit of chaos, I have included pop culture references, goofy and extraordinarily unrealistic situations, and objects from a multitude of themes and time periods. When I run a game, it’s all about the players having fun - and these things often make my group laugh and enjoy themselves. I fully understand that not everyone plays role-playing games the way that I do and fortunately this app makes it very easy to generate a new magical effect. If you (or your GM) don’t like the magical effect that was generated or you feel that it isn’t thematically appropriate for your game, just ignore it and swipe for a new one!\n\n\tAlso, the magical effects in this app are intended to be more of a guideline - they need not be set in stone. If the GM wants to modify an effect so that it better fits the game, that’s great!</string>
+    <string name="faq_did_you_steal_q">I saw this magic effect in The Net Libram of Random Magical Effects, did you steal it?</string>
+    <string name="faq_did_you_steal_a">\tYou sure did see it there! The Net Libram of Random Magical Effects was the list that I used the first time I played a Wild Magic Sorcerer and it inspired the creation of this app. When I first started working on this app, I reached out to Orrex, the author of The Net Libram of Random Magical Effects, and he generously gave me permission to use his Chaos Bursts in this app. Please visit ;URL; for more information about Orrex’s awesome project.</string>
+    <string name="faq_my_gm_hates_it_q">My GM hates your app and says it is ruining the game!</string>
+    <string name="faq_my_gm_hates_it_a">\tYour GM is correct! You did discuss using this app with the GM before you started playing, right? Maybe you even let them generate a few dozen magical effects so that they had a good idea of what they were in for? This app is intended as a supplement to make a game more chaotic and fun, but if it isn’t accomplishing that goal, then it probably isn’t right for your game. Your GM has worked hard to craft an experience for you and their opinion is important. If the GM feels like a certain magical effect doesn’t fit with the experience that they are trying to craft, then skip it! If your GM feels that the app is adding more problems to the game than fun, then ditch it all together and look for a solution that will better fit your game.</string>
 </resources>
+
+
+
+
+
+
+

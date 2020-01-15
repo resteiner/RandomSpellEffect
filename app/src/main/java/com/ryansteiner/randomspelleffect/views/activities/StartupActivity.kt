@@ -7,10 +7,15 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.View
+import android.view.View.VISIBLE
+import android.widget.RadioButton
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.ryansteiner.randomspelleffect.R
 import com.ryansteiner.randomspelleffect.contracts.StartupContract
+import com.ryansteiner.randomspelleffect.data.RPG_SYSTEM_D20
+import com.ryansteiner.randomspelleffect.data.RPG_SYSTEM_GENERIC
+import com.ryansteiner.randomspelleffect.data.RPG_SYSTEM_SAVAGEWORLDS
 import com.ryansteiner.randomspelleffect.presenters.StartupPresenter
 import com.ryansteiner.randomspelleffect.utils.PreferencesManager
 import kotlinx.android.synthetic.main.activity_startup.*
@@ -25,6 +30,7 @@ class StartupActivity : BaseActivity(), StartupContract.View/*, StartupListAdapt
     private val TAG = "StartupActivity"
 
     private var mPresenter: StartupPresenter? = null
+    private var mSystem: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,18 +42,14 @@ class StartupActivity : BaseActivity(), StartupContract.View/*, StartupListAdapt
         glideAnimatedLoadingIcon(this)
         mPresenter?.loadingViewToggle(true)
 
-
-        initializeView()
-        setupOnClickListeners()
-
+        mPresenter?.load()
     }
 
     private fun initializeView() {
 
         Log.d(TAG, "initializeView - mPresenter = $mPresenter")
-        mStartupText?.text = "Loading"
+        //mStartupText?.text = "Loading"
 
-        mPresenter?.load()
 
         //currently using icons from https://feathericons.com/ - MIT license, Ok to use w/o attribution
 
@@ -81,29 +83,66 @@ class StartupActivity : BaseActivity(), StartupContract.View/*, StartupListAdapt
 
     }
 
-    override fun onLoaded() {
+    override fun onLoaded(hasBeenOnboarded: Boolean) {
 
-        mStartupText?.text = "Loaded"
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.exitTransition = null
+        initializeView()
+        setupOnClickListeners()
+
+       when (hasBeenOnboarded) {
+            true -> {
+                Handler().postDelayed({
+                    mPresenter?.goToMainActivity(window)
+                }, 250)
+            }
+            else -> {
+                Log.d(TAG, "[SystemIssue] onLoaded - hasBeenOnboarded = $hasBeenOnboarded")
+                selectSystem()
+            }
         }
 
-        //post delay is placeholder until there's a proper splash screen
-        Handler().postDelayed({
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }, 250)
 
-
-        /* override fun onSelectItem(id: Int) {
-
-        val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra(INTENT_EXTRA_WALLPAPER_ID_INT, id)
-        startActivityForResult(intent, REQUEST_CODE_MAIN_ACTIVITY)
     }
 
-    override fun onCustomListItemClick(item: LiveWallpaperInfo) {
-        mPresenter?.selectItem(item)
-    }*/
+    private fun selectSystem() {
+        Log.d(TAG, "[SystemIssue] selectSystem - Start")
+        mStartupChooseSystemContainer.visibility = VISIBLE
+        mPresenter?.loadingViewToggle(false)
+    }
+
+    override fun onUpdatedSystem() {
+        mPresenter?.loadingViewToggle(true)
+        mPresenter?.goToMainActivity(window)
+    }
+
+    override fun onGoToMainActivity(intent: Intent) {
+        startActivity(intent)
+    }
+
+    fun onRadioButtonClicked(view: View) {
+        if (view is RadioButton) {
+            val checked = view.isChecked
+
+
+            when (view.id) {
+                R.id.mStartupRadioSystemGeneric ->
+                    if (checked) {
+                        Handler().postDelayed({
+                            mPresenter?.updateSystem(RPG_SYSTEM_GENERIC)
+                        }, 500)
+                    }
+                R.id.mStartupRadioSystemDND5E ->
+                    if (checked) {
+                        Handler().postDelayed({
+                            mPresenter?.updateSystem(RPG_SYSTEM_D20)
+                        }, 500)
+                    }
+                R.id.mStartupRadioSystemSWADE ->
+                    if (checked) {
+                        Handler().postDelayed({
+                            mPresenter?.updateSystem(RPG_SYSTEM_SAVAGEWORLDS)
+                        }, 500)
+                    }
+            }
+        }
     }
 }

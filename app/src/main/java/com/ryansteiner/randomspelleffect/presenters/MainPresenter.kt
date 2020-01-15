@@ -1,9 +1,12 @@
 package com.ryansteiner.randomspelleffect.presenters
 
 import android.content.Context
+import android.content.Intent
 import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
+import android.os.Build
 import android.util.Log
+import android.view.Window
 import androidx.core.content.ContextCompat
 import com.ryansteiner.randomspelleffect.R
 import com.ryansteiner.randomspelleffect.contracts.MainContract
@@ -12,6 +15,7 @@ import com.ryansteiner.randomspelleffect.data.models.*
 import com.ryansteiner.randomspelleffect.utils.*
 import com.ryansteiner.randomspelleffect.data.models.Song
 import com.ryansteiner.randomspelleffect.data.models.Spell
+import com.ryansteiner.randomspelleffect.views.activities.AboutActivity
 
 
 /**
@@ -138,10 +142,11 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
                 val backgroundImage = null //This is only used in the app and doesn't get stored in the database //it.getInt(it.getColumnIndex(TABLE_COL_BACKGROUND_IMAGE))
                 val requiresSpellType = it.getString(it.getColumnIndex(TABLE_COL_REQUIRES_SPELL_TYPE))
                 result.setAllVariables(id, description, type, target, hasGameplayImpact, tags, howBadIsIt, requiresCaster, requiresSpell, usesImage, isNetLibramBool, backgroundImage, requiresSpellType)
-                db?.close()
+                //db?.close()
                 return result
             }
         }
+        //db?.close()
         return null
     }
 
@@ -168,6 +173,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
     override fun parseSpellStringForVariables(string: String?, system: Int, requiredSpellType: String?): ParseSpellEffectStringResult? {
         Log.d(TAG, "parseSpellStringForVariables  [${mPreferencesManager?.getCurrentLifeTime()}]")
         mSystem = system
+        Log.d(TAG, "[SystemIssue] parseSpellStringForVariables - system = $system")
         var finalString: String?
         var workingString = string
         var result = ParseSpellEffectStringResult()
@@ -270,7 +276,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
                 workingString = spellPair.first
                 result.mSpell = spellPair.second
 
-                finalString = workingString
+                finalString = workingString?.capitalize()
 
                 result.mFullString = finalString
 
@@ -551,30 +557,35 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         var gameplayModifier: GameplayModifier? = null
         var workingString = string ?: "((Attempt at parsing variables failed spectacularly))"
         val safeName = GAME_EFFECT_DURATION
-        Log.d(TAG, "parseVariableForDuration - workingString = ${workingString}")
+        Log.d(TAG, "parseVariableForDuration - workingString BEFORE = ${workingString}")
 
         if (workingString != null && workingString.contains(GAME_EFFECT_DURATION_LONG)) {
+            Log.d(TAG, "parseVariableForDuration - workingString.contains(GAME_EFFECT_DURATION_LONG)")
             gameplayModifier = MyDatabaseUtils(mContext).getGameplayModifierByName(safeName)
             val replacementName = gameplayModifier?.getDuration(GAME_EFFECT_DURATION_LONG) ?: "ERROR RETRIEVING GAME EFFECT"
 
-            workingString = workingString.replace(safeName, replacementName)
+            workingString = workingString.replace(GAME_EFFECT_DURATION_LONG, replacementName)
         } else if (workingString != null && workingString.contains(GAME_EFFECT_DURATION_MEDIUM)) {
+            Log.d(TAG, "parseVariableForDuration - workingString.contains(GAME_EFFECT_DURATION_MEDIUM)")
             gameplayModifier = MyDatabaseUtils(mContext).getGameplayModifierByName(safeName)
             val replacementName = gameplayModifier?.getDuration(GAME_EFFECT_DURATION_MEDIUM) ?: "ERROR RETRIEVING GAME EFFECT"
 
-            workingString = workingString.replace(safeName, replacementName)
+            workingString = workingString.replace(GAME_EFFECT_DURATION_MEDIUM, replacementName)
         } else if (workingString != null && workingString.contains(GAME_EFFECT_DURATION_SHORT)) {
+            Log.d(TAG, "parseVariableForDuration - workingString.contains(GAME_EFFECT_DURATION_SHORT)")
             gameplayModifier = MyDatabaseUtils(mContext).getGameplayModifierByName(safeName)
             val replacementName = gameplayModifier?.getDuration(GAME_EFFECT_DURATION_SHORT) ?: "ERROR RETRIEVING GAME EFFECT"
 
-            workingString = workingString.replace(safeName, replacementName)
-        } else {
+            workingString = workingString.replace(GAME_EFFECT_DURATION_SHORT, replacementName)
+        } else if (workingString != null && workingString.contains(GAME_EFFECT_DURATION)) {
+            Log.d(TAG, "parseVariableForDuration - workingString.contains(GAME_EFFECT_DURATION)")
             gameplayModifier = MyDatabaseUtils(mContext).getGameplayModifierByName(safeName)
             val replacementName = gameplayModifier?.getDuration(GAME_EFFECT_DURATION) ?: "ERROR RETRIEVING GAME EFFECT"
 
             workingString = workingString.replace(safeName, replacementName)
 
         }
+        Log.d(TAG, "parseVariableForDuration - workingString AFTER = ${workingString}")
 
         result = workingString
 
@@ -639,6 +650,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
         var workingString = string
 
         val db = mDatabase
+
         val count = DatabaseUtils.queryNumEntries(db, DB_CREATURE_TABLE_NAME)
         val safeCount = count.toInt()
         //db?.close()
@@ -654,7 +666,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
             workingString = workingString.replace("CREATURE", creatureName)
 
         }
-
+        //db?.close()
         return workingString
     }
 
@@ -704,6 +716,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
             }
             Log.d(TAG, "parseSpellVariable - mSpellsList = $mSpellsList")
             Log.d(TAG, "parseSpellVariable - selectedSpell = $selectedSpell")
+            Log.d(TAG, "[SystemIssue] parseSpellVariable - mSystem = $mSystem")
             spellText = selectedSpell?.mNameWithAAn ?: "ERROR with mNameWithAAn"
             if (selectedSpell != null) {
                 when (mSystem) {
@@ -844,6 +857,7 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
             /*if (!url.isNullOrBlank()) {
                 view?.songVideoInit(true, song)
             }*/
+            //db?.close()
 
         }
 
@@ -888,6 +902,17 @@ class MainPresenter(context: Context) : BasePresenter<MainContract.View>(context
             view?.test()
 
         }
+    }
+
+    override fun goToAbout(w: Window, isFaq: Boolean) {
+        val view: MainContract.View? = getView()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            w.exitTransition = null
+        }
+
+        val intent = Intent(mContext, AboutActivity::class.java)
+        intent.putExtra(EXTRA_IS_FAQ, isFaq)
+        view?.onGoToAbout(intent)
     }
 
 }

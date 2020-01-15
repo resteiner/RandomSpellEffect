@@ -23,6 +23,11 @@
             android:screenOrientation="portrait"
             />
 
+        <activity
+            android:name=".views.activities.AboutActivity"
+            android:screenOrientation="portrait"
+            />
+
         <meta-data
             android:name="com.bugsnag.android.API_KEY"
             android:value="04012894bd2308fa9309c5319fbf6703"/>

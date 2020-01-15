@@ -150,8 +150,9 @@ class PreferencesManager(context: Context) {
     }
 
     fun selectSystem(system: Int) {
+        Log.d(TAG, "[SystemIssue] selectSystem - system = $system")
+        Log.d(TAG, "[SystemIssue] selectSystem - mPreferences = $mPreferences")
         mPreferences?.edit()?.putInt(RPG_SYSTEM_ID, system)?.apply()
-        //mPreferences?.edit()?.apply()
 
     }
 

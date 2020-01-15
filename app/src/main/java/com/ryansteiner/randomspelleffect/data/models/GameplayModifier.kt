@@ -55,8 +55,8 @@ data class GameplayModifier(
         var workingString = ""
         var numberOfDice = when (length) {
             GAME_EFFECT_DURATION_LONG -> 10
-            GAME_EFFECT_DURATION_MEDIUM -> 5
-            else -> 3
+            GAME_EFFECT_DURATION_SHORT -> 3
+            else -> 5
         }
         var randomDieType = when ((1..6).random()) {
             1 -> 4

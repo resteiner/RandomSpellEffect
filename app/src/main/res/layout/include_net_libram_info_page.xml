@@ -6,7 +6,7 @@
     android:layout_marginTop="20dp"
     android:layout_marginRight="20dp"
     android:layout_marginBottom="20dp"
-    android:background="@drawable/background_scroll"
+    android:background="@drawable/background_net_libram_book"
     android:paddingLeft="40dp"
     android:paddingTop="40dp"
     android:paddingRight="40dp"
@@ -36,7 +36,7 @@
                 android:fontFamily="@font/berkshire_swash"
                 android:text="@string/net_libram_this_effect_comes_from"
                 android:textAlignment="center"
-                android:textColor="@color/colorTextPrimary"
+                android:textColor="@color/colorTextMain"
                 android:textSize="@dimen/normal_text_size"
                 android:textStyle="italic" />
 
@@ -51,7 +51,7 @@
                 android:fontFamily="@font/berkshire_swash"
                 android:text="@string/net_libram_title"
                 android:textAlignment="center"
-                android:textColor="@color/colorTextPrimary"
+                android:textColor="@color/colorTextMain"
                 android:textSize="@dimen/title_text_size" />
 
             <TextView
@@ -60,7 +60,7 @@
                 android:fontFamily="@font/berkshire_swash"
                 android:text="@string/net_libram_by_author"
                 android:textAlignment="center"
-                android:textColor="@color/colorTextPrimary"
+                android:textColor="@color/colorTextMain"
                 android:textSize="@dimen/heading_1_text_size" />
 
             <View
@@ -75,7 +75,7 @@
                 android:fontFamily="@font/berkshire_swash"
                 android:text="@string/net_libram_used_with_permission"
                 android:textAlignment="center"
-                android:textColor="@color/colorTextPrimary"
+                android:textColor="@color/colorTextMain"
                 android:textSize="@dimen/normal_text_size"
                 android:textStyle="italic" />
 
@@ -100,7 +100,7 @@
                 android:fontFamily="@font/berkshire_swash"
                 android:text="@string/net_libram_for_information"
                 android:textAlignment="center"
-                android:textColor="@color/colorTextPrimary"
+                android:textColor="@color/colorTextMain"
                 android:textSize="@dimen/normal_text_size" />
 
             <TextView
@@ -109,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/net_libram_url"
                 android:textAlignment="center"
-                android:textColor="@color/colorTextLink"
+                android:textColor="@color/colorBlueCobalt"
                 android:textSize="@dimen/normal_text_size" />
         </LinearLayout>
 

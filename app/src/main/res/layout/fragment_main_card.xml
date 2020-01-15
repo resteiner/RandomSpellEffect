@@ -84,7 +84,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/reload_video"
-                            android:textColor="@color/colorTextPrimary"
+                            android:textColor="@color/colorTextMain"
                             android:textSize="@dimen/normal_text_size" />
 
                     </LinearLayout>
@@ -105,7 +105,7 @@
                 android:paddingRight="30dp"
                 android:paddingBottom="30dp"
                 android:text="Hello"
-                android:textColor="@color/colorTextPrimary"
+                android:textColor="@color/colorTextBlack"
                 android:textSize="@dimen/heading_1_text_size"
                 app:autoSizeMaxTextSize="@dimen/heading_2_text_size"
                 app:autoSizeMinTextSize="@dimen/normal_text_size"
@@ -133,18 +133,20 @@
                 android:gravity="center"
                 android:text="@string/net_libram_this_effect_comes_from"
                 android:textSize="@dimen/small_text_size"
-                android:textStyle="italic" />
+                android:textStyle="italic"
+                android:textColor="@color/colorTextSecondary"/>
 
             <TextView
                 android:id="@+id/tNetLibramLabel2"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:fontFamily="@font/berkshire_swash"
                 android:gravity="center"
                 android:text="@string/net_libram_title"
                 android:textSize="@dimen/small_text_size"
-                android:textStyle="italic" />
+                android:textStyle="italic"
+                android:textColor="@color/colorTextSecondary" />
         </LinearLayout>
 
 
@@ -194,7 +196,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Additional Info"
-                android:textColor="@color/colorTextPrimary"
+                android:textColor="@color/colorTextMain"
                 android:textSize="@dimen/title_text_size" />
 
             <TextView
@@ -204,7 +206,7 @@
                 android:layout_marginTop="@dimen/primary_margin_top_bottom"
                 android:layout_marginBottom="@dimen/primary_margin_top_bottom"
                 android:text="Description"
-                android:textColor="@color/colorTextPrimary"
+                android:textColor="@color/colorTextMain"
                 android:textSize="@dimen/heading_2_text_size" />
 
             <TextView
@@ -212,7 +214,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Page Info"
-                android:textColor="@color/colorTextPrimary"
+                android:textColor="@color/colorTextMain"
                 android:textSize="@dimen/normal_text_size" />
 
             <TextView
@@ -223,7 +225,7 @@
                 android:fontFamily="@font/philosopher"
                 android:text="Dice Roll"
                 android:textAlignment="center"
-                android:textColor="@color/colorTextPrimary"
+                android:textColor="@color/colorTextMain"
                 android:textSize="@dimen/heading_1_text_size" />
 
             <View
@@ -272,7 +274,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                             <TextView
@@ -287,7 +289,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                             <TextView
@@ -302,7 +304,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                             <TextView
@@ -317,7 +319,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                             <TextView
@@ -332,7 +334,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                         </LinearLayout>
@@ -356,7 +358,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                             <TextView
@@ -371,7 +373,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                             <TextView
@@ -386,7 +388,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                             <TextView
@@ -401,7 +403,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                             <TextView
@@ -416,7 +418,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
                         </LinearLayout>
 
@@ -439,7 +441,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                             <TextView
@@ -454,7 +456,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                             <TextView
@@ -469,7 +471,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                             <TextView
@@ -484,7 +486,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                             <TextView
@@ -499,7 +501,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                         </LinearLayout>
@@ -523,7 +525,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                             <TextView
@@ -538,7 +540,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                             <TextView
@@ -553,7 +555,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                             <TextView
@@ -568,7 +570,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                             <TextView
@@ -583,7 +585,7 @@
                                 android:gravity="center"
                                 android:text="0"
                                 android:textAlignment="center"
-                                android:textColor="@color/colorTextPrimary"
+                                android:textColor="@color/colorTextMain"
                                 android:textSize="@dimen/dice_roll_text_size" />
 
                         </LinearLayout>
@@ -600,7 +602,7 @@
                         android:fontFamily="@font/philosopher"
                         android:gravity="center"
                         android:text="x"
-                        android:textColor="@color/colorTextPrimary"
+                        android:textColor="@color/colorTextMain"
                         android:textSize="@dimen/dice_roll_multiplier_text_size" />
 
                     <TextView
@@ -613,7 +615,7 @@
                         android:fontFamily="@font/philosopher"
                         android:gravity="center"
                         android:text="1/2"
-                        android:textColor="@color/colorTextPrimary"
+                        android:textColor="@color/colorTextMain"
                         android:textSize="@dimen/dice_roll_multiplier_text_size" />
 
                     <TextView
@@ -626,7 +628,7 @@
                         android:fontFamily="@font/philosopher"
                         android:gravity="center"
                         android:text="="
-                        android:textColor="@color/colorTextPrimary"
+                        android:textColor="@color/colorTextMain"
                         android:textSize="@dimen/dice_roll_multiplier_text_size" />
 
                     <TextView
@@ -639,7 +641,7 @@
                         android:fontFamily="@font/philosopher"
                         android:gravity="center"
                         android:text="0"
-                        android:textColor="@color/colorTextPrimary"
+                        android:textColor="@color/colorTextMain"
                         android:textSize="@dimen/dice_roll_multiplier_text_size" />
 
                 </LinearLayout>
@@ -648,4 +650,25 @@
             </FrameLayout>
         </LinearLayout>
     </LinearLayout>
+    <FrameLayout
+        android:id="@+id/mMainCardDebugContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:background="@color/colorAccent">
+
+    <TextView
+        android:id="@+id/tMainCardDebug"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="3dp"
+        android:fontFamily="@font/philosopher"
+        android:gravity="center"
+        android:text="0"
+        android:textColor="@color/colorTextMain"
+        android:textSize="@dimen/dice_roll_multiplier_text_size" />
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
